@@ -16,10 +16,13 @@
         <header class="bg-indigo-700 text-white shadow-md">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <i class="fa-solid fa-[# clipboard-list] text-2xl text-indigo-200"></i>
+                    <i class="fa-solid fa-clipboard-list text-2xl text-indigo-200"></i>
                     <h1 class="text-xl font-bold tracking-wide">Система Отчетов</h1>
                 </div>
                 <div id="user-info" class="hidden items-center space-x-4">
+                    <span id="cloud-status" class="px-2.5 py-1 bg-emerald-500/20 text-emerald-200 rounded-full text-xs font-medium border border-emerald-400/30 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Облако подключено
+                    </span>
                     <span id="user-badge" class="px-3 py-1 bg-indigo-800 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
                     <span id="user-display" class="font-medium text-sm"></span>
                     <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200">
@@ -95,7 +98,7 @@
                     <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center">
                         <i class="fa-solid fa-plus mr-2"></i> Добавить строку
                     </button>
-                    <span id="save-status" class="text-xs text-slate-400 italic"> Все изменения сохранены</span>
+                    <span id="save-status" class="text-xs text-slate-400 italic">Синхронизировано с облаком</span>
                 </div>
             </div>
 
@@ -119,9 +122,7 @@
                                 <th class="p-3 w-16 text-center">Действие</th>
                             </tr>
                         </thead>
-                        <tbody id="user-table-body" class="divide-y divide-slate-100">
-                            <!-- Rows generated dynamically -->
-                        </tbody>
+                        <tbody id="user-table-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
@@ -199,9 +200,8 @@
                 </div>
             </div>
 
-            <!-- Special Analysis Section (Missing / Inactive Reports) -->
+            <!-- Special Analysis Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Missing 1+ Month in Last 6 Months -->
                 <div class="bg-amber-50 rounded-xl border border-amber-200 p-4">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-amber-900 text-sm flex items-center">
@@ -210,12 +210,9 @@
                         </h3>
                         <span id="count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </div>
-                    <div id="list-irregular" class="text-xs text-amber-800 space-y-1 max-h-40 overflow-y-auto">
-                        <!-- Populated dynamically -->
-                    </div>
+                    <div id="list-irregular" class="text-xs text-amber-800 space-y-1 max-h-40 overflow-y-auto"></div>
                 </div>
 
-                <!-- Missing ALL 6 Months -->
                 <div class="bg-rose-50 rounded-xl border border-rose-200 p-4">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
@@ -224,16 +221,14 @@
                         </h3>
                         <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </div>
-                    <div id="list-inactive" class="text-xs text-rose-800 space-y-1 max-h-40 overflow-y-auto">
-                        <!-- Populated dynamically -->
-                    </div>
+                    <div id="list-inactive" class="text-xs text-rose-800 space-y-1 max-h-40 overflow-y-auto"></div>
                 </div>
             </div>
 
             <!-- Consolidated Database Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex justify-between items-center">
-                    <h2 class="font-bold text-slate-800 text-lg">Сводная база данных отчетов</h2>
+                    <h2 class="font-bold text-slate-800 text-lg">Сводная база данных отчетов (Облако)</h2>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
@@ -251,177 +246,161 @@
                                 <th class="p-3 w-20 text-center">Действия</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-table-body" class="divide-y divide-slate-100">
-                            <!-- Consolidated rows dynamically filled -->
-                        </tbody>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Application Script -->
-    <script>
-        // State management
+    <!-- Firebase SDK Modular -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // КЛЮЧИ ПОДКЛЮЧЕНИЯ
+        const firebaseConfig = {
+            apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
+            authDomain: "tablitsa-40cf4.firebaseapp.com",
+            databaseURL: "https://tablitsa-40cf4-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "tablitsa-40cf4",
+            storageBucket: "tablitsa-40cf4.firebasestorage.app",
+            messagingSenderId: "785699516187",
+            appId: "1:785699516187:web:727bf55a5df125fc43edbe",
+            measurementId: "G-SRZ42R8TNM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const reportsRef = collection(db, "reports");
+
         const currentYear = new Date().getFullYear();
         let currentUser = null;
-        let reportsData = []; // Main array holding report entries
+        let reportsData = [];
 
-        // Default initial mockup data for testing/demo
-        const initialMockData = [
-            { id: '1', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Иванов И.И.', hours: '15', status: 'Возвещатель', studies: '1', notes: 'Участвовал', dp: '0' },
-            { id: '2', email: 'user2@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Петрова А.С.', hours: '50', status: 'ПП', studies: '4', notes: 'Отличный месяц', dp: '2' },
-            { id: '3', email: 'user3@test.com', group: '2', month: '09', year: currentYear.toString(), name: 'Сидоров В.К.', hours: '30', status: 'ОП', studies: '2', notes: '', dp: '0' },
-            { id: '4', email: 'user1@test.com', group: '1', month: '08', year: currentYear.toString(), name: 'Иванов И.И.', hours: '12', status: 'Возвещатель', studies: '1', notes: '', dp: '0' }
-        ];
-
-        // Initialize state
-        function initApp() {
-            // Set preset year
-            document.getElementById('user-year').value = currentYear;
-            document.getElementById('admin-year').value = currentYear;
-
-            // Set current month default
-            const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
-            document.getElementById('user-month').value = currentMonth;
-
-            // Load stored data or set mock
-            const savedData = localStorage.getItem('reports_db');
-            if (savedData) {
-                reportsData = JSON.parse(savedData);
-            } else {
-                reportsData = [...initialMockData];
-                saveToStorage();
-            }
-
-            setupEventListeners();
-        }
-
-        // Save data helper
-        function saveToStorage() {
-            localStorage.setItem('reports_db', JSON.stringify(reportsData));
-            showSaveNotification();
-        }
-
-        function showSaveNotification() {
-            const status = document.getElementById('save-status');
-            if (status) {
-                status.innerText = 'Сохранение...';
-                status.classList.add('text-amber-500');
-                setTimeout(() => {
-                    status.innerText = 'Все изменения сохранены';
-                    status.classList.remove('text-amber-500');
-                }, 600);
-            }
-        }
-
-        // Event listeners
-        function setupEventListeners() {
-            // Login Form Submit
-            document.getElementById('login-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value.trim();
-                const group = document.getElementById('group-number').value.trim();
-                const role = document.getElementById('role-select').value;
-
-                currentUser = { email, group, role };
-
-                // UI Update
-                document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('user-info').classList.remove('hidden');
-                document.getElementById('user-info').classList.add('flex');
-                document.getElementById('user-display').innerText = `${email} (Гр. ${group})`;
-                document.getElementById('user-badge').innerText = role === 'admin' ? 'Администратор' : 'Пользователь';
-
-                if (role === 'admin') {
-                    document.getElementById('admin-dashboard').classList.remove('hidden');
-                    populateAdminGroupFilter();
+        // Живая синхронизация с Firestore
+        onSnapshot(reportsRef, (snapshot) => {
+            reportsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (currentUser) {
+                populateAdminGroupFilter();
+                if (currentUser.role === 'admin') {
                     renderAdminDashboard();
                 } else {
-                    document.getElementById('user-dashboard').classList.remove('hidden');
-                    document.getElementById('user-group-display').innerText = group;
                     renderUserDashboard();
                 }
-            });
+            }
+        });
 
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                currentUser = null;
-                document.getElementById('user-info').classList.add('hidden');
-                document.getElementById('user-dashboard').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.add('hidden');
-                document.getElementById('login-view').classList.remove('hidden');
-            });
+        // Инициализация
+        document.getElementById('user-year').value = currentYear;
+        document.getElementById('admin-year').value = currentYear;
+        const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+        document.getElementById('user-month').value = currentMonth;
 
-            // User Month Change
-            document.getElementById('user-month').addEventListener('change', renderUserDashboard);
-
-            // Add Row User
-            document.getElementById('add-row-btn').addEventListener('click', () => {
-                const month = document.getElementById('user-month').value;
-                const year = currentYear.toString();
-
-                const newEntry = {
-                    id: Date.now().toString(),
-                    email: currentUser.email,
-                    group: currentUser.group,
-                    month: month,
-                    year: year,
-                    name: '',
-                    hours: '',
-                    status: 'Возвещатель',
-                    studies: '0',
-                    notes: '',
-                    dp: '0'
-                };
-
-                reportsData.push(newEntry);
-                saveToStorage();
-                renderUserDashboard();
-            });
-
-            // Admin Filters Change
-            document.getElementById('admin-month').addEventListener('change', renderAdminDashboard);
-            document.getElementById('admin-group-filter').addEventListener('change', renderAdminDashboard);
-            document.getElementById('admin-status-filter').addEventListener('change', renderAdminDashboard);
-
-            // Admin Add Entry Button
-            document.getElementById('admin-add-entry').addEventListener('click', () => {
-                const selectedMonth = document.getElementById('admin-month').value;
-                const monthVal = selectedMonth === 'all' ? '01' : selectedMonth;
-                const groupFilter = document.getElementById('admin-group-filter').value;
-                const groupVal = groupFilter === 'all' ? '1' : groupFilter;
-
-                const newEntry = {
-                    id: Date.now().toString(),
-                    email: 'admin_created@system.com',
-                    group: groupVal,
-                    month: monthVal,
-                    year: currentYear.toString(),
-                    name: 'Новый возвещатель',
-                    hours: '0',
-                    status: 'Возвещатель',
-                    studies: '0',
-                    notes: '',
-                    dp: '0'
-                };
-
-                reportsData.push(newEntry);
-                saveToStorage();
-                populateAdminGroupFilter();
-                renderAdminDashboard();
-            });
+        function showSaveStatus(text = 'Сохранено в облако') {
+            const status = document.getElementById('save-status');
+            if (status) {
+                status.innerText = text;
+                status.classList.add('text-emerald-600');
+                setTimeout(() => {
+                    status.innerText = 'Синхронизировано с облаком';
+                    status.classList.remove('text-emerald-600');
+                }, 1000);
+            }
         }
 
-        // --- RENDER USER DASHBOARD ---
+        // Авторизация
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const group = document.getElementById('group-number').value.trim();
+            const role = document.getElementById('role-select').value;
+
+            currentUser = { email, group, role };
+
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('user-info').classList.add('flex');
+            document.getElementById('user-display').innerText = `${email} (Гр. ${group})`;
+            document.getElementById('user-badge').innerText = role === 'admin' ? 'Администратор' : 'Пользователь';
+
+            if (role === 'admin') {
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                populateAdminGroupFilter();
+                renderAdminDashboard();
+            } else {
+                document.getElementById('user-dashboard').classList.remove('hidden');
+                document.getElementById('user-group-display').innerText = group;
+                renderUserDashboard();
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            currentUser = null;
+            document.getElementById('user-info').classList.add('hidden');
+            document.getElementById('user-dashboard').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+        });
+
+        document.getElementById('user-month').addEventListener('change', renderUserDashboard);
+
+        // Добавление строки возвещателем
+        document.getElementById('add-row-btn').addEventListener('click', async () => {
+            const month = document.getElementById('user-month').value;
+            const docId = Date.now().toString();
+            const newEntry = {
+                email: currentUser.email,
+                group: currentUser.group,
+                month: month,
+                year: currentYear.toString(),
+                name: '',
+                hours: '',
+                status: 'Возвещатель',
+                studies: '0',
+                notes: '',
+                dp: '0'
+            };
+            await setDoc(doc(db, "reports", docId), newEntry);
+            showSaveStatus();
+        });
+
+        document.getElementById('admin-month').addEventListener('change', renderAdminDashboard);
+        document.getElementById('admin-group-filter').addEventListener('change', renderAdminDashboard);
+        document.getElementById('admin-status-filter').addEventListener('change', renderAdminDashboard);
+
+        // Добавление записи админом
+        document.getElementById('admin-add-entry').addEventListener('click', async () => {
+            const selectedMonth = document.getElementById('admin-month').value;
+            const monthVal = selectedMonth === 'all' ? '01' : selectedMonth;
+            const groupFilter = document.getElementById('admin-group-filter').value;
+            const groupVal = groupFilter === 'all' ? '1' : groupFilter;
+            const docId = Date.now().toString();
+
+            const newEntry = {
+                email: 'admin_created@system.com',
+                group: groupVal,
+                month: monthVal,
+                year: currentYear.toString(),
+                name: 'Новый возвещатель',
+                hours: '0',
+                status: 'Возвещатель',
+                studies: '0',
+                notes: '',
+                dp: '0'
+            };
+            await setDoc(doc(db, "reports", docId), newEntry);
+            showSaveStatus();
+        });
+
         function renderUserDashboard() {
             const tbody = document.getElementById('user-table-body');
             tbody.innerHTML = '';
-
             const selectedMonth = document.getElementById('user-month').value;
             const selectedYear = currentYear.toString();
 
-            // Filter data for this user, group, month, and year
             const userEntries = reportsData.filter(item => 
                 item.email === currentUser.email && 
                 item.group === currentUser.group &&
@@ -430,66 +409,33 @@
             );
 
             if (userEntries.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="text-center py-8 text-slate-400">
-                            Записей за выбранный месяц не найдено. Нажмите "Добавить строку" для ввода отчета.
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Записей за этот месяц не найдено. Нажмите "Добавить строку".</td></tr>`;
                 return;
             }
 
             userEntries.forEach((entry, index) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition duration-150";
-
                 tr.innerHTML = `
                     <td class="p-3 text-center text-slate-400 font-mono">${index + 1}</td>
+                    <td class="p-2"><input type="text" value="${entry.name || ''}" placeholder="ФИО" onchange="window.updateReportData('${entry.id}', 'name', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
+                    <td class="p-2"><input type="text" value="${entry.hours || ''}" placeholder="Часы" onchange="window.updateReportData('${entry.id}', 'hours', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
                     <td class="p-2">
-                        <input type="text" value="${entry.name}" placeholder="ФИО возвещателя" 
-                            onchange="updateReportData('${entry.id}', 'name', this.value)"
-                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
-                    </td>
-                    <td class="p-2">
-                        <input type="text" value="${entry.hours}" placeholder="Часы / Да" 
-                            onchange="updateReportData('${entry.id}', 'hours', this.value)"
-                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
-                    </td>
-                    <td class="p-2">
-                        <select onchange="updateReportData('${entry.id}', 'status', this.value)"
-                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm bg-white focus:border-indigo-500 focus:outline-none">
+                        <select onchange="window.updateReportData('${entry.id}', 'status', this.value)" class="w-full px-2 py-1 border rounded text-sm bg-white">
                             <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                             <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
                             <option value="ОП" ${entry.status === 'ОП' ? 'selected' : ''}>ОП</option>
                         </select>
                     </td>
-                    <td class="p-2">
-                        <input type="number" value="${entry.studies}" min="0" 
-                            onchange="updateReportData('${entry.id}', 'studies', this.value)"
-                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
-                    </td>
-                    <td class="p-2">
-                        <input type="text" value="${entry.notes}" placeholder="Примечание" 
-                            onchange="updateReportData('${entry.id}', 'notes', this.value)"
-                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
-                    </td>
-                    <td class="p-2">
-                        <input type="number" value="${entry.dp}" min="0" 
-                            onchange="updateReportData('${entry.id}', 'dp', this.value)"
-                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
-                    </td>
-                    <td class="p-2 text-center">
-                        <button onclick="deleteReportRow('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
+                    <td class="p-2"><input type="number" value="${entry.studies || '0'}" min="0" onchange="window.updateReportData('${entry.id}', 'studies', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
+                    <td class="p-2"><input type="text" value="${entry.notes || ''}" placeholder="Примечание" onchange="window.updateReportData('${entry.id}', 'notes', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
+                    <td class="p-2"><input type="number" value="${entry.dp || '0'}" min="0" onchange="window.updateReportData('${entry.id}', 'dp', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
+                    <td class="p-2 text-center"><button onclick="window.deleteReportRow('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // --- RENDER ADMIN DASHBOARD ---
         function renderAdminDashboard() {
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
@@ -498,7 +444,6 @@
             const selectedGroup = document.getElementById('admin-group-filter').value;
             const selectedStatus = document.getElementById('admin-status-filter').value;
 
-            // Filter Consolidated Records
             let filtered = reportsData.filter(item => {
                 const matchMonth = selectedMonth === 'all' || item.month === selectedMonth;
                 const matchGroup = selectedGroup === 'all' || item.group === selectedGroup;
@@ -506,11 +451,7 @@
                 return matchMonth && matchGroup && matchStatus;
             });
 
-            // Calculate Statistics
-            let totalHours = 0;
-            let totalStudies = 0;
-            let totalDP = 0;
-
+            let totalHours = 0, totalStudies = 0, totalDP = 0;
             filtered.forEach(item => {
                 totalHours += parseFloat(item.hours) || 0;
                 totalStudies += parseInt(item.studies) || 0;
@@ -523,156 +464,95 @@
             document.getElementById('stat-dp').innerText = totalDP;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="10" class="text-center py-8 text-slate-400">
-                            Нет данных, соответствующих выбранным фильтрам.
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">Нет данных.</td></tr>`;
             } else {
                 filtered.forEach((entry, index) => {
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition duration-150";
-
                     tr.innerHTML = `
                         <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
+                        <td class="p-2"><input type="number" value="${entry.group}" onchange="window.updateReportData('${entry.id}', 'group', this.value)" class="w-12 px-1 py-1 border rounded text-xs text-center"></td>
+                        <td class="p-2 text-xs font-semibold text-slate-600">${entry.month}/${entry.year}</td>
+                        <td class="p-2"><input type="text" value="${entry.name || ''}" onchange="window.updateReportData('${entry.id}', 'name', this.value)" class="w-full px-2 py-1 border rounded text-sm font-medium"></td>
+                        <td class="p-2"><input type="text" value="${entry.hours || ''}" onchange="window.updateReportData('${entry.id}', 'hours', this.value)" class="w-20 px-2 py-1 border rounded text-sm"></td>
                         <td class="p-2">
-                            <input type="number" value="${entry.group}" onchange="updateReportData('${entry.id}', 'group', this.value)"
-                                class="w-12 px-1 py-1 border border-slate-200 rounded text-xs text-center">
-                        </td>
-                        <td class="p-2 text-xs font-semibold text-slate-600">
-                            ${entry.month}/${entry.year}
-                        </td>
-                        <td class="p-2">
-                            <input type="text" value="${entry.name}" onchange="updateReportData('${entry.id}', 'name', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm font-medium text-slate-800">
-                        </td>
-                        <td class="p-2">
-                            <input type="text" value="${entry.hours}" onchange="updateReportData('${entry.id}', 'hours', this.value)"
-                                class="w-20 px-2 py-1 border border-slate-200 rounded text-sm">
-                        </td>
-                        <td class="p-2">
-                            <select onchange="updateReportData('${entry.id}', 'status', this.value)"
-                                class="px-2 py-1 border border-slate-200 rounded text-xs bg-white">
+                            <select onchange="window.updateReportData('${entry.id}', 'status', this.value)" class="px-2 py-1 border rounded text-xs bg-white">
                                 <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                                 <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
                                 <option value="ОП" ${entry.status === 'ОП' ? 'selected' : ''}>ОП</option>
                             </select>
                         </td>
-                        <td class="p-2">
-                            <input type="number" value="${entry.studies}" onchange="updateReportData('${entry.id}', 'studies', this.value)"
-                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
-                        </td>
-                        <td class="p-2">
-                            <input type="text" value="${entry.notes}" onchange="updateReportData('${entry.id}', 'notes', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm">
-                        </td>
-                        <td class="p-2">
-                            <input type="number" value="${entry.dp}" onchange="updateReportData('${entry.id}', 'dp', this.value)"
-                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
-                        </td>
-                        <td class="p-2 text-center">
-                            <button onclick="deleteReportRow('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
+                        <td class="p-2"><input type="number" value="${entry.studies || '0'}" onchange="window.updateReportData('${entry.id}', 'studies', this.value)" class="w-16 px-2 py-1 border rounded text-sm"></td>
+                        <td class="p-2"><input type="text" value="${entry.notes || ''}" onchange="window.updateReportData('${entry.id}', 'notes', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
+                        <td class="p-2"><input type="number" value="${entry.dp || '0'}" onchange="window.updateReportData('${entry.id}', 'dp', this.value)" class="w-16 px-2 py-1 border rounded text-sm"></td>
+                        <td class="p-2 text-center"><button onclick="window.deleteReportRow('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
-
-            // Perform 6-Month Inactivity / Irregular Analysis
             analyzeSixMonthsActivity();
         }
 
-        // Dynamic Group Filter Options for Admin
         function populateAdminGroupFilter() {
             const groupSelect = document.getElementById('admin-group-filter');
             const groups = [...new Set(reportsData.map(item => item.group))].sort();
-
             groupSelect.innerHTML = '<option value="all">Все группы</option>';
             groups.forEach(g => {
-                const option = document.createElement('option');
-                option.value = g;
-                option.innerText = `Группа №${g}`;
-                groupSelect.appendChild(option);
+                if (g) {
+                    const option = document.createElement('option');
+                    option.value = g;
+                    option.innerText = `Группа №${g}`;
+                    groupSelect.appendChild(option);
+                }
             });
         }
 
-        // --- DATA MODIFICATION HANDLERS ---
-        window.updateReportData = function(id, key, value) {
+        // Работа с БД напрямую
+        window.updateReportData = async function(id, key, value) {
             const entry = reportsData.find(item => item.id === id);
             if (entry) {
                 entry[key] = value;
-                saveToStorage();
-                
-                // Refresh Admin group list if group changed
-                if (key === 'group') populateAdminGroupFilter();
-
-                // Re-render
-                if (currentUser.role === 'admin') {
-                    renderAdminDashboard();
-                } else {
-                    renderUserDashboard();
-                }
+                const { id: docId, ...dataToSave } = entry;
+                await setDoc(doc(db, "reports", id), dataToSave, { merge: true });
+                showSaveStatus();
             }
         };
 
-        window.deleteReportRow = function(id) {
-            if (confirm('Вы действительно хотите удалить эту запись?')) {
-                reportsData = reportsData.filter(item => item.id !== id);
-                saveToStorage();
-                populateAdminGroupFilter();
-                
-                if (currentUser.role === 'admin') {
-                    renderAdminDashboard();
-                } else {
-                    renderUserDashboard();
-                }
+        window.deleteReportRow = async function(id) {
+            if (confirm('Удалить эту запись из облака?')) {
+                await deleteDoc(doc(db, "reports", id));
+                showSaveStatus('Запись удалена');
             }
         };
 
-        // --- 6 MONTHS ANALYSIS LOGIC ---
         function analyzeSixMonthsActivity() {
             const irregularList = document.getElementById('list-irregular');
             const inactiveList = document.getElementById('list-inactive');
-            
             irregularList.innerHTML = '';
             inactiveList.innerHTML = '';
 
-            // Calculate last 6 months Array (formatted MM)
             const last6Months = [];
             const currentDate = new Date();
             for (let i = 0; i < 6; i++) {
                 const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                last6Months.push(m);
+                last6Months.push(String(d.getMonth() + 1).padStart(2, '0'));
             }
 
-            // Get unique publisher names
             const allPublishers = [...new Set(reportsData.map(item => item.name).filter(n => n && n.trim() !== ''))];
-
-            let countIrregular = 0;
-            let countInactive = 0;
+            let countIrregular = 0, countInactive = 0;
 
             allPublishers.forEach(name => {
-                // Get all reports for this publisher in current year
                 const publisherReports = reportsData.filter(r => r.name === name && r.year === currentYear.toString());
                 const submittedMonths = publisherReports.map(r => r.month);
-
-                // Check how many of the last 6 months are submitted
                 const submittedLast6Count = last6Months.filter(m => submittedMonths.includes(m)).length;
 
                 if (submittedLast6Count === 0) {
-                    // Completely Inactive (0 out of 6 months)
                     countInactive++;
                     const item = document.createElement('div');
                     item.className = 'flex justify-between items-center py-1 border-b border-rose-100';
                     item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-rose-500 font-mono">0/6 мес.</span>`;
                     inactiveList.appendChild(item);
                 } else if (submittedLast6Count < 6) {
-                    // Irregular (Missed at least 1 month in last 6)
                     countIrregular++;
                     const missedCount = 6 - submittedLast6Count;
                     const item = document.createElement('div');
@@ -684,13 +564,9 @@
 
             document.getElementById('count-irregular').innerText = countIrregular;
             document.getElementById('count-inactive').innerText = countInactive;
-
             if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600">Все возвещатели сдавали отчеты регулярно!</div>';
             if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600">За последние 6 месяцев нет полностью неактивных.</div>';
         }
-
-        // On Load
-        window.onload = initApp;
     </script>
 </body>
 </html>
