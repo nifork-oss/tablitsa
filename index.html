@@ -196,7 +196,7 @@
                     </div>
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Год</label>
-                        <comment-tag id="1"><input type="number" id="user-year" readonly class="border border-slate-200 bg-slate-50 text-slate-600 font-bold rounded-lg px-3 py-1.5 text-sm w-24 text-center"></comment-tag id="1" text="Чтобы сделать поле выбора года интерактивным, удалите атрибут readonly и измените стили фона. Рекомендуется заменить на: <input type='number' id='user-year' min='2020' max='2035' class='border border-slate-300 rounded-lg px-3 py-1.5 text-sm w-24 text-center font-bold focus:ring-2 focus:ring-indigo-500'>" type="suggestion">
+                        <input type="number" id="user-year" readonly class="border border-slate-200 bg-slate-50 text-slate-600 font-bold rounded-lg px-3 py-1.5 text-sm w-24 text-center">
                     </div>
                 </div>
                 
@@ -286,7 +286,7 @@
                                 <option value="11">Ноябрь</option>
                                 <option value="12">Декабрь</option>
                             </select>
-                            <comment-tag id="2"><input type="number" id="admin-year" readonly class="border border-slate-200 bg-slate-50 text-slate-600 font-bold rounded-lg px-3 py-1.5 text-sm w-20 text-center"></comment-tag id="2" text="Удалите атрибут readonly в административной панели, чтобы администраторы могли менять год и анализировать сводную таблицу за любые периоды. Замените на: <input type='number' id='admin-year' min='2020' max='2035' class='border border-slate-300 rounded-lg px-3 py-1.5 text-sm w-24 text-center font-bold focus:ring-2 focus:ring-indigo-500'>" type="suggestion">
+                            <input type="number" id="admin-year" readonly class="border border-slate-200 bg-slate-50 text-slate-600 font-bold rounded-lg px-3 py-1.5 text-sm w-20 text-center">
                         </div>
                     </div>
 
@@ -1008,7 +1008,7 @@
             });
 
             // User Dashboard controls
-            <comment-tag id="3">document.getElementById('user-month').addEventListener('change', renderUserDashboard);</comment-tag id="3" text="Добавьте слушатели событий изменения года для пользовательской и административной панелей: document.getElementById('user-month').addEventListener('change', renderUserDashboard); document.getElementById('user-year').addEventListener('change', renderUserDashboard); document.getElementById('admin-year').addEventListener('change', renderAdminDashboard);" type="suggestion">
+            document.getElementById('user-month').addEventListener('change', renderUserDashboard);
 
             // Add Row with Empty fields
             document.getElementById('add-row-btn').addEventListener('click', () => {
@@ -1496,7 +1496,7 @@
             let countInactive = 0;
 
             publishersInGroup.forEach(pId => {
-                <comment-tag id="4">const pReports = groupReports.filter(r => r.personId === pId && r.year === currentYear.toString());</comment-tag id="4" text="Вместо жесткой привязки к текущему году currentYear.toString() считывайте выбранный в пользовательском интерфейсе год: const selYear = document.getElementById('user-year').value || currentYear.toString(); const pReports = groupReports.filter(r => r.personId === pId && r.year === selYear);" type="suggestion">
+                const pReports = groupReports.filter(r => r.personId === pId && r.year === currentYear.toString());
                 if (pReports.length === 0) return;
 
                 const name = pReports[pReports.length - 1].name || 'Имя не указано';
@@ -1547,7 +1547,7 @@
             let countInactive = 0;
 
             allPersonIds.forEach(pId => {
-                <comment-tag id="5">const pReports = reportsData.filter(r => r.personId === pId && r.year === currentYear.toString());</comment-tag id="5" text="Для анализа отчетов всей системы используйте динамически выбранный год из панели администратора #admin-year: const selYear = document.getElementById('admin-year').value || currentYear.toString(); const pReports = reportsData.filter(r => r.personId === pId && r.year === selYear);" type="suggestion">
+                const pReports = reportsData.filter(r => r.personId === pId && r.year === currentYear.toString());
                 if (pReports.length === 0) return;
 
                 const latest = pReports[pReports.length - 1];
