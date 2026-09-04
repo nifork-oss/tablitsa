@@ -609,11 +609,116 @@
                     auth = getAuth(app);
                     db = getFirestore(app);
 
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (authErr) {
+                        console.warn('Firebase Auth warning:', authErr);
                     }
+
+                    isCloudConnected = true;
+                    updateCloudUIStatus('connected', 'Облако подключено');
+                    subscribeToReports();
+                    subscribeToUsers();
+                } catch (err) {
+                    console.warn('Firebase initialization failed:', err);
+                    let errDetail = 'Ошибка сети или конфигурации';
+                    if (err.code === 'auth/operation-not-allowed') {
+                        errDetail = 'Включите Анонимный вход в Firebase Console!';
+                    } else if (err.message) {
+                        errDetail = err.message;
+                    }
+                    updateCloudUIStatus('error', 'Ошибка облака', errDetail);
+                }
+            } else {
+                updateCloudUIStatus('offline', 'Автономный режим');
+            }
+        }
+
+        function subscribeToReports() {
+            if (!db) return;
+            const reportsRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
+
+            onSnapshot(reportsRef, (snapshot) => {
+                if (snapshot.empty) {
+                    // Seed cloud with initial local reports if cloud database is empty
+                    if (reportsData.length > 0) {
+                        reportsData.forEach(entry => {
+                            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
+                            setDoc(docRef, entry, { merge: true }).catch(console.error);
+                        });
+                    }
+                    return;
+                }
+
+                const cloudItems = [];
+                snapshot.forEach(docSnap => {
+                    cloudItems.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                if (cloudItems.length > 0) {
+                    reportsData = cloudItems;
+                    localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                    refreshCurrentView();
+                }
+            }, (error) => {
+                console.error('Firestore listener error:', error);
+                let errDetail = 'Ошибка доступа Firestore';
+                if (error.code === 'permission-denied') {
+                    errDetail = 'Проверьте Правила Доступа (Rules) в Firestore Database!';
+                } else if (error.message) {
+                    errDetail = error.message;
+                }
+                updateCloudUIStatus('error', 'Ошибка подписки', errDetail);
+            });
+        }
+
+        function subscribeToUsers() {
+            if (!db) return;
+            const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+
+            onSnapshot(usersRef, (snapshot) => {
+                if (snapshot.empty) {
+                    if (usersData.length > 0) {
+                        usersData.forEach(u => saveUserToCloud(u));
+                    }
+                    return;
+                }
+
+                const cloudUsers = [];
+                snapshot.forEach(docSnap => {
+                    cloudUsers.push(docSnap.data());
+                });
+
+                if (cloudUsers.length > 0) {
+                    cloudUsers.forEach(cu => {
+                        const idx = usersData.findIndex(u => u.email.toLowerCase() === cu.email.toLowerCase());
+                        if (idx !== -1) {
+                            usersData[idx] = cu;
+                        } else {
+                            usersData.push(cu);
+                        }
+                    });
+
+                    localStorage.setItem('app_users_db', JSON.stringify(usersData));
+                    if (currentUser && currentUser.role === 'superadmin') {
+                        renderSuperAdminUsers();
+                    }
+                }
+            }, (error) => {
+                console.error('Firestore users listener error:', error);
+            });
+        }
+
+        function saveUserToCloud(userObj) {
+            if (!isCloudConnected || !db || !userObj || !userObj.email) return;
+            const userKey = userObj.email.replace(/[@.]/g, '_');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', userKey);
+            setDoc(docRef, userObj, { merge: true }).catch(console.error);
+        }
 
                     isCloudConnected = true;
                     updateCloudUIStatus('connected', 'Облако подключено');
@@ -864,6 +969,7 @@
                 const newUser = { email, password: pass, group, role: 'user' };
                 usersData.push(newUser);
                 localStorage.setItem('app_users_db', JSON.stringify(usersData));
+                saveUserToCloud(newUser);
 
                 currentUser = { email: newUser.email, group: newUser.group, role: newUser.role };
                 localStorage.setItem('current_user_session', JSON.stringify(currentUser));
@@ -1053,6 +1159,7 @@
             if (user && user.role !== 'superadmin') {
                 user.role = user.role === 'admin' ? 'user' : 'admin';
                 localStorage.setItem('app_users_db', JSON.stringify(usersData));
+                saveUserToCloud(user);
                 renderSuperAdminUsers();
             }
         };
@@ -1069,6 +1176,8 @@
 
                     localStorage.setItem('app_users_db', JSON.stringify(usersData));
                     localStorage.setItem('current_user_session', JSON.stringify(currentUser));
+                    saveUserToCloud(currentSuper);
+                    saveUserToCloud(targetUser);
 
                     applyUserSession();
                 }
