@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Учет Отчетов Возвещателей — Облачная система</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .glass-modal { backdrop-filter: blur(4px); }
@@ -41,7 +41,7 @@
                     </button>
 
                     <div id="user-info" class="hidden items-center space-x-3">
-                        <button id="open-users-modal-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 flex items-center shadow-sm font-medium">
+                        <button id="open-users-modal-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
                             <i class="fa-solid fa-users-gear mr-1.5"></i> <span class="hidden sm:inline">Аккаунты</span>
                         </button>
                         <span id="user-badge" class="px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
@@ -54,7 +54,7 @@
             </div>
         </header>
 
-        <!-- Cloud Modal -->
+        <!-- Cloud Settings Modal -->
         <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
                 <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
@@ -67,16 +67,21 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        По умолчанию система использует подключение к <strong>Firebase Firestore</strong> для синхронизации отчетов в реальном времени.
+                        По умолчанию система использует подключение к <strong>Firebase Firestore</strong> для синхронизации отчетов в реальном времени. Можно вставлять весь JS-код с <code>const firebaseConfig = ...</code>.
                     </p>
                     <div id="firebase-requirements-info" class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[11px] text-amber-800 space-y-1">
                         <div class="font-bold flex items-center"><i class="fa-solid fa-circle-info mr-1.5"></i> Требования Firebase:</div>
                         <div>1. <strong>Authentication:</strong> Включите <i>Anonymous (Анонимный)</i> вход.</div>
-                        <div>2. <strong>Firestore Database:</strong> Создайте базу данных в режиме тестирования.</div>
+                        <div>2. <strong>Firestore Database:</strong> Создайте базу данных и проверьте вкладку <i>Rules (Правила)</i>.</div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Конфигурация Firebase (JS или JSON)</label>
-                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = { ... };'></textarea>
+                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = {
+  apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
+  authDomain: "tablitsa-40cf4.firebaseapp.com",
+  projectId: "tablitsa-40cf4",
+  ...
+};'></textarea>
                     </div>
                     <div id="cloud-modal-msg" class="text-xs p-2.5 rounded-lg hidden"></div>
                     <div class="flex space-x-2 pt-2">
@@ -123,7 +128,7 @@
                     </button>
 
                     <div class="mt-4 pt-3 border-t border-slate-100">
-                        <p class="text-[11px] font-semibold text-slate-500 mb-2 text-center">Тестовые аккаунты (нажмите для мгновенного входа):</p>
+                        <p class="text-[11px] font-semibold text-slate-500 mb-2 text-center">Тестовые аккаунты (быстрый вход):</p>
                         <div class="flex flex-col space-y-1.5 text-xs">
                             <button type="button" onclick="quickFill('superadmin@system.com', 'admin')" class="flex justify-between items-center px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 rounded-lg transition border border-purple-200">
                                 <span class="font-medium">superadmin@system.com</span>
@@ -214,7 +219,7 @@
                 <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
-                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за 6 мес.)
+                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за период)
                         </h3>
                         <span id="user-count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
@@ -308,7 +313,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-slate-800 text-base">Анализ служения возвещателей (Все группы)</h3>
-                        <p class="text-xs text-slate-500">Автоматический расчет активности и регулярности отчетов за 6 месяцев</p>
+                        <p class="text-xs text-slate-500">Автоматический расчет активности и регулярности отчетов за выбранный год</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 text-xs">
@@ -330,7 +335,7 @@
                 <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
-                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за 6 месяцев)
+                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за период)
                         </h3>
                         <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
@@ -429,10 +434,10 @@
         </div>
     </div>
 
-    <!-- Toast Notification Overlay -->
+    <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-    <!-- Generic Confirmation Modal (Replaces browser confirm) -->
+    <!-- Generic Confirmation Modal -->
     <div id="confirm-dialog-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 border border-slate-200 text-center">
             <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full inline-flex items-center justify-center mb-3 text-xl">
@@ -478,7 +483,7 @@
         </div>
     </div>
 
-    <!-- Transfer & Delete Dialogs -->
+    <!-- Action Confirmation Modals -->
     <div id="transfer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 text-center">
             <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full inline-flex items-center justify-center mb-3 text-xl">
@@ -512,13 +517,14 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Config with user's specific projectId (tablitsa-40cf4) preserved as default
         const DEFAULT_FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDemoConfigKeyForTesting12345678",
-            authDomain: "publisher-reports-demo.firebaseapp.com",
-            projectId: "publisher-reports-demo",
-            storageBucket: "publisher-reports-demo.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef123456"
+            apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
+            authDomain: "tablitsa-40cf4.firebaseapp.com",
+            projectId: "tablitsa-40cf4",
+            storageBucket: "tablitsa-40cf4.appspot.com",
+            messagingSenderId: "1029384756",
+            appId: "1:1029384756:web:abcd1234efgh5678"
         };
 
         const currentYear = new Date().getFullYear();
@@ -698,7 +704,7 @@
                 label.textContent = text || "Подключение...";
             } else {
                 dot.className = "w-2.5 h-2.5 rounded-full bg-slate-400";
-                label.textContent = text || "Автономно (Локально)";
+                label.textContent = text || "Автономно";
             }
         }
 
@@ -717,7 +723,7 @@
                         }
                     }
                 }, (error) => {
-                    console.warn("Firestore snapshot listener error:", error);
+                    console.warn("Firestore listener error:", error);
                 });
             } catch (e) {
                 console.warn("Subscription setup error:", e);
@@ -920,7 +926,149 @@
             }
         }
 
-        function addNewReportRow() {
+        function generate15PublishersYearData(yearStr) {
+            const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+            const publishers = [
+                // Group 1
+                { id: 'p_g1_1', group: '1', name: 'Иванов И.И.', status: 'Возвещатель', email: 'user1@test.com', activeMonths: months, hours: '', studies: 1, dp: '100', notes: 'Регулярный' },
+                { id: 'p_g1_2', group: '1', name: 'Петрова А.С.', status: 'ПП', email: 'user1@test.com', activeMonths: months, hours: '50', studies: 3, dp: '200', notes: 'Общий пионер' },
+                { id: 'p_g1_3', group: '1', name: 'Сидоров В.К.', status: 'Возвещатель', email: 'user1@test.com', activeMonths: ['01','03','05','07','09','11'], hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
+                { id: 'p_g1_4', group: '1', name: 'Смирнова Е.В.', status: 'Некрещеный возвещатель', email: 'user1@test.com', activeMonths: months, hours: '', studies: 1, dp: '50', notes: 'Некрещеный' },
+                { id: 'p_g1_5', group: '1', name: 'Козлов Д.А.', status: 'ОП', email: 'user1@test.com', activeMonths: months, hours: '100', studies: 5, dp: '500', notes: 'Специальный пионер' },
+
+                // Group 2
+                { id: 'p_g2_1', group: '2', name: 'Морозов М.Н.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 2, dp: '150', notes: '' },
+                { id: 'p_g2_2', group: '2', name: 'Новикова О.И.', status: 'ПП', email: 'user2@test.com', activeMonths: months, hours: '55', studies: 4, dp: '250', notes: 'Пионер' },
+                { id: 'p_g2_3', group: '2', name: 'Федоров С.П.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: [], hours: '', studies: 0, dp: '0', notes: 'Неактивный' },
+                { id: 'p_g2_4', group: '2', name: 'Волкова Т.А.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 1, dp: '100', notes: '' },
+                { id: 'p_g2_5', group: '2', name: 'Алексеев Г.В.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: ['02','04','06','08','10','12'], hours: '', studies: 1, dp: '0', notes: '' },
+
+                // Group 3
+                { id: 'p_g3_1', group: '3', name: 'Васильев Н.С.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 2, dp: '200', notes: '' },
+                { id: 'p_g3_2', group: '3', name: 'Зайцева Л.М.', status: 'ПП', email: 'user3@test.com', activeMonths: months, hours: '50', studies: 3, dp: '300', notes: 'Пионер' },
+                { id: 'p_g3_3', group: '3', name: 'Семенов А.В.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: ['01','02','03'], hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
+                { id: 'p_g3_4', group: '3', name: 'Голубева Е.Н.', status: 'Некрещеный возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 1, dp: '50', notes: '' },
+                { id: 'p_g3_5', group: '3', name: 'Виноградов К.Д.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: [], hours: '', studies: 0, dp: '0', notes: 'Неактивный' }
+            ];
+
+            const reports = [];
+            publishers.forEach(p => {
+                months.forEach(m => {
+                    const isParticipated = p.activeMonths.includes(m);
+                    reports.push({
+                        id: `rep_${p.id}_${yearStr}_${m}`,
+                        personId: p.id,
+                        email: p.email,
+                        group: p.group,
+                        month: m,
+                        year: yearStr,
+                        name: p.name,
+                        hours: (p.status === 'ПП' || p.status === 'ОП') ? (isParticipated ? p.hours : '0') : '',
+                        participated: isParticipated,
+                        status: p.status,
+                        studies: isParticipated ? p.studies.toString() : '0',
+                        notes: isParticipated ? p.notes : '',
+                        dp: isParticipated ? p.dp : '0'
+                    });
+                });
+            });
+            return reports;
+        }
+
+        const initialMockData = generate15PublishersYearData(currentYear.toString());
+
+        function extractFirebaseConfig(inputStr) {
+            if (!inputStr) return null;
+            let cleanStr = inputStr.trim();
+            try {
+                return JSON.parse(cleanStr);
+            } catch (e) {
+                try {
+                    const formatted = cleanStr
+                        .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '')
+                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+                        .replace(/'/g, '"')
+                        .replace(/,\s*([}\]])/g, '$1');
+                    return JSON.parse(formatted);
+                } catch (err) {
+                    return null;
+                }
+            }
+        }
+
+        function fallbackToLocal() {
+            isCloudConnected = false;
+            updateCloudUIStatus('offline', 'Автономно');
+            reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
+            refreshCurrentView();
+        }
+
+        async function initCloud() {
+            try {
+                let config = null;
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                } else {
+                    const savedConfigStr = localStorage.getItem('custom_firebase_config');
+                    config = savedConfigStr ? JSON.parse(savedConfigStr) : DEFAULT_FIREBASE_CONFIG;
+                }
+
+                if (!config || !config.apiKey) {
+                    fallbackToLocal();
+                    return;
+                }
+
+                updateCloudUIStatus('connecting', 'Подключение к облаку...');
+
+                const app = initializeApp(config);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (authErr) {
+                    console.warn("Custom token auth failed, using anonymous auth fallback:", authErr);
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (anonErr) {
+                        console.error("Anonymous auth failed:", anonErr);
+                    }
+                }
+
+                if (auth.currentUser) {
+                    isCloudConnected = true;
+                    updateCloudUIStatus('connected', 'Облако подключено');
+                    subscribeToCloudCollections();
+                } else {
+                    fallbackToLocal();
+                }
+            } catch (err) {
+                console.warn("Cloud init error, using local mode:", err);
+                fallbackToLocal();
+            }
+        }
+
+        async function saveReportsToStorage() {
+            localStorage.setItem('reports_db', JSON.stringify(reportsData));
+            if (db && isCloudConnected && auth?.currentUser) {
+                for (const r of reportsData) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', r.id);
+                        await setDoc(docRef, r, { merge: true });
+                    } catch (e) {
+                        console.warn("Error saving report to Firestore:", e);
+                    }
+                }
+            }
+        }
+
+        window.refreshCurrentView = refreshCurrentView;
+
+        window.addNewReportRow = function() {
             if (!currentUser) return;
 
             let group = currentUser.group || '1';
@@ -960,150 +1108,7 @@
             saveReportsToStorage();
             refreshCurrentView();
             showToast("Добавлен новый возвещатель в список", "success");
-        }
-
-        function extractFirebaseConfig(inputStr) {
-            if (!inputStr) return null;
-            let cleanStr = inputStr.trim();
-            try {
-                return JSON.parse(cleanStr);
-            } catch (e) {
-                try {
-                    const formatted = cleanStr
-                        .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '')
-                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
-                        .replace(/'/g, '"')
-                        .replace(/,\s*([}\]])/g, '$1');
-                    return JSON.parse(formatted);
-                } catch (err) {
-                    return null;
-                }
-            }
-        }
-
-        function generate15PublishersYearData(yearStr) {
-            const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-            const publishers = [
-                // Group 1
-                { id: 'p_g1_1', group: '1', name: 'Иванов И.И.', status: 'Возвещатель', email: 'user1@test.com', activeMonths: months, hours: '', studies: 1, dp: '100', notes: 'Регулярный' },
-                { id: 'p_g1_2', group: '1', name: 'Петрова А.С.', status: 'ПП', email: 'user1@test.com', activeMonths: months, hours: '50', studies: 3, dp: '200', notes: 'Общий пионер' },
-                { id: 'p_g1_3', group: '1', name: 'Сидоров В.К.', status: 'Возвещатель', email: 'user1@test.com', activeMonths: months, hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
-                { id: 'p_g1_4', group: '1', name: 'Смирнова Е.В.', status: 'Некрещеный возвещатель', email: 'user1@test.com', activeMonths: months, hours: '', studies: 1, dp: '50', notes: 'Некрещеный' },
-                { id: 'p_g1_5', group: '1', name: 'Козлов Д.А.', status: 'ОП', email: 'user1@test.com', activeMonths: months, hours: '100', studies: 5, dp: '500', notes: 'Специальный пионер' },
-
-                // Group 2
-                { id: 'p_g2_1', group: '2', name: 'Морозов М.Н.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 2, dp: '150', notes: '' },
-                { id: 'p_g2_2', group: '2', name: 'Новикова О.И.', status: 'ПП', email: 'user2@test.com', activeMonths: months, hours: '55', studies: 4, dp: '250', notes: 'Пионер' },
-                { id: 'p_g2_3', group: '2', name: 'Федоров С.П.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 0, dp: '0', notes: 'Неактивный' },
-                { id: 'p_g2_4', group: '2', name: 'Волкова Т.А.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 1, dp: '100', notes: '' },
-                { id: 'p_g2_5', group: '2', name: 'Алексеев Г.В.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 1, dp: '0', notes: '' },
-
-                // Group 3
-                { id: 'p_g3_1', group: '3', name: 'Васильев Н.С.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 2, dp: '200', notes: '' },
-                { id: 'p_g3_2', group: '3', name: 'Зайцева Л.М.', status: 'ПП', email: 'user3@test.com', activeMonths: months, hours: '50', studies: 3, dp: '300', notes: 'Пионер' },
-                { id: 'p_g3_3', group: '3', name: 'Семенов А.В.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
-                { id: 'p_g3_4', group: '3', name: 'Голубева Е.Н.', status: 'Некрещеный возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 1, dp: '50', notes: '' },
-                { id: 'p_g3_5', group: '3', name: 'Виноградов К.Д.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 0, dp: '0', notes: 'Неактивный' }
-            ];
-
-            const reports = [];
-            publishers.forEach(p => {
-                p.activeMonths.forEach(m => {
-                    reports.push({
-                        id: `rep_${p.id}_${yearStr}_${m}`,
-                        personId: p.id,
-                        email: p.email,
-                        group: p.group,
-                        month: m,
-                        year: yearStr,
-                        name: p.name,
-                        hours: (p.status === 'ПП' || p.status === 'ОП') ? p.hours : '',
-                        participated: true,
-                        status: p.status,
-                        studies: p.studies.toString(),
-                        notes: p.notes,
-                        dp: p.dp
-                    });
-                });
-            });
-            return reports;
-        }
-
-        const initialMockData = generate15PublishersYearData(currentYear.toString());
-
-        function fallbackToLocal() {
-            isCloudConnected = false;
-            updateCloudUIStatus('offline', 'Автономно (Локально)');
-            reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
-            refreshCurrentView();
-        }
-
-        async function initCloud() {
-            try {
-                let config = null;
-                // Safely parse or assign Firebase configuration
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-                } else {
-                    const savedConfigStr = localStorage.getItem('custom_firebase_config');
-                    config = savedConfigStr ? JSON.parse(savedConfigStr) : DEFAULT_FIREBASE_CONFIG;
-                }
-
-                if (!config || !config.apiKey) {
-                    fallbackToLocal();
-                    return;
-                }
-
-                updateCloudUIStatus('connecting', 'Подключение к облаку...');
-
-                const app = initializeApp(config);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Authenticate with custom token if available, fallback to anonymous auth
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (authErr) {
-                    console.warn("Custom token auth failed, falling back to anonymous auth:", authErr);
-                    try {
-                        await signInAnonymously(auth);
-                    } catch (anonErr) {
-                        console.error("Anonymous auth failed:", anonErr);
-                    }
-                }
-
-                if (auth.currentUser) {
-                    isCloudConnected = true;
-                    updateCloudUIStatus('connected', 'Облако подключено');
-                    subscribeToCloudCollections();
-                } else {
-                    fallbackToLocal();
-                }
-            } catch (err) {
-                console.warn("Cloud init failed, falling back to local storage:", err);
-                fallbackToLocal();
-            }
-        }
-
-        async function saveReportsToStorage() {
-            localStorage.setItem('reports_db', JSON.stringify(reportsData));
-            if (db && isCloudConnected && auth?.currentUser) {
-                for (const r of reportsData) {
-                    try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', r.id);
-                        await setDoc(docRef, r, { merge: true });
-                    } catch (e) {
-                        console.warn("Error saving report to Firestore:", e);
-                    }
-                }
-            }
-        }
-
-        window.refreshCurrentView = refreshCurrentView;
+        };
 
         window.saveRow = function(id) {
             const rowEl = document.getElementById('row_' + id);
@@ -1269,7 +1274,7 @@
                     <td class="p-3 text-center space-x-1">
                         ${!isSuper ? `
                             <button onclick="promptTransferSuperadmin('${u.email}')" title="Передать SuperAdmin" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded text-[11px] font-medium"><i class="fa-solid fa-crown mr-1"></i>Сделать Главным</button>
-                        ` : '<span class="text-slate-400 italic text-[11px]">Текущий владельцы</span>'}
+                        ` : '<span class="text-slate-400 italic text-[11px]">Текущий владелец</span>'}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1290,13 +1295,13 @@
             const userMonthSel = document.getElementById('user-month');
             if (userMonthSel) userMonthSel.value = curMonthStr;
 
-            // Confirm dialog modal handlers
-            document.getElementById('confirm-modal-cancel').addEventListener('click', () => {
+            // Confirm modal buttons
+            document.getElementById('confirm-modal-cancel')?.addEventListener('click', () => {
                 document.getElementById('confirm-dialog-modal').classList.add('hidden');
                 confirmCallback = null;
             });
 
-            document.getElementById('confirm-modal-ok').addEventListener('click', () => {
+            document.getElementById('confirm-modal-ok')?.addEventListener('click', () => {
                 document.getElementById('confirm-dialog-modal').classList.add('hidden');
                 if (typeof confirmCallback === 'function') {
                     confirmCallback();
@@ -1304,12 +1309,12 @@
                 confirmCallback = null;
             });
 
-            document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            document.getElementById('cancel-delete-btn')?.addEventListener('click', () => {
                 document.getElementById('delete-modal').classList.add('hidden');
                 itemToDeleteId = null;
             });
 
-            document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            document.getElementById('confirm-delete-btn')?.addEventListener('click', async () => {
                 if (itemToDeleteId) {
                     reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
                     if (db && isCloudConnected && auth?.currentUser) {
@@ -1328,35 +1333,35 @@
                 }
             });
 
-            document.getElementById('close-publisher-card').addEventListener('click', () => {
+            document.getElementById('close-publisher-card')?.addEventListener('click', () => {
                 document.getElementById('publisher-card-modal').classList.add('hidden');
             });
 
-            document.getElementById('tab-login-btn').addEventListener('click', () => {
+            document.getElementById('tab-login-btn')?.addEventListener('click', () => {
                 document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
                 document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
                 document.getElementById('login-form').classList.remove('hidden');
                 document.getElementById('register-form').classList.add('hidden');
             });
 
-            document.getElementById('tab-register-btn').addEventListener('click', () => {
+            document.getElementById('tab-register-btn')?.addEventListener('click', () => {
                 document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
                 document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
                 document.getElementById('register-form').classList.remove('hidden');
                 document.getElementById('login-form').classList.add('hidden');
             });
 
-            document.getElementById('cloud-config-btn').addEventListener('click', () => {
+            document.getElementById('cloud-config-btn')?.addEventListener('click', () => {
                 document.getElementById('cloud-modal').classList.remove('hidden');
                 const cur = localStorage.getItem('custom_firebase_config') || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
                 document.getElementById('firebase-json-input').value = cur;
             });
 
-            document.getElementById('close-cloud-modal').addEventListener('click', () => {
+            document.getElementById('close-cloud-modal')?.addEventListener('click', () => {
                 document.getElementById('cloud-modal').classList.add('hidden');
             });
 
-            document.getElementById('save-firebase-config').addEventListener('click', () => {
+            document.getElementById('save-firebase-config')?.addEventListener('click', () => {
                 const val = document.getElementById('firebase-json-input').value;
                 const parsed = extractFirebaseConfig(val);
                 const msg = document.getElementById('cloud-modal-msg');
@@ -1366,24 +1371,24 @@
                     msg.className = "text-xs p-2.5 rounded-lg bg-emerald-100 text-emerald-800 block font-medium";
                     setTimeout(() => window.location.reload(), 1200);
                 } else {
-                    msg.textContent = "Ошибка: неверный формат JSON конфигурации Firebase.";
+                    msg.textContent = "Ошибка: неверный формат конфигурации Firebase.";
                     msg.className = "text-xs p-2.5 rounded-lg bg-rose-100 text-rose-800 block font-medium";
                 }
             });
 
-            document.getElementById('reset-firebase-config').addEventListener('click', () => {
+            document.getElementById('reset-firebase-config')?.addEventListener('click', () => {
                 localStorage.removeItem('custom_firebase_config');
                 window.location.reload();
             });
 
-            document.getElementById('login-form').addEventListener('submit', (e) => {
+            document.getElementById('login-form')?.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value.trim().toLowerCase();
                 const pass = document.getElementById('login-password').value;
                 loginWithCredentials(email, pass);
             });
 
-            document.getElementById('register-form').addEventListener('submit', async (e) => {
+            document.getElementById('register-form')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('reg-email').value.trim().toLowerCase();
                 const pass = document.getElementById('reg-password').value;
@@ -1413,7 +1418,7 @@
                         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId);
                         await setDoc(docRef, newUser, { merge: true });
                     } catch(e) {
-                        console.warn("User register cloud write error:", e);
+                        console.warn("User register cloud error:", e);
                     }
                 }
 
@@ -1423,7 +1428,7 @@
                 showToast("Аккаунт успешно зарегистрирован!", "success");
             });
 
-            document.getElementById('logout-btn').addEventListener('click', () => {
+            document.getElementById('logout-btn')?.addEventListener('click', () => {
                 currentUser = null;
                 document.getElementById('user-dashboard').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.add('hidden');
@@ -1432,30 +1437,30 @@
                 showToast("Вы вышли из системы", "info");
             });
 
-            document.getElementById('add-row-btn').addEventListener('click', addNewReportRow);
-            document.getElementById('user-add-row-bottom').addEventListener('click', addNewReportRow);
-            document.getElementById('admin-add-entry').addEventListener('click', addNewReportRow);
+            document.getElementById('add-row-btn')?.addEventListener('click', window.addNewReportRow);
+            document.getElementById('user-add-row-bottom')?.addEventListener('click', window.addNewReportRow);
+            document.getElementById('admin-add-entry')?.addEventListener('click', window.addNewReportRow);
 
             ['user-month', 'user-year', 'admin-month', 'admin-year', 'admin-group-filter', 'admin-status-filter', 'analysis-year-admin'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('change', refreshCurrentView);
             });
 
-            document.getElementById('open-users-modal-btn').addEventListener('click', () => {
+            document.getElementById('open-users-modal-btn')?.addEventListener('click', () => {
                 renderSuperAdminUsersTable();
                 document.getElementById('superadmin-modal').classList.remove('hidden');
             });
 
-            document.getElementById('close-superadmin-modal').addEventListener('click', () => {
+            document.getElementById('close-superadmin-modal')?.addEventListener('click', () => {
                 document.getElementById('superadmin-modal').classList.add('hidden');
             });
 
-            document.getElementById('cancel-transfer-btn').addEventListener('click', () => {
+            document.getElementById('cancel-transfer-btn')?.addEventListener('click', () => {
                 document.getElementById('transfer-modal').classList.add('hidden');
                 pendingTransferEmail = null;
             });
 
-            document.getElementById('confirm-transfer-btn').addEventListener('click', async () => {
+            document.getElementById('confirm-transfer-btn')?.addEventListener('click', async () => {
                 if (pendingTransferEmail) {
                     let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
                     savedUsers = savedUsers.map(u => {
