@@ -288,7 +288,7 @@
 
         <!-- Admin Dashboard View -->
         <main id="admin-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-            <!-- Filter Bar & Control Buttons for Admin -->
+            <!-- Filter Bar for Admin -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex flex-wrap items-center gap-3">
                     <div>
@@ -331,12 +331,6 @@
                             <option value="ОП">ОП (Спец. пионер)</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="flex items-center space-x-2">
-                    <button id="admin-add-entry" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-user-plus mr-2"></i> Внести запись
-                    </button>
                 </div>
             </div>
 
@@ -408,12 +402,17 @@
 
             <!-- Consolidated Database Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <!-- Шапка админской таблицы с кнопкой «Сохранить все записи» над подзаголовками -->
+                <!-- Шапка админской таблицы с кнопками «Добавить» и «Сохранить все записи» -->
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Сводная база данных отчетов (Все группы)</h2>
-                    <button onclick="saveAllModifiedRows()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все записи
-                    </button>
+                    <div class="flex items-center space-x-3">
+                        <button id="admin-add-entry" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                            <i class="fa-solid fa-user-plus mr-2"></i> Добавить
+                        </button>
+                        <button onclick="saveAllModifiedRows()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все записи
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
