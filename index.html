@@ -303,8 +303,8 @@
                             <option value="all">Все статусы</option>
                             <option value="Возвещатель">Возвещатель</option>
                             <option value="Некрещеный возвещатель">Некрещеный возвещатель</option>
-                            <option value="ПП">ПП (Постоянный пионер)</option>
-                            <option value="ОП">ОП (Вспомогательный пионер)</option>
+                            <option value="ПП">ПП</option>
+                            <option value="ОП">ОП</option>
                         </select>
                     </div>
                 </div>
@@ -322,44 +322,76 @@
                     <div class="text-xs font-semibold text-slate-400 uppercase">Всего отчетов</div>
                     <div id="stat-total" class="text-2xl font-bold text-slate-800 mt-1">0</div>
                 </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="text-xs font-semibold text-slate-400 uppercase">Сумма часов (ПП + ОП)</div>
-                    <div id="stat-hours" class="text-2xl font-bold text-indigo-600 mt-1">0 ч.</div>
+                <div class="bg-white p-4 rounded-xl border border-indigo-200 bg-indigo-50/30 shadow-sm">
+                    <div class="text-xs font-semibold text-indigo-600 uppercase">Показатели ОП</div>
+                    <div class="text-xl font-bold text-indigo-900 mt-1">
+                        <span id="stat-op-hours">0 ч.</span> / <span id="stat-op-studies">0 изуч.</span>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-purple-200 bg-purple-50/30 shadow-sm">
+                    <div class="text-xs font-semibold text-purple-600 uppercase">Показатели ПП</div>
+                    <div class="text-xl font-bold text-purple-900 mt-1">
+                        <span id="stat-pp-hours">0 ч.</span> / <span id="stat-pp-studies">0 изуч.</span>
+                    </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="text-xs font-semibold text-slate-400 uppercase">Изучений</div>
-                    <div id="stat-studies" class="text-2xl font-bold text-emerald-600 mt-1">0</div>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="text-xs font-semibold text-slate-400 uppercase">Доб. пож.</div>
-                    <div id="stat-dp" class="text-2xl font-bold text-amber-600 mt-1">0</div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase">Изучения (Все) / Доб. пож.</div>
+                    <div class="text-xl font-bold text-amber-600 mt-1">
+                        <span id="stat-studies">0</span> / <span id="stat-dp">0</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Analysis Section (All Groups) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Missing 1+ Month -->
-                <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-amber-900 text-sm flex items-center">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i>
-                            Нерегулярные (Пропустили ≥ 1 отчет за 6 мес.)
-                        </h3>
-                        <span id="count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+            <div class="space-y-3">
+                <div class="flex flex-wrap items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-sm gap-3">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-line text-indigo-600 text-sm"></i>
+                        <span class="text-xs font-bold text-slate-700">Период анализа (за 6 месяцев до выбранной даты):</span>
                     </div>
-                    <div id="list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
+                    <div class="flex items-center space-x-2">
+                        <select id="analysis-month-select" class="border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            <option value="01">Январь</option>
+                            <option value="02">Февраль</option>
+                            <option value="03">Март</option>
+                            <option value="04">Апрель</option>
+                            <option value="05">Май</option>
+                            <option value="06">Июнь</option>
+                            <option value="07">Июль</option>
+                            <option value="08">Август</option>
+                            <option value="09">Сентябрь</option>
+                            <option value="10">Октябрь</option>
+                            <option value="11">Ноябрь</option>
+                            <option value="12">Декабрь</option>
+                        </select>
+                        <input type="number" id="analysis-year-select" class="border border-slate-300 rounded-lg px-2 py-1 text-xs w-20 text-center font-bold">
+                    </div>
                 </div>
 
-                <!-- Missing ALL 6 Months -->
-                <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-rose-900 text-sm flex items-center">
-                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
-                            Неактивные (0 отчетов за последние 6 месяцев)
-                        </h3>
-                        <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Missing 1+ Month -->
+                    <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-amber-900 text-sm flex items-center">
+                                <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i>
+                                Нерегулярные (Пропустили ≥ 1 отчет за 6 мес.)
+                            </h3>
+                            <span id="count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+                        </div>
+                        <div id="list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
                     </div>
-                    <div id="list-inactive" class="text-xs text-rose-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
+
+                    <!-- Missing ALL 6 Months -->
+                    <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-rose-900 text-sm flex items-center">
+                                <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
+                                Неактивные (0 отчетов за 6 месяцев)
+                            </h3>
+                            <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+                        </div>
+                        <div id="list-inactive" class="text-xs text-rose-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
+                    </div>
                 </div>
             </div>
 
@@ -374,10 +406,10 @@
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-10 text-center">№</th>
                                 <th class="p-3 w-16">Группа</th>
-                                <th class="p-3 w-20">Период</th>
-                                <th class="p-3">Имя сокр.</th>
+                                <th class="p-3 w-32">Месяц / Год</th>
+                                <th class="p-3 min-w-[150px]">Имя сокр.</th>
                                 <th class="p-3 w-28">Часы / Участие</th>
-                                <th class="p-3 w-40">Статус</th>
+                                <th class="p-3 w-36">Статус</th>
                                 <th class="p-3 w-20">Изучения</th>
                                 <th class="p-3">Примечания</th>
                                 <th class="p-3 w-20">Доб. пож.</th>
@@ -417,7 +449,7 @@
                         <div id="card-publisher-group" class="text-lg font-bold text-indigo-900 mt-0.5">-</div>
                     </div>
                     <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-                        <div class="text-[10px] uppercase font-bold text-emerald-600">Отчетов всего</div>
+                        <div class="text-[10px] uppercase font-bold text-emerald-600">Отчетов (за 12 мес.)</div>
                         <div id="card-total-reports" class="text-lg font-bold text-emerald-900 mt-0.5">0</div>
                     </div>
                     <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
@@ -428,10 +460,10 @@
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">История отчетов</h4>
-                    <div class="border border-slate-200 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
+                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">История за последние 12 месяцев</h4>
+                    <div class="border border-slate-200 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
+                            <thead class="bg-slate-100 text-slate-600 uppercase text-[10px] sticky top-0 bg-slate-100">
                                 <tr>
                                     <th class="p-2">Период</th>
                                     <th class="p-2">Статус</th>
@@ -761,6 +793,12 @@
             const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
             document.getElementById('user-month').value = currentMonth;
 
+            // Initialize analysis month and year default to current month/year
+            const analysisMonthSel = document.getElementById('analysis-month-select');
+            const analysisYearSel = document.getElementById('analysis-year-select');
+            if (analysisMonthSel) analysisMonthSel.value = currentMonth;
+            if (analysisYearSel) analysisYearSel.value = currentYear;
+
             // Load Users DB
             const savedUsers = localStorage.getItem('app_users_db');
             if (savedUsers) {
@@ -1065,11 +1103,11 @@
                     dp: ''
                 };
 
-                reportsData.push(newEntry);
-                saveToStorage(newEntry);
-                populateAdminGroupFilter();
-                renderAdminDashboard();
-            });
+            // Analysis Month & Year Change Listeners
+            const analysisMonthSel = document.getElementById('analysis-month-select');
+            const analysisYearSel = document.getElementById('analysis-year-select');
+            if (analysisMonthSel) analysisMonthSel.addEventListener('change', renderAdminDashboard);
+            if (analysisYearSel) analysisYearSel.addEventListener('change', renderAdminDashboard);
 
             // Close Publisher Card Modal
             document.getElementById('close-publisher-card').addEventListener('click', () => {
@@ -1226,7 +1264,8 @@
                         <td class="p-2">
                             <input type="text" value="${entry.name || ''}" placeholder="Имя сокр." 
                                 onchange="updatePublisherName('${entry.id}', '${entry.personId}', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none font-medium">
+                                onclick="openPublisherCard('${entry.personId}')"
+                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none font-medium cursor-pointer hover:bg-indigo-50/50" title="Нажмите, чтобы открыть карточку">
                         </td>
                         <td class="p-2">
                             ${hoursInputHtml}
@@ -1267,6 +1306,275 @@
                     tbody.appendChild(tr);
                 });
             }
+
+            renderGroupActivityAnalysis();
+        }
+
+        function renderAdminDashboard() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            const selectedMonth = document.getElementById('admin-month').value;
+            const selectedGroup = document.getElementById('admin-group-filter').value;
+            const selectedStatus = document.getElementById('admin-status-filter').value;
+
+            let filtered = reportsData.filter(item => {
+                const matchMonth = selectedMonth === 'all' || item.month === selectedMonth;
+                const matchGroup = selectedGroup === 'all' || item.group === selectedGroup;
+                const matchStatus = selectedStatus === 'all' || item.status === selectedStatus;
+                return matchMonth && matchGroup && matchStatus;
+            });
+
+            let totalOpHours = 0, totalOpStudies = 0;
+            let totalPpHours = 0, totalPpStudies = 0;
+            let totalStudies = 0;
+            let totalDP = 0;
+
+            filtered.forEach(item => {
+                const hrs = parseFloat(item.hours) || 0;
+                const stds = parseInt(item.studies) || 0;
+                
+                if (item.status === 'ОП') {
+                    totalOpHours += hrs;
+                    totalOpStudies += stds;
+                } else if (item.status === 'ПП') {
+                    totalPpHours += hrs;
+                    totalPpStudies += stds;
+                }
+
+                totalStudies += stds;
+                totalDP += parseInt(item.dp) || 0;
+            });
+
+            document.getElementById('stat-total').innerText = filtered.length;
+            document.getElementById('stat-op-hours').innerText = `${totalOpHours} ч.`;
+            document.getElementById('stat-op-studies').innerText = `${totalOpStudies} изуч.`;
+            document.getElementById('stat-pp-hours').innerText = `${totalPpHours} ч.`;
+            document.getElementById('stat-pp-studies').innerText = `${totalPpStudies} изуч.`;
+            document.getElementById('stat-studies').innerText = totalStudies;
+            document.getElementById('stat-dp').innerText = totalDP;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="text-center py-8 text-slate-400 text-xs">
+                            Нет данных, соответствующих выбранным фильтрам.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                filtered.forEach((entry, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition duration-150";
+
+                    const isSimplePublisher = entry.status === 'Возвещатель' || entry.status === 'Некрещеный возвещатель';
+
+                    let hoursInputHtml = '';
+                    if (isSimplePublisher) {
+                        hoursInputHtml = `
+                            <label class="inline-flex items-center space-x-1.5 cursor-pointer bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded border border-slate-200">
+                                <input type="checkbox" ${entry.participated ? 'checked' : ''} 
+                                    onchange="updateReportData('${entry.id}', 'participated', this.checked)"
+                                    class="w-3.5 h-3.5 text-indigo-600 rounded">
+                                <span class="text-xs font-medium ${entry.participated ? 'text-emerald-700' : 'text-slate-500'}">
+                                    ${entry.participated ? 'Да' : 'Нет'}
+                                </span>
+                            </label>
+                        `;
+                    } else {
+                        hoursInputHtml = `
+                            <input type="number" value="${entry.hours || ''}" placeholder="Часы" onchange="updateReportData('${entry.id}', 'hours', this.value)"
+                                class="w-20 px-2 py-1 border border-slate-200 rounded text-sm">
+                        `;
+                    }
+
+                    tr.innerHTML = `
+                        <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
+                        <td class="p-2">
+                            <input type="number" value="${entry.group}" onchange="updateReportData('${entry.id}', 'group', this.value)"
+                                class="w-12 px-1 py-1 border border-slate-200 rounded text-xs text-center font-bold">
+                        </td>
+                        <td class="p-2">
+                            <div class="flex space-x-1">
+                                <select onchange="updateReportData('${entry.id}', 'month', this.value)" class="px-1 py-1 border border-slate-200 rounded text-xs font-semibold bg-white">
+                                    <option value="01" ${entry.month === '01' ? 'selected' : ''}>01</option>
+                                    <option value="02" ${entry.month === '02' ? 'selected' : ''}>02</option>
+                                    <option value="03" ${entry.month === '03' ? 'selected' : ''}>03</option>
+                                    <option value="04" ${entry.month === '04' ? 'selected' : ''}>04</option>
+                                    <option value="05" ${entry.month === '05' ? 'selected' : ''}>05</option>
+                                    <option value="06" ${entry.month === '06' ? 'selected' : ''}>06</option>
+                                    <option value="07" ${entry.month === '07' ? 'selected' : ''}>07</option>
+                                    <option value="08" ${entry.month === '08' ? 'selected' : ''}>08</option>
+                                    <option value="09" ${entry.month === '09' ? 'selected' : ''}>09</option>
+                                    <option value="10" ${entry.month === '10' ? 'selected' : ''}>10</option>
+                                    <option value="11" ${entry.month === '11' ? 'selected' : ''}>11</option>
+                                    <option value="12" ${entry.month === '12' ? 'selected' : ''}>12</option>
+                                </select>
+                                <input type="number" value="${entry.year || currentYear}" onchange="updateReportData('${entry.id}', 'year', this.value)" class="w-14 px-1 py-1 border border-slate-200 rounded text-xs text-center font-semibold">
+                            </div>
+                        </td>
+                        <td class="p-2">
+                            <input type="text" value="${entry.name || ''}" placeholder="Имя сокр." 
+                                onchange="updatePublisherName('${entry.id}', '${entry.personId}', this.value)"
+                                onclick="openPublisherCard('${entry.personId}')"
+                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm font-medium text-slate-800 cursor-pointer hover:bg-indigo-50/50" title="Нажмите, чтобы открыть карточку">
+                        </td>
+                        <td class="p-2">
+                            ${hoursInputHtml}
+                        </td>
+                        <td class="p-2">
+                            <select onchange="updateReportData('${entry.id}', 'status', this.value)"
+                                class="px-2 py-1 border border-slate-200 rounded text-xs bg-white">
+                                <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
+                                <option value="Некрещеный возвещатель" ${entry.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный возвещатель</option>
+                                <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
+                                <option value="ОП" ${entry.status === 'ОП' ? 'selected' : ''}>ОП</option>
+                            </select>
+                        </td>
+                        <td class="p-2">
+                            <input type="number" value="${entry.studies || ''}" placeholder="0" onchange="updateReportData('${entry.id}', 'studies', this.value)"
+                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2">
+                            <input type="text" value="${entry.notes || ''}" placeholder="Примечание" onchange="updateReportData('${entry.id}', 'notes', this.value)"
+                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2">
+                            <input type="number" value="${entry.dp || ''}" placeholder="0" onchange="updateReportData('${entry.id}', 'dp', this.value)"
+                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2 text-center space-x-1">
+                            <button onclick="openPublisherCard('${entry.personId}')" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50" title="Карточка возвещателя">
+                                <i class="fa-solid fa-id-card"></i>
+                            </button>
+                            <button onclick="requestDelete('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1.5 rounded hover:bg-rose-50" title="Удалить">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            analyzeSixMonthsActivity();
+        }
+
+        window.openPublisherCard = function(personId) {
+            const personReports = reportsData.filter(r => r.personId === personId || (r.name && r.personId === personId));
+            if (personReports.length === 0) return;
+
+            // Sort all reports chronologically (newest first)
+            personReports.sort((a, b) => {
+                const dateA = new Date(parseInt(a.year || currentYear), parseInt(a.month) - 1, 1);
+                const dateB = new Date(parseInt(b.year || currentYear), parseInt(b.month) - 1, 1);
+                return dateB - dateA;
+            });
+
+            // Get up to the last 12 available report months
+            const last12Reports = personReports.slice(0, 12);
+
+            const latestReport = personReports[0];
+            document.getElementById('card-publisher-name').innerText = latestReport.name || 'Имя не указано';
+            document.getElementById('card-publisher-id').innerText = personId;
+            document.getElementById('card-publisher-group').innerText = latestReport.group;
+
+            document.getElementById('card-total-reports').innerText = last12Reports.length;
+
+            let totalHours = 0;
+            let totalStudies = 0;
+            last12Reports.forEach(r => {
+                totalHours += parseFloat(r.hours) || 0;
+                totalStudies += parseInt(r.studies) || 0;
+            });
+
+            document.getElementById('card-total-hours').innerText = `${totalHours} ч.`;
+            document.getElementById('card-total-studies').innerText = totalStudies;
+
+            const tbody = document.getElementById('card-history-tbody');
+            tbody.innerHTML = '';
+
+            last12Reports.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+
+                const isSimplePublisher = r.status === 'Возвещатель' || r.status === 'Некрещеный возвещатель';
+                const participationDisplay = isSimplePublisher 
+                    ? (r.participated ? '<span class="text-emerald-600 font-bold">✓ Участие</span>' : '<span class="text-slate-400">Нет</span>')
+                    : `${r.hours || 0} ч.`;
+
+                tr.innerHTML = `
+                    <td class="p-2.5 font-semibold text-slate-700">${r.month}/${r.year}</td>
+                    <td class="p-2.5">${r.status}</td>
+                    <td class="p-2.5">${participationDisplay}</td>
+                    <td class="p-2.5 font-mono">${r.studies || 0}</td>
+                    <td class="p-2.5 font-mono">${r.dp || 0}</td>
+                    <td class="p-2.5 text-slate-500">${r.notes || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('publisher-card-modal').classList.remove('hidden');
+        };
+
+        function analyzeSixMonthsActivity() {
+            const irregularList = document.getElementById('list-irregular');
+            const inactiveList = document.getElementById('list-inactive');
+            
+            if (!irregularList || !inactiveList) return;
+
+            irregularList.innerHTML = '';
+            inactiveList.innerHTML = '';
+
+            const selMonth = parseInt(document.getElementById('analysis-month-select')?.value || String(new Date().getMonth() + 1));
+            const selYear = parseInt(document.getElementById('analysis-year-select')?.value || currentYear);
+
+            // Generate last 6 months relative to chosen month/year
+            const last6PeriodKeys = [];
+            for (let i = 0; i < 6; i++) {
+                const d = new Date(selYear, selMonth - 1 - i, 1);
+                const mStr = String(d.getMonth() + 1).padStart(2, '0');
+                const yStr = d.getFullYear().toString();
+                last6PeriodKeys.push(`${mStr}/${yStr}`);
+            }
+
+            const allPersonIds = [...new Set(reportsData.map(item => item.personId).filter(id => id))];
+
+            let countIrregular = 0;
+            let countInactive = 0;
+
+            allPersonIds.forEach(pId => {
+                const pReports = reportsData.filter(r => r.personId === pId);
+                if (pReports.length === 0) return;
+
+                const latest = pReports[pReports.length - 1];
+                const name = latest.name || 'Без имени';
+                const group = latest.group;
+
+                const submittedKeys = pReports.map(r => `${r.month}/${r.year}`);
+                const submittedLast6Count = last6PeriodKeys.filter(k => submittedKeys.includes(k)).length;
+
+                if (submittedLast6Count === 0) {
+                    countInactive++;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center py-1 border-b border-rose-100';
+                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-rose-600 font-mono font-semibold">0/6 мес.</span>`;
+                    inactiveList.appendChild(item);
+                } else if (submittedLast6Count < 6) {
+                    countIrregular++;
+                    const missedCount = 6 - submittedLast6Count;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
+                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
+                    irregularList.appendChild(item);
+                }
+            });
+
+            document.getElementById('count-irregular').innerText = countIrregular;
+            document.getElementById('count-inactive').innerText = countInactive;
+
+            if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600 italic">Все возвещатели сдавали отчеты регулярно!</div>';
+            if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600 italic">За выбранные 6 месяцев нет неактивных.</div>';
+        }
 
             renderGroupActivityAnalysis();
         }
