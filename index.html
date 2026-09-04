@@ -59,7 +59,7 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        По умолчанию система использует локальное хранилище браузера. Укажите конфигурацию **Firebase** для синхронизации в реальном времени:
+                        По умолчанию система использует локальное хранилище браузера. Укажите конфигурацию <strong class="text-slate-800 font-semibold">Firebase</strong> для синхронизации в реальном времени.
                     </p>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">JSON Конфигурация Firebase</label>
@@ -810,7 +810,7 @@
             // User Dashboard controls
             document.getElementById('user-month').addEventListener('change', renderUserDashboard);
 
-            // Add Row with Empty fields (NO pre-filled placeholder strings to force deletion)
+            // Add Row with Empty fields
             document.getElementById('add-row-btn').addEventListener('click', () => {
                 const month = document.getElementById('user-month').value;
                 const year = currentYear.toString();
@@ -990,7 +990,6 @@
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition duration-150";
 
-                    // Determine hours cell component based on status
                     const isSimplePublisher = entry.status === 'Возвещатель' || entry.status === 'Некрещеный возвещатель';
                     
                     let hoursInputHtml = '';
