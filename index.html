@@ -11,6 +11,11 @@
     <style>
         .glass-modal { backdrop-filter: blur(4px); }
         .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; font-weight: 600; }
+        .row-saved { animation: pulseGreen 1s ease-in-out; }
+        @keyframes pulseGreen {
+            0% { background-color: rgba(16, 185, 129, 0.2); }
+            100% { background-color: transparent; }
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
@@ -36,8 +41,7 @@
                     </button>
 
                     <div id="user-info" class="hidden items-center space-x-3">
-                        <!-- SuperAdmin Dedicated Account Management Button -->
-                        <button id="open-users-modal-btn" onclick="openSuperAdminModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
+                        <button id="open-users-modal-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
                             <i class="fa-solid fa-users-gear mr-1.5"></i> <span class="hidden sm:inline">Аккаунты</span>
                         </button>
                         <span id="user-badge" class="px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
@@ -50,7 +54,7 @@
             </div>
         </header>
 
-        <!-- Cloud Settings Modal -->
+        <!-- Cloud Modal -->
         <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
                 <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
@@ -63,23 +67,11 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        По умолчанию система использует локальное хранилище браузера. Укажите конфигурацию <strong>Firebase</strong> для синхронизации в реальном времени. Можно вставлять весь JS-код с `const firebaseConfig = ...`.
+                        По умолчанию система использует локальное хранилище браузера. Укажите конфигурацию <strong>Firebase</strong> для синхронизации в реальном времени.
                     </p>
-                    
-                    <div id="firebase-requirements-info" class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[11px] text-amber-800 space-y-1">
-                        <div class="font-bold flex items-center"><i class="fa-solid fa-circle-info mr-1.5"></i> Внимание! В консоли Firebase необходимо включить:</div>
-                        <div>1. <strong>Authentication:</strong> Вкладка <i>Sign-in method</i> &rarr; активируйте <b>Анонимный (Anonymous)</b> вход.</div>
-                        <div>2. <strong>Firestore Database:</strong> Создайте базу данных и проверьте вкладку <i>Rules (Правила)</i>.</div>
-                    </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Конфигурация Firebase (JS или JSON)</label>
-                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = {
-  apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
-  authDomain: "tablitsa-40cf4.firebaseapp.com",
-  projectId: "tablitsa-40cf4",
-  ...
-};'></textarea>
+                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = { ... };'></textarea>
                     </div>
                     <div id="cloud-modal-msg" class="text-xs p-2.5 rounded-lg hidden"></div>
                     <div class="flex space-x-2 pt-2">
@@ -94,10 +86,9 @@
             </div>
         </div>
 
-        <!-- Auth View (Login & Register Tabs) -->
+        <!-- Login / Register View -->
         <main id="login-view" class="flex-grow flex items-center justify-center p-4">
             <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
-                <!-- Auth Tabs Switcher -->
                 <div class="flex border-b border-slate-200 mb-6 text-sm font-medium">
                     <button id="tab-login-btn" class="flex-1 py-2 text-center tab-active focus:outline-none">
                         <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Вход
@@ -126,7 +117,6 @@
                         Войти в систему
                     </button>
 
-                    <!-- Demo Accounts Quick Click Hint -->
                     <div class="mt-4 pt-3 border-t border-slate-100">
                         <p class="text-[11px] font-semibold text-slate-500 mb-2 text-center">Тестовые аккаунты (нажмите для автозаполнения):</p>
                         <div class="flex flex-col space-y-1.5 text-xs">
@@ -150,7 +140,7 @@
                 <form id="register-form" class="space-y-4 hidden">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-bold text-slate-800">Создать аккаунт</h2>
-                        <p class="text-slate-500 text-xs mt-1">Новый аккаунт автоматически регистрируется как Пользователь</p>
+                        <p class="text-slate-500 text-xs mt-1">Новый аккаунт регистрируется как Пользователь</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email</label>
@@ -162,7 +152,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Номер группы</label>
-                        <input type="number" id="reg-group" required min="1" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Например: 1">
+                        <input type="number" id="reg-group" required min="1" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="1">
                     </div>
                     <div id="reg-error" class="text-xs text-rose-600 hidden font-medium"></div>
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition duration-200 text-sm mt-2">
@@ -172,79 +162,44 @@
             </div>
         </main>
 
-        <!-- User Dashboard View -->
+        <!-- User Dashboard -->
         <main id="user-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-            <!-- Filter Bar with Add Row button -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц отчета</label>
-                        <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
-                            <option value="01">Январь</option>
-                            <option value="02">Февраль</option>
-                            <option value="03">Март</option>
-                            <option value="04">Апрель</option>
-                            <option value="05">Май</option>
-                            <option value="06">Июнь</option>
-                            <option value="07">Июль</option>
-                            <option value="08">Август</option>
-                            <option value="09">Сентябрь</option>
-                            <option value="10">Октябрь</option>
-                            <option value="11">Ноябрь</option>
-                            <option value="12">Декабрь</option>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц по умолчанию</label>
+                        <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
+                            <option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option><option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option><option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год отчета</label>
-                        <select id="user-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                            <!-- Populated dynamically -->
-                        </select>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год по умолчанию</label>
+                        <select id="user-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 cursor-pointer"></select>
                     </div>
                 </div>
-                
                 <div class="flex items-center space-x-3">
                     <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-plus mr-2"></i> Добавить строку
+                        <i class="fa-solid fa-user-plus mr-2"></i> Добавить (+ возвещатель)
                     </button>
-                    <span id="save-status" class="text-xs text-slate-400 italic">Все изменения сохранены</span>
+                    <span id="save-status" class="text-xs text-slate-400 italic">Нажмите Enter для сохранения строки</span>
                 </div>
             </div>
 
-            <!-- Analysis Header for User -->
-            <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-chart-line text-indigo-600 text-base"></i>
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm">Анализ служения группы</h3>
-                        <p class="text-[11px] text-slate-500">Оценка активности за 6 месяцев до выбранной даты</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2 text-xs">
-                    <span class="text-slate-500 font-medium">Период анализа:</span>
-                    <span id="user-analysis-period-badge" class="bg-indigo-100 text-indigo-800 font-bold px-2.5 py-1 rounded-lg border border-indigo-200"></span>
-                </div>
-            </div>
-
-            <!-- Group-scoped Analytics -->
+            <!-- Group-scoped Analytics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Group Irregular -->
                 <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-amber-900 text-sm flex items-center">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i>
-                            Нерегулярные нашей группы (Пропустили ≥ 1 отчет)
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Нерегулярные (Пропустили ≥ 1 отчет)
                         </h3>
                         <span id="user-count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
                     <div id="user-list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
                 </div>
-
-                <!-- Group Inactive -->
                 <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
-                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
-                            Неактивные нашей группы (0 отчетов за 6 мес.)
+                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за 6 мес.)
                         </h3>
                         <span id="user-count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
@@ -255,12 +210,18 @@
             <!-- User Report Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
-                    <h2 class="font-bold text-slate-800 text-base">Мои отчеты за выбранный период</h2>
+                    <h2 class="font-bold text-slate-800 text-base">Мои отчеты группы</h2>
                     <div class="flex items-center space-x-3">
-                        <button onclick="saveAllModifiedRows()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                            <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все записи
+                        <button id="user-add-row-bottom" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                            <i class="fa-solid fa-user-plus mr-1.5"></i> Добавить (+ возвещатель)
                         </button>
-                        <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold border border-indigo-200">Группа №<span id="user-group-display"></span></span>
+                        <button onclick="saveAllModifiedRows()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все
+                        </button>
+                        <div class="flex items-center space-x-1.5 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200 text-xs">
+                            <span class="font-semibold text-indigo-700">Группа №:</span>
+                            <input type="number" min="1" id="user-group-input" onchange="updateUserGroup(this.value)" class="w-14 text-xs font-bold text-indigo-900 bg-white border border-indigo-300 rounded px-1.5 py-0.5 text-center focus:ring-2 focus:ring-indigo-500">
+                        </div>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -268,61 +229,47 @@
                         <thead>
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-10 text-center">№</th>
-                                <th class="p-3 min-w-[180px]">Имя сокр.</th>
-                                <th class="p-3 w-32">Часы / Участие</th>
-                                <th class="p-3 w-44">Статус</th>
-                                <th class="p-3 w-28">Изучения</th>
+                                <th class="p-3 w-28">Месяц</th>
+                                <th class="p-3 w-24">Год</th>
+                                <th class="p-3 w-16">Гр.</th>
+                                <th class="p-3 min-w-[160px]">Имя сокр.</th>
+                                <th class="p-3 w-36">Статус</th>
+                                <th class="p-3 w-40">Участие / Часы</th>
+                                <th class="p-3 w-24">Изучения</th>
                                 <th class="p-3">Примечания</th>
-                                <th class="p-3 w-24">Доб. пож.</th>
+                                <th class="p-3 w-20">Доб. пож.</th>
                                 <th class="p-3 w-28 text-center">Действия</th>
                             </tr>
                         </thead>
-                        <tbody id="user-table-body" class="divide-y divide-slate-100">
-                            <!-- Dynamically populated rows -->
-                        </tbody>
+                        <tbody id="user-table-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </main>
 
-        <!-- Admin Dashboard View -->
+        <!-- Admin Dashboard -->
         <main id="admin-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-            <!-- Filter Bar & Control Buttons for Admin -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex flex-wrap items-center gap-3">
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц</label>
-                        <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
-                            <option value="all">Все месяца</option>
-                            <option value="01">Январь</option>
-                            <option value="02">Февраль</option>
-                            <option value="03">Март</option>
-                            <option value="04">Апрель</option>
-                            <option value="05">Май</option>
-                            <option value="06">Июнь</option>
-                            <option value="07">Июль</option>
-                            <option value="08">Август</option>
-                            <option value="09">Сентябрь</option>
-                            <option value="10">Октябрь</option>
-                            <option value="11">Ноябрь</option>
-                            <option value="12">Декабрь</option>
+                        <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
+                            <option value="all">Все месяца</option><option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option><option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option><option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Год</label>
-                        <select id="admin-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                            <!-- Populated dynamically -->
-                        </select>
+                        <select id="admin-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 cursor-pointer"></select>
                     </div>
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Группа</label>
-                        <select id="admin-group-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <select id="admin-group-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
                             <option value="all">Все группы</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Статус</label>
-                        <select id="admin-status-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <select id="admin-status-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
                             <option value="all">Все статусы</option>
                             <option value="Возвещатель">Возвещатель</option>
                             <option value="Некрещеный возвещатель">Некрещеный возвещатель</option>
@@ -331,15 +278,8 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="flex items-center space-x-2">
-                    <button id="admin-add-entry" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-user-plus mr-2"></i> Внести запись
-                    </button>
-                </div>
             </div>
 
-            <!-- Analytics Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div class="text-xs font-semibold text-slate-400 uppercase">Всего отчетов</div>
@@ -359,7 +299,7 @@
                 </div>
             </div>
 
-            <!-- Analysis Header & Specific Year Selector for Admin -->
+            <!-- Global Analytics & Year Selector -->
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
@@ -372,32 +312,24 @@
                 </div>
                 <div class="flex items-center space-x-2 text-xs">
                     <span class="text-slate-600 font-semibold">Год для анализа:</span>
-                    <select id="analysis-year-admin" class="border border-slate-300 font-bold text-indigo-900 bg-indigo-50 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500">
-                        <!-- Populated dynamically -->
-                    </select>
+                    <select id="analysis-year-admin" class="border border-slate-300 font-bold text-indigo-900 bg-indigo-50 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
             </div>
 
-            <!-- Analysis Section (All Groups) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Missing 1+ Month -->
                 <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-amber-900 text-sm flex items-center">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i>
-                            Нерегулярные (Пропустили ≥ 1 отчет за 6 мес.)
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Нерегулярные (Пропустили ≥ 1 отчет)
                         </h3>
                         <span id="count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
                     <div id="list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
                 </div>
-
-                <!-- Missing ALL 6 Months -->
                 <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
-                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
-                            Неактивные (0 отчетов за 6 месяцев)
+                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за 6 месяцев)
                         </h3>
                         <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
@@ -409,36 +341,40 @@
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Сводная база данных отчетов (Все группы)</h2>
-                    <button onclick="saveAllModifiedRows()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все записи
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button id="admin-add-entry" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                            <i class="fa-solid fa-user-plus mr-1.5"></i> Добавить (+ возвещатель)
+                        </button>
+                        <button onclick="saveAllModifiedRows()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
                         <thead>
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-10 text-center">№</th>
-                                <th class="p-3 w-16">Группа</th>
-                                <th class="p-3 w-20">Период</th>
-                                <th class="p-3">Имя сокр.</th>
-                                <th class="p-3 w-28">Часы / Участие</th>
-                                <th class="p-3 w-40">Статус</th>
-                                <th class="p-3 w-20">Изучения</th>
+                                <th class="p-3 w-16">Гр.</th>
+                                <th class="p-3 w-28">Месяц</th>
+                                <th class="p-3 w-24">Год</th>
+                                <th class="p-3 min-w-[160px]">Имя сокр.</th>
+                                <th class="p-3 w-36">Статус</th>
+                                <th class="p-3 w-36">Участие / Часы</th>
+                                <th class="p-3 w-20">Изуч.</th>
                                 <th class="p-3">Примечания</th>
                                 <th class="p-3 w-20">Доб. пож.</th>
                                 <th class="p-3 w-28 text-center">Действия</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-table-body" class="divide-y divide-slate-100">
-                            <!-- Consolidated rows dynamically filled -->
-                        </tbody>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Publisher Card Modal ("Карточка возвещателя") -->
+    <!-- Publisher Card Modal -->
     <div id="publisher-card-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
@@ -451,9 +387,7 @@
                         <p class="text-xs text-indigo-200">ID: <span id="card-publisher-id" class="font-mono"></span></p>
                     </div>
                 </div>
-                <button id="close-publisher-card" class="text-indigo-200 hover:text-white text-xl p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button id="close-publisher-card" class="text-indigo-200 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto space-y-4">
                 <div class="grid grid-cols-3 gap-3 text-center">
@@ -494,7 +428,7 @@
         </div>
     </div>
 
-    <!-- Super Admin Accounts Modal ("Управление Аккаунтами и Правами") -->
+    <!-- Super Admin Accounts Modal -->
     <div id="superadmin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
             <div class="bg-purple-700 text-white p-4 flex justify-between items-center">
@@ -505,13 +439,9 @@
                         <p class="text-[11px] text-purple-200">Панель Главного Администратора</p>
                     </div>
                 </div>
-                <button id="close-superadmin-modal" class="text-purple-200 hover:text-white text-xl p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button id="close-superadmin-modal" class="text-purple-200 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
             <div class="p-5 overflow-y-auto space-y-4">
-                <p class="text-xs text-slate-500">Управление пользователями, ролями и распределением административных прав в системе.</p>
                 <div class="overflow-x-auto border border-slate-200 rounded-xl">
                     <table class="w-full text-left text-xs">
                         <thead>
@@ -519,28 +449,24 @@
                                 <th class="p-3">Email / Почта</th>
                                 <th class="p-3">Группа</th>
                                 <th class="p-3">Роль</th>
-                                <th class="p-3 text-center">Действия с ролью</th>
+                                <th class="p-3 text-center">Действия</th>
                             </tr>
                         </thead>
-                        <tbody id="superadmin-users-table" class="divide-y divide-slate-100">
-                            <!-- Dynamically generated accounts list -->
-                        </tbody>
+                        <tbody id="superadmin-users-table" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Custom Transfer Confirmation Modal -->
+    <!-- Transfer & Delete Dialogs -->
     <div id="transfer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 text-center">
             <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full inline-flex items-center justify-center mb-3 text-xl">
                 <i class="fa-solid fa-user-gear"></i>
             </div>
             <h3 class="font-bold text-slate-800 text-base mb-2">Передать права Главного Админа?</h3>
-            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                Вы действительно хотите передать права Главного Администратора пользователю <strong id="transfer-target-email" class="text-indigo-600"></strong>? Ваш статус будет изменен на Администратора.
-            </p>
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">Вы хотите передать права Главного Администратора пользователю <strong id="transfer-target-email" class="text-indigo-600"></strong>?</p>
             <div class="flex space-x-3">
                 <button id="cancel-transfer-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-semibold">Отмена</button>
                 <button id="confirm-transfer-btn" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow">Подтвердить</button>
@@ -548,7 +474,6 @@
         </div>
     </div>
 
-    <!-- Custom Delete Modal Dialog -->
     <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 border border-slate-200 text-center">
             <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full inline-flex items-center justify-center mb-3">
@@ -563,7 +488,6 @@
         </div>
     </div>
 
-    <!-- Application Logic Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -588,34 +512,12 @@
             projectId: "tablitsa-40cf4",
             storageBucket: "tablitsa-40cf4.firebasestorage.app",
             messagingSenderId: "785699516187",
-            appId: "1:785699516187:web:727bf55a5df125fc43edbe",
-            measurementId: "G-SRZ42R8TNM"
+            appId: "1:785699516187:web:727bf55a5df125fc43edbe"
         };
 
         function extractFirebaseConfig(inputStr) {
             if (!inputStr) return null;
             let cleanStr = inputStr.trim();
-            if (cleanStr.includes('apiKey')) {
-                const apiKeyIdx = cleanStr.indexOf('apiKey');
-                const openBraceIdx = cleanStr.lastIndexOf('{', apiKeyIdx);
-                if (openBraceIdx !== -1) {
-                    let closeBraceIdx = -1;
-                    let depth = 0;
-                    for (let i = openBraceIdx; i < cleanStr.length; i++) {
-                        if (cleanStr[i] === '{') depth++;
-                        else if (cleanStr[i] === '}') {
-                            depth--;
-                            if (depth === 0) {
-                                closeBraceIdx = i;
-                                break;
-                            }
-                        }
-                    }
-                    if (closeBraceIdx !== -1) {
-                        cleanStr = cleanStr.substring(openBraceIdx, closeBraceIdx + 1);
-                    }
-                }
-            }
             try {
                 return JSON.parse(cleanStr);
             } catch (e) {
@@ -627,7 +529,6 @@
                         .replace(/,\s*([}\]])/g, '$1');
                     return JSON.parse(formatted);
                 } catch (err) {
-                    console.error("Config parse error:", err);
                     return null;
                 }
             }
@@ -653,7 +554,7 @@
                 firebaseConfig = extractFirebaseConfig(customConfigStr);
             }
             if (!firebaseConfig && typeof __firebase_config !== 'undefined') {
-                try { firebaseConfig = JSON.parse(__firebase_config); } catch (e) { console.error(e); }
+                try { firebaseConfig = JSON.parse(__firebase_config); } catch (e) { }
             }
             if (!firebaseConfig) {
                 firebaseConfig = DEFAULT_FIREBASE_CONFIG;
@@ -680,25 +581,35 @@
                     subscribeToReports();
                     subscribeToUsers();
                 } catch (err) {
-                    console.warn('Firebase init failed:', err);
-                    updateCloudUIStatus('error', 'Ошибка облака', err.message);
+                    updateCloudUIStatus('error', 'Ошибка облака');
+                    loadLocalFallback();
                 }
             } else {
                 updateCloudUIStatus('offline', 'Автономный режим');
+                loadLocalFallback();
             }
+        }
+
+        function loadLocalFallback() {
+            const savedUsers = localStorage.getItem('users_db');
+            usersData = savedUsers ? JSON.parse(savedUsers) : initialUsers;
+
+            const savedReports = localStorage.getItem('reports_db');
+            reportsData = savedReports ? JSON.parse(savedReports) : initialMockData;
+
+            populateYearSelectors();
+            refreshCurrentView();
         }
 
         function subscribeToReports() {
             if (!db) return;
             const reportsRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
             onSnapshot(reportsRef, (snapshot) => {
-                if (snapshot.empty) {
-                    if (reportsData.length > 0) {
-                        reportsData.forEach(entry => {
-                            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
-                            setDoc(docRef, entry, { merge: true }).catch(console.error);
-                        });
-                    }
+                if (snapshot.empty && reportsData.length > 0) {
+                    reportsData.forEach(entry => {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
+                        setDoc(docRef, entry, { merge: true }).catch(() => {});
+                    });
                     return;
                 }
                 const cloudItems = [];
@@ -711,19 +622,18 @@
                     populateYearSelectors();
                     refreshCurrentView();
                 }
-            }, (error) => {
-                console.error('Reports listener error:', error);
-            });
+            }, () => { loadLocalFallback(); });
         }
 
         function subscribeToUsers() {
             if (!db) return;
             const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
             onSnapshot(usersRef, (snapshot) => {
-                if (snapshot.empty) {
-                    if (usersData.length > 0) {
-                        usersData.forEach(u => saveUserToCloud(u));
-                    }
+                if (snapshot.empty && usersData.length > 0) {
+                    usersData.forEach(u => {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', u.email.replace(/[@.]/g, '_'));
+                        setDoc(docRef, u, { merge: true }).catch(() => {});
+                    });
                     return;
                 }
                 const cloudUsers = [];
@@ -731,708 +641,97 @@
                     cloudUsers.push(docSnap.data());
                 });
                 if (cloudUsers.length > 0) {
-                    cloudUsers.forEach(cu => {
-                        const idx = usersData.findIndex(u => u.email.toLowerCase() === cu.email.toLowerCase());
-                        if (idx !== -1) {
-                            usersData[idx] = cu;
-                        } else {
-                            usersData.push(cu);
-                        }
-                    });
-                    localStorage.setItem('app_users_db', JSON.stringify(usersData));
-                    if (currentUser && currentUser.role === 'superadmin') {
-                        renderSuperAdminUsers();
-                    }
+                    usersData = cloudUsers;
+                    localStorage.setItem('users_db', JSON.stringify(usersData));
                 }
-            }, (error) => {
-                console.error('Users listener error:', error);
-            });
+            }, () => {});
         }
 
-        function saveUserToCloud(userObj) {
-            if (!isCloudConnected || !db || !userObj || !userObj.email) return;
-            const userKey = userObj.email.replace(/[@.]/g, '_');
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', userKey);
-            setDoc(docRef, userObj, { merge: true }).catch(console.error);
-        }
+        window.refreshCurrentView = function() {
+            if (!currentUser) return;
+            if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
+                renderAdminDashboard();
+            } else {
+                renderUserDashboard();
+            }
+        };
 
-        function updateCloudUIStatus(status, text, detailMessage = '') {
+        function updateCloudUIStatus(status, text) {
             const dot = document.getElementById('cloud-status-dot');
-            const statusText = document.getElementById('cloud-status-text');
-            const cloudBtn = document.getElementById('cloud-config-btn');
-            if (status === 'connected') {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
-                statusText.textContent = text;
-                cloudBtn.className = "flex items-center space-x-1.5 bg-emerald-800/80 hover:bg-emerald-900 px-3 py-1.5 rounded-lg text-xs transition border border-emerald-500/30 text-white";
-            } else if (status === 'error') {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
-                statusText.textContent = text;
-                cloudBtn.className = "flex items-center space-x-1.5 bg-rose-800/80 hover:bg-rose-900 px-3 py-1.5 rounded-lg text-xs transition border border-rose-500/30 text-white";
-            } else {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse";
-                statusText.textContent = text;
-            }
-        }
-
-        function initLocalStorageData() {
-            const savedUsers = localStorage.getItem('app_users_db');
-            if (savedUsers) {
-                try { usersData = JSON.parse(savedUsers); } catch (e) { usersData = initialUsers; }
-            } else {
-                usersData = initialUsers;
-                localStorage.setItem('app_users_db', JSON.stringify(usersData));
-            }
-
-            const savedReports = localStorage.getItem('reports_db');
-            if (savedReports) {
-                try { reportsData = JSON.parse(savedReports); } catch (e) { reportsData = initialMockData; }
-            } else {
-                reportsData = initialMockData;
-                localStorage.setItem('reports_db', JSON.stringify(reportsData));
-            }
+            const txt = document.getElementById('cloud-status-text');
+            if (!dot || !txt) return;
+            txt.textContent = text;
+            dot.className = "w-2.5 h-2.5 rounded-full " + (status === 'connected' ? 'bg-emerald-500' : status === 'error' ? 'bg-rose-500' : 'bg-amber-400 animate-pulse');
         }
 
         function populateYearSelectors() {
-            const years = [];
-            for (let y = currentYear - 2; y <= currentYear + 2; y++) {
-                years.push(y.toString());
-            }
-
-            const userYearSelect = document.getElementById('user-year');
-            const adminYearSelect = document.getElementById('admin-year');
-            const analysisYearAdminSelect = document.getElementById('analysis-year-admin');
-
-            const curUserYearVal = userYearSelect.value || currentYear.toString();
-            const curAdminYearVal = adminYearSelect.value || currentYear.toString();
-            const curAnalysisYearVal = analysisYearAdminSelect.value || currentYear.toString();
-
-            userYearSelect.innerHTML = years.map(y => `<option value="${y}" ${y === curUserYearVal ? 'selected' : ''}>${y}</option>`).join('');
-            adminYearSelect.innerHTML = `<option value="all">Все года</option>` + years.map(y => `<option value="${y}" ${y === curAdminYearVal ? 'selected' : ''}>${y}</option>`).join('');
-            analysisYearAdminSelect.innerHTML = years.map(y => `<option value="${y}" ${y === curAnalysisYearVal ? 'selected' : ''}>${y}</option>`).join('');
-        }
-
-        function populateGroupFilter() {
-            const groupSelect = document.getElementById('admin-group-filter');
-            const groups = [...new Set(reportsData.map(r => r.group).filter(Boolean))].sort();
-            const curVal = groupSelect.value;
-            groupSelect.innerHTML = `<option value="all">Все группы</option>` + groups.map(g => `<option value="${g}" ${g === curVal ? 'selected' : ''}>Группа №${g}</option>`).join('');
-        }
-
-        function setCurrentMonthAndYear() {
-            const now = new Date();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const y = now.getFullYear().toString();
-
-            const uMonth = document.getElementById('user-month');
-            const uYear = document.getElementById('user-year');
-            if (uMonth) uMonth.value = m;
-            if (uYear && [...uYear.options].some(o => o.value === y)) uYear.value = y;
-
-            const aMonth = document.getElementById('admin-month');
-            const aYear = document.getElementById('admin-year');
-            if (aMonth) aMonth.value = 'all';
-            if (aYear && [...aYear.options].some(o => o.value === 'all')) aYear.value = 'all';
-        }
-
-        function renderUserDashboard() {
-            if (!currentUser) return;
-            document.getElementById('user-group-display').textContent = currentUser.group || '1';
-            
-            const month = document.getElementById('user-month').value;
-            const year = document.getElementById('user-year').value;
-
-            const tbody = document.getElementById('user-table-body');
-            const userReports = reportsData.filter(r => r.email === currentUser.email && r.month === month && r.year === year);
-
-            if (userReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400 text-xs">Записи за этот месяц отсутствуют. Нажмите «Добавить строку».</td></tr>`;
-            } else {
-                tbody.innerHTML = userReports.map((r, idx) => `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100" data-id="${r.id}">
-                        <td class="p-3 text-center font-medium text-slate-500 text-xs">${idx + 1}</td>
-                        <td class="p-3">
-                            <input type="text" value="${r.name || ''}" oninput="markRowModified('${r.id}')" data-field="name" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Имя Фамилия">
-                        </td>
-                        <td class="p-3">
-                            <div class="flex items-center space-x-1.5">
-                                <input type="number" min="0" value="${r.hours || ''}" oninput="markRowModified('${r.id}')" data-field="hours" class="w-16 text-xs px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Часы">
-                                <label class="inline-flex items-center text-[11px] text-slate-600 cursor-pointer" title="Участвовал в служении">
-                                    <input type="checkbox" ${r.participated !== false ? 'checked' : ''} onchange="markRowModified('${r.id}')" data-field="participated" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
-                                </label>
-                            </div>
-                        </td>
-                        <td class="p-3">
-                            <select onchange="markRowModified('${r.id}')" data-field="status" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
-                                <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
-                                <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный возвещатель</option>
-                                <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
-                                <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>ОП (Спец. пионер)</option>
-                            </select>
-                        </td>
-                        <td class="p-3">
-                            <input type="number" min="0" value="${r.studies || ''}" oninput="markRowModified('${r.id}')" data-field="studies" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="0">
-                        </td>
-                        <td class="p-3">
-                            <input type="text" value="${r.notes || ''}" oninput="markRowModified('${r.id}')" data-field="notes" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Примечания">
-                        </td>
-                        <td class="p-3">
-                            <input type="number" min="0" value="${r.dp || ''}" oninput="markRowModified('${r.id}')" data-field="dp" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="0">
-                        </td>
-                        <td class="p-3 text-center">
-                            <div class="flex items-center justify-center space-x-2">
-                                <button onclick="saveSingleRow('${r.id}')" class="text-indigo-600 hover:text-indigo-800 p-1 rounded transition" title="Сохранить"><i class="fa-solid fa-floppy-disk text-sm"></i></button>
-                                <button onclick="openDeleteModal('${r.id}')" class="text-rose-500 hover:text-rose-700 p-1 rounded transition" title="Удалить"><i class="fa-solid fa-trash text-sm"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-            renderGroupAnalytics();
-        }
-
-        function renderAdminDashboard() {
-            populateGroupFilter();
-            const month = document.getElementById('admin-month').value;
-            const year = document.getElementById('admin-year').value;
-            const groupFilter = document.getElementById('admin-group-filter').value;
-            const statusFilter = document.getElementById('admin-status-filter').value;
-
-            let filtered = reportsData;
-            if (month !== 'all') filtered = filtered.filter(r => r.month === month);
-            if (year !== 'all') filtered = filtered.filter(r => r.year === year);
-            if (groupFilter !== 'all') filtered = filtered.filter(r => r.group === groupFilter);
-            if (statusFilter !== 'all') filtered = filtered.filter(r => r.status === statusFilter);
-
-            let totalHoursSum = 0;
-            let totalStudiesSum = 0;
-            let totalDpSum = 0;
-
-            filtered.forEach(r => {
-                const h = parseFloat(r.hours) || 0;
-                if (r.status === 'ПП' || r.status === 'ОП') {
-                    totalHoursSum += h;
-                }
-                totalStudiesSum += parseInt(r.studies) || 0;
-                totalDpSum += parseInt(r.dp) || 0;
-            });
-
-            document.getElementById('stat-total').textContent = filtered.length;
-            document.getElementById('stat-hours').textContent = totalHoursSum + ' ч.';
-            document.getElementById('stat-studies').textContent = totalStudiesSum;
-            document.getElementById('stat-dp').textContent = totalDpSum;
-
-            const tbody = document.getElementById('admin-table-body');
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400 text-xs">Нет данных по заданным фильтрам.</td></tr>`;
-            } else {
-                tbody.innerHTML = filtered.map((r, idx) => `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100" data-id="${r.id}">
-                        <td class="p-3 text-center font-medium text-slate-500 text-xs">${idx + 1}</td>
-                        <td class="p-3 font-semibold text-xs text-indigo-700">Гр. ${r.group || '1'}</td>
-                        <td class="p-3 text-xs text-slate-600 font-mono">${r.month}.${r.year}</td>
-                        <td class="p-3">
-                            <input type="text" value="${r.name || ''}" oninput="markRowModified('${r.id}')" data-field="name" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Имя">
-                        </td>
-                        <td class="p-3">
-                            <div class="flex items-center space-x-1.5">
-                                <input type="number" min="0" value="${r.hours || ''}" oninput="markRowModified('${r.id}')" data-field="hours" class="w-16 text-xs px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Часы">
-                                <label class="inline-flex items-center text-[11px] text-slate-600 cursor-pointer" title="Участвовал">
-                                    <input type="checkbox" ${r.participated !== false ? 'checked' : ''} onchange="markRowModified('${r.id}')" data-field="participated" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
-                                </label>
-                            </div>
-                        </td>
-                        <td class="p-3">
-                            <select onchange="markRowModified('${r.id}')" data-field="status" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
-                                <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
-                                <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный возвещатель</option>
-                                <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
-                                <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>ОП (Спец. пионер)</option>
-                            </select>
-                        </td>
-                        <td class="p-3">
-                            <input type="number" min="0" value="${r.studies || ''}" oninput="markRowModified('${r.id}')" data-field="studies" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="0">
-                        </td>
-                        <td class="p-3">
-                            <input type="text" value="${r.notes || ''}" oninput="markRowModified('${r.id}')" data-field="notes" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Заметки">
-                        </td>
-                        <td class="p-3">
-                            <input type="number" min="0" value="${r.dp || ''}" oninput="markRowModified('${r.id}')" data-field="dp" class="w-full text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="0">
-                        </td>
-                        <td class="p-3 text-center">
-                            <div class="flex items-center justify-center space-x-1.5">
-                                <button onclick="openPublisherCard('${r.personId || r.name}', '${r.name}')" class="text-sky-600 hover:text-sky-800 p-1 rounded transition" title="Карточка возвещателя"><i class="fa-solid id-card fa-address-card text-sm"></i></button>
-                                <button onclick="saveSingleRow('${r.id}')" class="text-indigo-600 hover:text-indigo-800 p-1 rounded transition" title="Сохранить"><i class="fa-solid fa-floppy-disk text-sm"></i></button>
-                                <button onclick="openDeleteModal('${r.id}')" class="text-rose-500 hover:text-rose-700 p-1 rounded transition" title="Удалить"><i class="fa-solid fa-trash text-sm"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-            renderGlobalAnalytics();
-        }
-
-        function getSixMonthsList(selectedMonthStr, selectedYearStr) {
-            const m = parseInt(selectedMonthStr, 10) - 1;
-            const y = parseInt(selectedYearStr, 10);
-            const list = [];
-            for (let i = 5; i >= 0; i--) {
-                let d = new Date(y, m - i, 1);
-                let mm = String(d.getMonth() + 1).padStart(2, '0');
-                let yy = String(d.getFullYear());
-                list.push({ month: mm, year: yy });
-            }
-            return list;
-        }
-
-        function calculateActivityAnalysis(publisherReportsMap, sixMonths) {
-            let irregular = [];
-            let inactive = [];
-
-            for (let [personId, data] of publisherReportsMap.entries()) {
-                let submittedCount = 0;
-                sixMonths.forEach(sm => {
-                    const found = data.reports.find(r => r.month === sm.month && r.year === sm.year);
-                    if (found && (found.participated || (found.hours && parseFloat(found.hours) > 0) || found.notes)) {
-                        submittedCount++;
-                    }
+            const years = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+            ['user-year', 'admin-year', 'analysis-year-admin'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const currentVal = el.value || currentYear.toString();
+                el.innerHTML = '';
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y.toString();
+                    opt.textContent = y.toString();
+                    if (opt.value === currentVal) opt.selected = true;
+                    el.appendChild(opt);
                 });
-
-                if (submittedCount === 0) {
-                    inactive.push(data.name);
-                } else if (submittedCount > 0 && submittedCount < 6) {
-                    irregular.push({ name: data.name, count: submittedCount });
-                }
-            }
-            return { irregular, inactive };
-        }
-
-        function renderGroupAnalytics() {
-            const month = document.getElementById('user-month').value;
-            const year = document.getElementById('user-year').value;
-            const sixMonths = getSixMonthsList(month, year);
-
-            document.getElementById('user-analysis-period-badge').textContent = `${sixMonths[0].month}.${sixMonths[0].year} — ${sixMonths[5].month}.${sixMonths[5].year}`;
-
-            const groupReports = reportsData.filter(r => r.group === currentUser.group);
-            const pubMap = new Map();
-
-            groupReports.forEach(r => {
-                const pid = r.personId || r.name;
-                if (!pubMap.has(pid)) {
-                    pubMap.set(pid, { name: r.name || 'Без имени', reports: [] });
-                }
-                pubMap.get(pid).reports.push(r);
+                if (!el.value) el.value = currentYear.toString();
             });
-
-            const { irregular, inactive } = calculateActivityAnalysis(pubMap, sixMonths);
-
-            document.getElementById('user-count-irregular').textContent = irregular.length;
-            document.getElementById('user-list-irregular').innerHTML = irregular.length === 0 ? 
-                `<span class="text-emerald-700 font-medium">Все возвещатели регулярны!</span>` :
-                irregular.map(i => `<div>&bull; <strong>${i.name}</strong> (сдали отчетов: ${i.count}/6)</div>`).join('');
-
-            document.getElementById('user-count-inactive').textContent = inactive.length;
-            document.getElementById('user-list-inactive').innerHTML = inactive.length === 0 ? 
-                `<span class="text-emerald-700 font-medium">Нет неактивных возвещателей.</span>` :
-                inactive.map(n => `<div>&bull; ${n}</div>`).join('');
         }
 
-        function renderGlobalAnalytics() {
-            const year = document.getElementById('analysis-year-admin').value;
-            const month = document.getElementById('admin-month').value !== 'all' ? document.getElementById('admin-month').value : '12';
-            const sixMonths = getSixMonthsList(month, year);
-
-            const pubMap = new Map();
-            reportsData.forEach(r => {
-                const pid = r.personId || r.name;
-                if (!pubMap.has(pid)) {
-                    pubMap.set(pid, { name: r.name || 'Без имени', reports: [] });
-                }
-                pubMap.get(pid).reports.push(r);
-            });
-
-            const { irregular, inactive } = calculateActivityAnalysis(pubMap, sixMonths);
-
-            document.getElementById('count-irregular').textContent = irregular.length;
-            document.getElementById('list-irregular').innerHTML = irregular.length === 0 ? 
-                `<span class="text-emerald-700 font-medium">Все возвещатели во всех группах регулярны!</span>` :
-                irregular.map(i => `<div>&bull; <strong>${i.name}</strong> (сдали отчетов: ${i.count}/6)</div>`).join('');
-
-            document.getElementById('count-inactive').textContent = inactive.length;
-            document.getElementById('list-inactive').innerHTML = inactive.length === 0 ? 
-                `<span class="text-emerald-700 font-medium">Нет неактивных возвещателей.</span>` :
-                inactive.map(n => `<div>&bull; ${n}</div>`).join('');
-        }
-
-        window.markRowModified = function(id) {
-            const tr = document.querySelector(`tr[data-id="${id}"]`);
-            if (!tr) return;
-            tr.classList.add('bg-amber-50/50');
-            document.getElementById('save-status').textContent = 'Есть несохраненные изменения...';
-            document.getElementById('save-status').className = 'text-xs text-amber-600 font-medium';
-        };
-
-        window.saveSingleRow = function(id) {
-            const tr = document.querySelector(`tr[data-id="${id}"]`);
-            if (!tr) return;
-
-            const name = tr.querySelector('[data-field="name"]').value.trim();
-            const hours = tr.querySelector('[data-field="hours"]').value;
-            const participated = tr.querySelector('[data-field="participated"]').checked;
-            const status = tr.querySelector('[data-field="status"]').value;
-            const studies = tr.querySelector('[data-field="studies"]').value;
-            const notes = tr.querySelector('[data-field="notes"]').value.trim();
-            const dp = tr.querySelector('[data-field="dp"]').value;
-
-            const idx = reportsData.findIndex(r => r.id === id);
-            if (idx !== -1) {
-                reportsData[idx] = {
-                    ...reportsData[idx],
-                    name, hours, participated, status, studies, notes, dp
-                };
-                persistReports();
-                tr.classList.remove('bg-amber-50/50');
-                tr.classList.add('bg-emerald-50/50');
-                setTimeout(() => tr.classList.remove('bg-emerald-50/50'), 1000);
-                document.getElementById('save-status').textContent = 'Все изменения сохранены';
-                document.getElementById('save-status').className = 'text-xs text-slate-400 italic';
-            }
-        };
-
-        window.saveAllModifiedRows = function() {
-            const rows = document.querySelectorAll('tbody tr[data-id]');
-            rows.forEach(tr => {
-                const id = tr.getAttribute('data-id');
-                const name = tr.querySelector('[data-field="name"]').value.trim();
-                const hours = tr.querySelector('[data-field="hours"]').value;
-                const participated = tr.querySelector('[data-field="participated"]').checked;
-                const status = tr.querySelector('[data-field="status"]').value;
-                const studies = tr.querySelector('[data-field="studies"]').value;
-                const notes = tr.querySelector('[data-field="notes"]').value.trim();
-                const dp = tr.querySelector('[data-field="dp"]').value;
-
-                const idx = reportsData.findIndex(r => r.id === id);
-                if (idx !== -1) {
-                    reportsData[idx] = {
-                        ...reportsData[idx],
-                        name, hours, participated, status, studies, notes, dp
-                    };
-                }
-                tr.classList.remove('bg-amber-50/50');
-            });
-            persistReports();
-            document.getElementById('save-status').textContent = 'Все записи успешно сохранены!';
-            document.getElementById('save-status').className = 'text-xs text-emerald-600 font-bold';
-            setTimeout(() => {
-                document.getElementById('save-status').textContent = 'Все изменения сохранены';
-                document.getElementById('save-status').className = 'text-xs text-slate-400 italic';
-            }, 2000);
-        };
-
-        function persistReports() {
-            localStorage.setItem('reports_db', JSON.stringify(reportsData));
-            if (isCloudConnected && db) {
-                reportsData.forEach(entry => {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
-                    setDoc(docRef, entry, { merge: true }).catch(console.error);
-                });
-            }
-            refreshCurrentView();
-        }
-
-        function refreshCurrentView() {
-            if (!currentUser) return;
-            if (currentUser.role === 'user') {
-                renderUserDashboard();
-            } else {
-                renderAdminDashboard();
-            }
-        }
-
-        window.openPublisherCard = function(personId, name) {
-            document.getElementById('card-publisher-name').textContent = name || 'Возвещатель';
-            document.getElementById('card-publisher-id').textContent = personId;
-
-            const publisherReports = reportsData.filter(r => (r.personId === personId) || (r.name === name));
-            document.getElementById('card-publisher-group').textContent = publisherReports.length > 0 ? publisherReports[0].group : '1';
-            document.getElementById('card-total-reports').textContent = publisherReports.length;
-
-            let totalH = 0;
-            let totalS = 0;
-            publisherReports.forEach(r => {
-                totalH += parseFloat(r.hours) || 0;
-                totalS += parseInt(r.studies) || 0;
-            });
-            document.getElementById('card-total-hours').textContent = totalH + ' ч.';
-            document.getElementById('card-total-studies').textContent = totalS;
-
-            const historyTbody = document.getElementById('card-history-tbody');
-            historyTbody.innerHTML = publisherReports.map(r => `
-                <tr class="border-b border-slate-100">
-                    <td class="p-2 font-mono">${r.month}.${r.year}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded font-semibold text-[10px]">${r.status}</span></td>
-                    <td class="p-2">${r.hours ? r.hours + ' ч.' : (r.participated ? 'Участвовал' : '-')}</td>
-                    <td class="p-2">${r.studies || '0'}</td>
-                    <td class="p-2">${r.dp || '0'}</td>
-                    <td class="p-2 text-slate-500">${r.notes || '-'}</td>
-                </tr>
-            `).join('');
-
-            document.getElementById('publisher-card-modal').classList.remove('hidden');
-        };
-
-        window.openSuperAdminModal = function() {
-            renderSuperAdminUsers();
-            document.getElementById('superadmin-modal').classList.remove('hidden');
-        };
-
-        function renderSuperAdminUsers() {
-            const tbody = document.getElementById('superadmin-users-table');
-            tbody.innerHTML = usersData.map(u => `
-                <tr class="border-b border-slate-100">
-                    <td class="p-3 font-medium text-slate-800">${u.email}</td>
-                    <td class="p-3">Группа №${u.group || '1'}</td>
-                    <td class="p-3">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            u.role === 'superadmin' ? 'bg-purple-100 text-purple-800' :
-                            u.role === 'admin' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700'
-                        }">${u.role}</span>
-                    </td>
-                    <td class="p-3 text-center">
-                        ${u.email !== currentUser.email ? `
-                            <div class="flex items-center justify-center space-x-2">
-                                <select onchange="changeUserRole('${u.email}', this.value)" class="text-xs border border-slate-300 rounded px-2 py-1 bg-white">
-                                    <option value="user" ${u.role === 'user' ? 'selected' : ''}>Пользователь</option>
-                                    <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Админ</option>
-                                </select>
-                                ${currentUser.role === 'superadmin' ? `
-                                    <button onclick="requestTransferSuperAdmin('${u.email}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded text-xs font-semibold transition" title="Передать права Главного Админа">
-                                        Глав. Админ
-                                    </button>
-                                ` : ''}
-                            </div>
-                        ` : '<span class="text-xs text-slate-400">Текущий аккаунт</span>'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        window.changeUserRole = function(email, newRole) {
-            const u = usersData.find(x => x.email.toLowerCase() === email.toLowerCase());
-            if (u) {
-                u.role = newRole;
-                localStorage.setItem('app_users_db', JSON.stringify(usersData));
-                saveUserToCloud(u);
-                renderSuperAdminUsers();
-            }
-        };
-
-        window.requestTransferSuperAdmin = function(targetEmail) {
-            pendingTransferEmail = targetEmail;
-            document.getElementById('transfer-target-email').textContent = targetEmail;
-            document.getElementById('transfer-modal').classList.remove('hidden');
-        };
-
-        window.quickFill = function(email, password) {
+        window.quickFill = function(email, pass) {
             document.getElementById('login-email').value = email;
-            document.getElementById('login-password').value = password;
+            document.getElementById('login-password').value = pass;
         };
 
+        // DOM Loaded Init
         document.addEventListener('DOMContentLoaded', () => {
-            initLocalStorageData();
             initCloud();
             populateYearSelectors();
-            setCurrentMonthAndYear();
 
-            // Auth tabs switcher
+            // Month default current
+            const curMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
+            const userMonthSel = document.getElementById('user-month');
+            if (userMonthSel) userMonthSel.value = curMonthStr;
+
+            // Tabs Login/Register
             document.getElementById('tab-login-btn').addEventListener('click', () => {
-                document.getElementById('tab-login-btn').className = 'flex-1 py-2 text-center tab-active focus:outline-none';
-                document.getElementById('tab-register-btn').className = 'flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none';
+                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
+                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
                 document.getElementById('login-form').classList.remove('hidden');
                 document.getElementById('register-form').classList.add('hidden');
             });
-
             document.getElementById('tab-register-btn').addEventListener('click', () => {
-                document.getElementById('tab-register-btn').className = 'flex-1 py-2 text-center tab-active focus:outline-none';
-                document.getElementById('tab-login-btn').className = 'flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none';
+                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
+                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
                 document.getElementById('register-form').classList.remove('hidden');
                 document.getElementById('login-form').classList.add('hidden');
             });
 
-            // Login form handler
-            document.getElementById('login-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value.trim().toLowerCase();
-                const pass = document.getElementById('login-password').value;
-                const errDiv = document.getElementById('login-error');
-
-                const found = usersData.find(u => u.email.toLowerCase() === email && u.password === pass);
-                if (found) {
-                    currentUser = found;
-                    errDiv.classList.add('hidden');
-                    completeLogin();
-                } else {
-                    errDiv.textContent = 'Неверный email или пароль';
-                    errDiv.classList.remove('hidden');
-                }
-            });
-
-            // Register form handler
-            document.getElementById('register-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('reg-email').value.trim().toLowerCase();
-                const password = document.getElementById('reg-password').value;
-                const group = document.getElementById('reg-group').value;
-                const errDiv = document.getElementById('reg-error');
-
-                if (usersData.some(u => u.email.toLowerCase() === email)) {
-                    errDiv.textContent = 'Пользователь с таким email уже существует';
-                    errDiv.classList.remove('hidden');
-                    return;
-                }
-
-                const newUser = { email, password, group, role: 'user' };
-                usersData.push(newUser);
-                localStorage.setItem('app_users_db', JSON.stringify(usersData));
-                saveUserToCloud(newUser);
-
-                currentUser = newUser;
-                errDiv.classList.add('hidden');
-                completeLogin();
-            });
-
-            function completeLogin() {
-                document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('user-info').classList.remove('hidden');
-                document.getElementById('user-info').classList.add('flex');
-
-                document.getElementById('user-display').textContent = currentUser.email;
-                const badge = document.getElementById('user-badge');
-                const usersModalBtn = document.getElementById('open-users-modal-btn');
-
-                if (currentUser.role === 'superadmin') {
-                    badge.textContent = 'Главный Админ';
-                    badge.className = 'px-2.5 py-1 bg-purple-900 text-purple-100 rounded-full text-xs font-semibold uppercase tracking-wider';
-                    usersModalBtn.classList.remove('hidden');
-                    usersModalBtn.classList.add('flex');
-                    document.getElementById('admin-dashboard').classList.remove('hidden');
-                    renderAdminDashboard();
-                } else if (currentUser.role === 'admin') {
-                    badge.textContent = 'Администратор';
-                    badge.className = 'px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider';
-                    usersModalBtn.classList.add('hidden');
-                    document.getElementById('admin-dashboard').classList.remove('hidden');
-                    renderAdminDashboard();
-                } else {
-                    badge.textContent = `Пользователь (Гр. ${currentUser.group || '1'})`;
-                    badge.className = 'px-2.5 py-1 bg-slate-800 text-slate-100 rounded-full text-xs font-semibold uppercase tracking-wider';
-                    usersModalBtn.classList.add('hidden');
-                    document.getElementById('user-dashboard').classList.remove('hidden');
-                    renderUserDashboard();
-                }
-            }
-
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                currentUser = null;
-                document.getElementById('login-view').classList.remove('hidden');
-                document.getElementById('user-dashboard').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.add('hidden');
-                document.getElementById('user-info').classList.add('hidden');
-                document.getElementById('open-users-modal-btn').classList.add('hidden');
-                document.getElementById('login-password').value = '';
-            });
-
-            // Add row button for user / admin
-            document.getElementById('add-row-btn').addEventListener('click', () => {
-                if (!currentUser) return;
-                const month = document.getElementById('user-month').value;
-                const year = document.getElementById('user-year').value;
-                const newId = 'r_' + Date.now() + Math.random().toString(36).substring(2, 6);
-                const newPersonId = 'p_' + Date.now();
-
-                const newEntry = {
-                    id: newId,
-                    personId: newPersonId,
-                    email: currentUser.email,
-                    group: currentUser.group || '1',
-                    month: month,
-                    year: year,
-                    name: currentUser.email.split('@')[0],
-                    hours: '',
-                    participated: true,
-                    status: 'Возвещатель',
-                    studies: '0',
-                    notes: '',
-                    dp: '0'
-                };
-
-                reportsData.push(newEntry);
-                persistReports();
-            });
-
-            document.getElementById('admin-add-entry').addEventListener('click', () => {
-                if (!currentUser) return;
-                const month = document.getElementById('admin-month').value !== 'all' ? document.getElementById('admin-month').value : '09';
-                const year = document.getElementById('admin-year').value !== 'all' ? document.getElementById('admin-year').value : currentYear.toString();
-                const newId = 'r_' + Date.now() + Math.random().toString(36).substring(2, 6);
-                const newPersonId = 'p_' + Date.now();
-
-                const newEntry = {
-                    id: newId,
-                    personId: newPersonId,
-                    email: currentUser.email,
-                    group: '1',
-                    month: month,
-                    year: year,
-                    name: 'Новый возвещатель',
-                    hours: '',
-                    participated: true,
-                    status: 'Возвещатель',
-                    studies: '0',
-                    notes: '',
-                    dp: '0'
-                };
-
-                reportsData.push(newEntry);
-                persistReports();
-            });
-
-            // Filters listeners
-            ['user-month', 'user-year'].forEach(id => {
-                document.getElementById(id).addEventListener('change', () => {
-                    if (currentUser && currentUser.role === 'user') renderUserDashboard();
-                });
-            });
-
-            ['admin-month', 'admin-year', 'admin-group-filter', 'admin-status-filter', 'analysis-year-admin'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.addEventListener('change', () => {
-                        if (currentUser && currentUser.role !== 'user') renderAdminDashboard();
-                    });
-                }
-            });
-
-            // Cloud modal triggers
+            // Cloud Config Modal
             document.getElementById('cloud-config-btn').addEventListener('click', () => {
-                document.getElementById('firebase-json-input').value = localStorage.getItem('custom_firebase_config') || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
                 document.getElementById('cloud-modal').classList.remove('hidden');
+                const cur = localStorage.getItem('custom_firebase_config') || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
+                document.getElementById('firebase-json-input').value = cur;
             });
             document.getElementById('close-cloud-modal').addEventListener('click', () => {
                 document.getElementById('cloud-modal').classList.add('hidden');
             });
             document.getElementById('save-firebase-config').addEventListener('click', () => {
-                const val = document.getElementById('firebase-json-input').value.trim();
+                const val = document.getElementById('firebase-json-input').value;
                 const parsed = extractFirebaseConfig(val);
-                const msgDiv = document.getElementById('cloud-modal-msg');
+                const msg = document.getElementById('cloud-modal-msg');
                 if (parsed && parsed.apiKey) {
                     localStorage.setItem('custom_firebase_config', JSON.stringify(parsed));
-                    msgDiv.textContent = 'Конфигурация сохранена! Перезагрузка...';
-                    msgDiv.className = 'text-xs p-2.5 rounded-lg bg-emerald-50 text-emerald-800 font-medium block';
+                    msg.textContent = "Конфигурация сохранена! Перезагрузка...";
+                    msg.className = "text-xs p-2.5 rounded-lg bg-emerald-100 text-emerald-800 block font-medium";
                     setTimeout(() => window.location.reload(), 1200);
                 } else {
-                    msgDiv.textContent = 'Ошибка: не удалось распознать конфигурацию Firebase JSON/JS.';
-                    msgDiv.className = 'text-xs p-2.5 rounded-lg bg-rose-50 text-rose-800 font-medium block';
+                    msg.textContent = "Ошибка: неверный формат JSON конфигурации Firebase.";
+                    msg.className = "text-xs p-2.5 rounded-lg bg-rose-100 text-rose-800 block font-medium";
                 }
             });
             document.getElementById('reset-firebase-config').addEventListener('click', () => {
@@ -1440,56 +739,641 @@
                 window.location.reload();
             });
 
-            // Publisher Card modal close
-            document.getElementById('close-publisher-card').addEventListener('click', () => {
-                document.getElementById('publisher-card-modal').classList.add('hidden');
+            // Login Handler
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value.trim().toLowerCase();
+                const pass = document.getElementById('login-password').value;
+                const errEl = document.getElementById('login-error');
+
+                const savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+                const found = savedUsers.find(u => u.email.toLowerCase() === email && u.password === pass);
+
+                if (found) {
+                    currentUser = found;
+                    errEl.classList.add('hidden');
+                    enterDashboard();
+                } else {
+                    errEl.textContent = "Неверный Email или пароль.";
+                    errEl.classList.remove('hidden');
+                }
             });
 
-            // Super Admin modal close
-            document.getElementById('close-superadmin-modal').addEventListener('click', () => {
-                document.getElementById('superadmin-modal').classList.add('hidden');
+            // Register Handler
+            document.getElementById('register-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('reg-email').value.trim().toLowerCase();
+                const pass = document.getElementById('reg-password').value;
+                const group = document.getElementById('reg-group').value;
+                const errEl = document.getElementById('reg-error');
+
+                if (pass.length < 4) {
+                    errEl.textContent = "Пароль должен быть не менее 4 символов.";
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+
+                let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+                if (savedUsers.some(u => u.email.toLowerCase() === email)) {
+                    errEl.textContent = "Пользователь с таким email уже существует.";
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+
+                const newUser = { email, password: pass, group, role: 'user' };
+                savedUsers.push(newUser);
+                localStorage.setItem('users_db', JSON.stringify(savedUsers));
+                usersData = savedUsers;
+
+                if (db) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', email.replace(/[@.]/g, '_'));
+                    setDoc(docRef, newUser).catch(() => {});
+                }
+
+                currentUser = newUser;
+                errEl.classList.add('hidden');
+                enterDashboard();
             });
 
-            // Transfer confirmation modal
-            document.getElementById('cancel-transfer-btn').addEventListener('click', () => {
-                document.getElementById('transfer-modal').classList.add('hidden');
-                pendingTransferEmail = null;
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                currentUser = null;
+                document.getElementById('user-dashboard').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
+                document.getElementById('login-view').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('hidden');
             });
-            document.getElementById('confirm-transfer-btn').addEventListener('click', () => {
-                if (pendingTransferEmail) {
-                    const target = usersData.find(u => u.email.toLowerCase() === pendingTransferEmail.toLowerCase());
-                    const cur = usersData.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
-                    if (target && cur) {
-                        target.role = 'superadmin';
-                        cur.role = 'admin';
-                        localStorage.setItem('app_users_db', JSON.stringify(usersData));
-                        saveUserToCloud(target);
-                        saveUserToCloud(cur);
-                        currentUser = cur;
-                        document.getElementById('transfer-modal').classList.add('hidden');
-                        document.getElementById('superadmin-modal').classList.add('hidden');
-                        completeLogin();
+
+            // Add row triggers
+            document.getElementById('add-row-btn').addEventListener('click', addNewReportRow);
+            document.getElementById('user-add-row-bottom').addEventListener('click', addNewReportRow);
+            document.getElementById('admin-add-entry').addEventListener('click', addNewReportRow);
+
+            // Filters
+            ['admin-month', 'admin-year', 'admin-group-filter', 'admin-status-filter', 'analysis-year-admin'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', refreshCurrentView);
+            });
+        });
+
+        function enterDashboard() {
+            document.getElementById('login-view').classList.add('hidden');
+            const userInfo = document.getElementById('user-info');
+            userInfo.classList.remove('hidden');
+            userInfo.classList.add('flex');
+
+            const badge = document.getElementById('user-badge');
+            const display = document.getElementById('user-display');
+            const superModalBtn = document.getElementById('open-users-modal-btn');
+
+            display.textContent = currentUser.email;
+
+            if (currentUser.role === 'superadmin') {
+                badge.textContent = "Главный Админ";
+                badge.className = "px-2.5 py-1 bg-purple-900 text-purple-100 rounded-full text-xs font-semibold uppercase tracking-wider";
+                superModalBtn.classList.remove('hidden');
+                superModalBtn.classList.add('flex');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('user-dashboard').classList.add('hidden');
+                setupSuperAdminModal();
+                renderAdminDashboard();
+            } else if (currentUser.role === 'admin') {
+                badge.textContent = "Администратор";
+                badge.className = "px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider";
+                superModalBtn.classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('user-dashboard').classList.add('hidden');
+                renderAdminDashboard();
+            } else {
+                badge.textContent = `Группа №${currentUser.group}`;
+                badge.className = "px-2.5 py-1 bg-slate-800 text-slate-100 rounded-full text-xs font-semibold uppercase tracking-wider";
+                superModalBtn.classList.add('hidden');
+                document.getElementById('user-dashboard').classList.remove('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
+                document.getElementById('user-group-input').value = currentUser.group;
+                renderUserDashboard();
+            }
+        }
+
+        window.updateUserGroup = function(val) {
+            if (!currentUser) return;
+            currentUser.group = val;
+            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+            savedUsers = savedUsers.map(u => u.email === currentUser.email ? currentUser : u);
+            localStorage.setItem('users_db', JSON.stringify(savedUsers));
+            if (db) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.email.replace(/[@.]/g, '_'));
+                setDoc(docRef, currentUser, { merge: true }).catch(() => {});
+            }
+        };
+
+        function addNewReportRow() {
+            const defaultMonth = document.getElementById('user-month') ? document.getElementById('user-month').value : '09';
+            const defaultYear = document.getElementById('user-year') ? document.getElementById('user-year').value : currentYear.toString();
+            const groupNum = (currentUser.role === 'user') ? currentUser.group : '1';
+
+            const newEntry = {
+                id: 'rep_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                personId: 'p_' + Math.random().toString(36).substr(2, 6),
+                email: currentUser.email,
+                group: groupNum,
+                month: defaultMonth,
+                year: defaultYear,
+                name: '',
+                hours: '',
+                participated: true,
+                status: 'Возвещатель',
+                studies: '0',
+                notes: '',
+                dp: '0'
+            };
+
+            reportsData.push(newEntry);
+            saveReportsToStorage();
+            refreshCurrentView();
+        }
+
+        window.onStatusChange = function(selectEl, rowId) {
+            const newStatus = selectEl.value;
+            const entry = reportsData.find(r => r.id === rowId);
+            if (!entry) return;
+            entry.status = newStatus;
+            
+            // Toggle participation vs hours container
+            const tr = document.getElementById('row_' + rowId);
+            if (tr) {
+                const container = tr.querySelector('.participation-cell-content');
+                if (container) {
+                    if (newStatus === 'ПП' || newStatus === 'ОП') {
+                        container.innerHTML = `<input type="number" min="0" value="${entry.hours || ''}" placeholder="Часы" onchange="updateField('${rowId}', 'hours', this.value)" onkeydown="if(event.key==='Enter') saveRow('${rowId}')" class="w-20 px-2 py-1 text-xs border border-indigo-300 rounded focus:ring-2 focus:ring-indigo-500 font-bold text-indigo-700 bg-white"> <span class="text-[11px] text-slate-500">ч.</span>`;
+                    } else {
+                        container.innerHTML = `<label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" ${entry.participated ? 'checked' : ''} onchange="updateField('${rowId}', 'participated', this.checked)" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"><span class="text-xs text-slate-600">Участвовал</span></label>`;
+                    }
+                }
+            }
+        };
+
+        window.updateField = function(id, field, val) {
+            const entry = reportsData.find(r => r.id === id);
+            if (entry) {
+                entry[field] = val;
+            }
+        };
+
+        window.saveRow = function(id) {
+            const entry = reportsData.find(r => r.id === id);
+            if (!entry) return;
+            saveReportsToStorage();
+            
+            const tr = document.getElementById('row_' + id);
+            if (tr) {
+                tr.classList.add('row-saved');
+                setTimeout(() => tr.classList.remove('row-saved'), 1000);
+            }
+            refreshCurrentView();
+        };
+
+        window.saveAllModifiedRows = function() {
+            saveReportsToStorage();
+            alert("Все изменения успешно сохранены.");
+            refreshCurrentView();
+        };
+
+        function saveReportsToStorage() {
+            localStorage.setItem('reports_db', JSON.stringify(reportsData));
+            if (db) {
+                reportsData.forEach(entry => {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
+                    setDoc(docRef, entry, { merge: true }).catch(() => {});
+                });
+            }
+        }
+
+        window.promptDelete = function(id) {
+            itemToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        };
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            document.getElementById('delete-modal').classList.add('hidden');
+            itemToDeleteId = null;
+        });
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            if (itemToDeleteId) {
+                reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
+                localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                if (db) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', itemToDeleteId);
+                    deleteDoc(docRef).catch(() => {});
+                }
+                document.getElementById('delete-modal').classList.add('hidden');
+                itemToDeleteId = null;
+                refreshCurrentView();
+            }
+        });
+
+        window.openPublisherCard = function(personId) {
+            const publisherReports = reportsData.filter(r => r.personId === personId);
+            if (publisherReports.length === 0) return;
+            const sample = publisherReports[0];
+
+            document.getElementById('card-publisher-name').textContent = sample.name || 'Без имени';
+            document.getElementById('card-publisher-id').textContent = sample.personId;
+            document.getElementById('card-publisher-group').textContent = sample.group || '-';
+            document.getElementById('card-total-reports').textContent = publisherReports.length;
+
+            let totalH = 0;
+            let totalS = 0;
+            publisherReports.forEach(r => {
+                totalH += parseFloat(r.hours || 0);
+                totalS += parseInt(r.studies || 0);
+            });
+            document.getElementById('card-total-hours').textContent = totalH + ' ч.';
+            document.getElementById('card-total-studies').textContent = totalS;
+
+            const tbody = document.getElementById('card-history-tbody');
+            tbody.innerHTML = '';
+            publisherReports.sort((a, b) => (b.year + b.month).localeCompare(a.year + a.month)).forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2 font-mono font-medium">${r.month}.${r.year}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100">${r.status}</span></td>
+                    <td class="p-2">${r.status === 'ПП' || r.status === 'ОП' ? (r.hours || '0') + ' ч.' : (r.participated ? 'Да' : 'Нет')}</td>
+                    <td class="p-2">${r.studies || '0'}</td>
+                    <td class="p-2">${r.dp || '0'}</td>
+                    <td class="p-2 text-slate-500">${r.notes || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('publisher-card-modal').classList.remove('hidden');
+        };
+
+        document.getElementById('close-publisher-card').addEventListener('click', () => {
+            document.getElementById('publisher-card-modal').classList.add('hidden');
+        });
+
+        // Analytics calculation (irregular & inactive)
+        function calculatePublisherActivity(filteredReports, analysisYear) {
+            const publisherMap = {};
+            reportsData.forEach(r => {
+                const pid = r.personId || r.name;
+                if (!pid) return;
+                if (!publisherMap[pid]) {
+                    publisherMap[pid] = { name: r.name || 'Без имени', group: r.group, reports: [] };
+                }
+                publisherMap[pid].reports.push(r);
+            });
+
+            const irregular = [];
+            const inactive = [];
+
+            Object.values(publisherMap).forEach(p => {
+                // Check reports in analysisYear
+                const yearReports = p.reports.filter(r => r.year === analysisYear);
+                const reportMonths = new Set(yearReports.map(r => r.month));
+
+                // Last 6 months check or overall activity
+                const totalReportsCount = p.reports.length;
+                if (totalReportsCount === 0) {
+                    inactive.push(p);
+                } else {
+                    // If missed at least 1 month out of active check
+                    let missedMonths = 0;
+                    ['01','02','03','04','05','06','07','08','09','10','11','12'].forEach(m => {
+                        if (!reportMonths.has(m) && parseInt(m) <= new Date().getMonth() + 1) {
+                            missedMonths++;
+                        }
+                    });
+                    if (missedMonths >= 1 && missedMonths < 6) {
+                        irregular.push(p);
+                    } else if (missedMonths >= 6) {
+                        inactive.push(p);
                     }
                 }
             });
 
-            // Delete modal triggers
-            window.openDeleteModal = function(id) {
-                itemToDeleteId = id;
-                document.getElementById('delete-modal').classList.remove('hidden');
-            };
-            document.getElementById('cancel-delete-btn').addEventListener('click', () => {
-                document.getElementById('delete-modal').classList.add('hidden');
-                itemToDeleteId = null;
+            return { irregular, inactive };
+        }
+
+        function renderUserDashboard() {
+            const tbody = document.getElementById('user-table-body');
+            tbody.innerHTML = '';
+
+            const userGroup = currentUser.group;
+            const filtered = reportsData.filter(r => r.group === userGroup);
+
+            filtered.forEach((r, idx) => {
+                const tr = document.createElement('tr');
+                tr.id = 'row_' + r.id;
+                tr.className = "hover:bg-slate-50/80 transition";
+
+                const isPioneer = r.status === 'ПП' || r.status === 'ОП';
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-xs font-semibold text-slate-400">${idx + 1}</td>
+                    <td class="p-3">
+                        <select onchange="updateField('${r.id}', 'month', this.value); saveRow('${r.id}')" class="border border-slate-300 rounded px-2 py-1 text-xs bg-white font-medium">
+                            <option value="01" ${r.month === '01' ? 'selected' : ''}>Январь</option>
+                            <option value="02" ${r.month === '02' ? 'selected' : ''}>Февраль</option>
+                            <option value="03" ${r.month === '03' ? 'selected' : ''}>Март</option>
+                            <option value="04" ${r.month === '04' ? 'selected' : ''}>Апрель</option>
+                            <option value="05" ${r.month === '05' ? 'selected' : ''}>Май</option>
+                            <option value="06" ${r.month === '06' ? 'selected' : ''}>Июнь</option>
+                            <option value="07" ${r.month === '07' ? 'selected' : ''}>Июль</option>
+                            <option value="08" ${r.month === '08' ? 'selected' : ''}>Август</option>
+                            <option value="09" ${r.month === '09' ? 'selected' : ''}>Сентябрь</option>
+                            <option value="10" ${r.month === '10' ? 'selected' : ''}>Октябрь</option>
+                            <option value="11" ${r.month === '11' ? 'selected' : ''}>Ноябрь</option>
+                            <option value="12" ${r.month === '12' ? 'selected' : ''}>Декабрь</option>
+                        </select>
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.year || currentYear}" onchange="updateField('${r.id}', 'year', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-16 px-2 py-1 text-xs border border-slate-300 rounded text-center font-bold">
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.group || '1'}" onchange="updateField('${r.id}', 'group', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-12 px-2 py-1 text-xs border border-slate-300 rounded text-center font-bold">
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.name || ''}" placeholder="ФИО сокр." onchange="updateField('${r.id}', 'name', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-full px-2.5 py-1 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 font-medium">
+                    </td>
+                    <td class="p-3">
+                        <select onchange="onStatusChange(this, '${r.id}'); saveRow('${r.id}')" class="border border-slate-300 rounded px-2 py-1 text-xs bg-white">
+                            <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
+                            <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещ. возвещ.</option>
+                            <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
+                            <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>ОП (Спец. пионер)</option>
+                        </select>
+                    </td>
+                    <td class="p-3 participation-cell-content">
+                        ${isPioneer ? `
+                            <input type="number" min="0" value="${r.hours || ''}" placeholder="Часы" onchange="updateField('${r.id}', 'hours', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-20 px-2 py-1 text-xs border border-indigo-300 rounded focus:ring-2 focus:ring-indigo-500 font-bold text-indigo-700 bg-white"> <span class="text-[11px] text-slate-500">ч.</span>
+                        ` : `
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" ${r.participated ? 'checked' : ''} onchange="updateField('${r.id}', 'participated', this.checked); saveRow('${r.id}')" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                <span class="text-xs text-slate-600">Участвовал</span>
+                            </label>
+                        `}
+                    </td>
+                    <td class="p-3">
+                        <input type="number" min="0" value="${r.studies || '0'}" onchange="updateField('${r.id}', 'studies', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-16 px-2.5 py-1 text-xs border border-slate-300 rounded text-center font-bold text-emerald-700">
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.notes || ''}" placeholder="Примечания..." onchange="updateField('${r.id}', 'notes', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-full px-2.5 py-1 text-xs border border-slate-300 rounded">
+                    </td>
+                    <td class="p-3">
+                        <input type="number" min="0" value="${r.dp || '0'}" onchange="updateField('${r.id}', 'dp', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-16 px-2.5 py-1 text-xs border border-slate-300 rounded text-center font-bold text-amber-700">
+                    </td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="openPublisherCard('${r.personId}')" class="p-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded transition" title="Карточка"><i class="fa-solid fa-address-card text-xs"></i></button>
+                        <button onclick="saveRow('${r.id}')" class="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded transition" title="Сохранить"><i class="fa-solid fa-floppy-disk text-xs"></i></button>
+                        <button onclick="promptDelete('${r.id}')" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded transition" title="Удалить"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
-            document.getElementById('confirm-delete-btn').addEventListener('click', () => {
-                if (itemToDeleteId) {
-                    reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
-                    persistReports();
-                    document.getElementById('delete-modal').classList.add('hidden');
-                    itemToDeleteId = null;
+
+            // Update Analytics Cards
+            const analysisYear = document.getElementById('analysis-year-admin') ? document.getElementById('analysis-year-admin').value : currentYear.toString();
+            const { irregular, inactive } = calculatePublisherActivity(filtered, analysisYear);
+
+            document.getElementById('user-count-irregular').textContent = irregular.length;
+            const listIrreg = document.getElementById('user-list-irregular');
+            listIrreg.innerHTML = irregular.length ? irregular.map(p => `<div>• ${p.name} (Гр. ${p.group})</div>`).join('') : '<span class="text-amber-600 italic">Нет нерегулярных возвещателей</span>';
+
+            document.getElementById('user-count-inactive').textContent = inactive.length;
+            const listInact = document.getElementById('user-list-inactive');
+            listInact.innerHTML = inactive.length ? inactive.map(p => `<div>• ${p.name} (Гр. ${p.group})</div>`).join('') : '<span class="text-rose-600 italic">Нет неактивных возвещателей</span>';
+        }
+
+        function renderAdminDashboard() {
+            const mFilter = document.getElementById('admin-month').value;
+            const yFilter = document.getElementById('admin-year').value;
+            const gFilter = document.getElementById('admin-group-filter').value;
+            const sFilter = document.getElementById('admin-status-filter').value;
+
+            // Populate group filters
+            const groupsSet = new Set(reportsData.map(r => r.group).filter(Boolean));
+            const groupSelect = document.getElementById('admin-group-filter');
+            const curGVal = groupSelect.value;
+            groupSelect.innerHTML = '<option value="all">Все группы</option>';
+            Array.from(groupsSet).sort().forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = `Группа №${g}`;
+                if (opt.value === curGVal) opt.selected = true;
+                groupSelect.appendChild(opt);
+            });
+
+            const filtered = reportsData.filter(r => {
+                if (mFilter !== 'all' && r.month !== mFilter) return false;
+                if (yFilter && r.year !== yFilter) return false;
+                if (gFilter !== 'all' && r.group !== gFilter) return false;
+                if (sFilter !== 'all' && r.status !== sFilter) return false;
+                return true;
+            });
+
+            // Stats calculation
+            let totalHours = 0;
+            let totalStudies = 0;
+            let totalDp = 0;
+
+            filtered.forEach(r => {
+                if (r.status === 'ПП' || r.status === 'ОП') {
+                    totalHours += parseFloat(r.hours || 0);
                 }
+                totalStudies += parseInt(r.studies || 0);
+                totalDp += parseFloat(r.dp || 0);
             });
+
+            document.getElementById('stat-total').textContent = filtered.length;
+            document.getElementById('stat-hours').textContent = totalHours + ' ч.';
+            document.getElementById('stat-studies').textContent = totalStudies;
+            document.getElementById('stat-dp').textContent = totalDp;
+
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            filtered.forEach((r, idx) => {
+                const tr = document.createElement('tr');
+                tr.id = 'row_' + r.id;
+                tr.className = "hover:bg-slate-50/80 transition";
+                const isPioneer = r.status === 'ПП' || r.status === 'ОП';
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-xs font-semibold text-slate-400">${idx + 1}</td>
+                    <td class="p-3">
+                        <input type="text" value="${r.group || '1'}" onchange="updateField('${r.id}', 'group', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-12 px-2 py-1 text-xs border border-slate-300 rounded text-center font-bold">
+                    </td>
+                    <td class="p-3">
+                        <select onchange="updateField('${r.id}', 'month', this.value); saveRow('${r.id}')" class="border border-slate-300 rounded px-2 py-1 text-xs bg-white font-medium">
+                            <option value="01" ${r.month === '01' ? 'selected' : ''}>Январь</option>
+                            <option value="02" ${r.month === '02' ? 'selected' : ''}>Февраль</option>
+                            <option value="03" ${r.month === '03' ? 'selected' : ''}>Март</option>
+                            <option value="04" ${r.month === '04' ? 'selected' : ''}>Апрель</option>
+                            <option value="05" ${r.month === '05' ? 'selected' : ''}>Май</option>
+                            <option value="06" ${r.month === '06' ? 'selected' : ''}>Июнь</option>
+                            <option value="07" ${r.month === '07' ? 'selected' : ''}>Июль</option>
+                            <option value="08" ${r.month === '08' ? 'selected' : ''}>Август</option>
+                            <option value="09" ${r.month === '09' ? 'selected' : ''}>Сентябрь</option>
+                            <option value="10" ${r.month === '10' ? 'selected' : ''}>Октябрь</option>
+                            <option value="11" ${r.month === '11' ? 'selected' : ''}>Ноябрь</option>
+                            <option value="12" ${r.month === '12' ? 'selected' : ''}>Декабрь</option>
+                        </select>
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.year || currentYear}" onchange="updateField('${r.id}', 'year', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-16 px-2 py-1 text-xs border border-slate-300 rounded text-center font-bold">
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.name || ''}" placeholder="ФИО сокр." onchange="updateField('${r.id}', 'name', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-full px-2.5 py-1 text-xs border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 font-medium">
+                    </td>
+                    <td class="p-3">
+                        <select onchange="onStatusChange(this, '${r.id}'); saveRow('${r.id}')" class="border border-slate-300 rounded px-2 py-1 text-xs bg-white">
+                            <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
+                            <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещ. возвещ.</option>
+                            <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
+                            <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>ОП (Спец. пионер)</option>
+                        </select>
+                    </td>
+                    <td class="p-3 participation-cell-content">
+                        ${isPioneer ? `
+                            <input type="number" min="0" value="${r.hours || ''}" placeholder="Часы" onchange="updateField('${r.id}', 'hours', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-20 px-2 py-1 text-xs border border-indigo-300 rounded focus:ring-2 focus:ring-indigo-500 font-bold text-indigo-700 bg-white"> <span class="text-[11px] text-slate-500">ч.</span>
+                        ` : `
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" ${r.participated ? 'checked' : ''} onchange="updateField('${r.id}', 'participated', this.checked); saveRow('${r.id}')" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                <span class="text-xs text-slate-600">Участвовал</span>
+                            </label>
+                        `}
+                    </td>
+                    <td class="p-3">
+                        <input type="number" min="0" value="${r.studies || '0'}" onchange="updateField('${r.id}', 'studies', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-16 px-2.5 py-1 text-xs border border-slate-300 rounded text-center font-bold text-emerald-700">
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.notes || ''}" placeholder="Примечания..." onchange="updateField('${r.id}', 'notes', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-full px-2.5 py-1 text-xs border border-slate-300 rounded">
+                    </td>
+                    <td class="p-3">
+                        <input type="number" min="0" value="${r.dp || '0'}" onchange="updateField('${r.id}', 'dp', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-16 px-2.5 py-1 text-xs border border-slate-300 rounded text-center font-bold text-amber-700">
+                    </td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="openPublisherCard('${r.personId}')" class="p-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded transition" title="Карточка"><i class="fa-solid fa-address-card text-xs"></i></button>
+                        <button onclick="saveRow('${r.id}')" class="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded transition" title="Сохранить"><i class="fa-solid fa-floppy-disk text-xs"></i></button>
+                        <button onclick="promptDelete('${r.id}')" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded transition" title="Удалить"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Global Analytics
+            const analysisYear = document.getElementById('analysis-year-admin').value;
+            const { irregular, inactive } = calculatePublisherActivity(filtered, analysisYear);
+
+            document.getElementById('count-irregular').textContent = irregular.length;
+            const listIrreg = document.getElementById('list-irregular');
+            listIrreg.innerHTML = irregular.length ? irregular.map(p => `<div>• ${p.name} (Гр. ${p.group})</div>`).join('') : '<span class="text-amber-600 italic">Нет нерегулярных возвещателей</span>';
+
+            document.getElementById('count-inactive').textContent = inactive.length;
+            const listInact = document.getElementById('list-inactive');
+            listInact.innerHTML = inactive.length ? inactive.map(p => `<div>• ${p.name} (Гр. ${p.group})</div>`).join('') : '<span class="text-rose-600 italic">Нет неактивных возвещателей</span>';
+        }
+
+        // Superadmin Accounts Modal Setup
+        function setupSuperAdminModal() {
+            const btn = document.getElementById('open-users-modal-btn');
+            btn.addEventListener('click', () => {
+                renderSuperAdminUsersTable();
+                document.getElementById('superadmin-modal').classList.remove('hidden');
+            });
+
+            document.getElementById('close-superadmin-modal').addEventListener('click', () => {
+                document.getElementById('superadmin-modal').classList.add('hidden');
+            });
+        }
+
+        function renderSuperAdminUsersTable() {
+            const tbody = document.getElementById('superadmin-users-table');
+            tbody.innerHTML = '';
+
+            const savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+
+            savedUsers.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-purple-50/50";
+                tr.innerHTML = `
+                    <td class="p-3 font-medium text-slate-800">${u.email}</td>
+                    <td class="p-3">
+                        <input type="number" min="1" value="${u.group || '1'}" onchange="updateUserAccountGroup('${u.email}', this.value)" class="w-16 px-2 py-1 border border-slate-300 rounded text-xs font-bold text-center">
+                    </td>
+                    <td class="p-3">
+                        <select onchange="updateUserAccountRole('${u.email}', this.value)" class="border border-slate-300 rounded px-2 py-1 text-xs bg-white font-semibold">
+                            <option value="user" ${u.role === 'user' ? 'selected' : ''}>Пользователь</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Администратор</option>
+                            <option value="superadmin" ${u.role === 'superadmin' ? 'selected' : ''}>Главный Админ</option>
+                        </select>
+                    </td>
+                    <td class="p-3 text-center">
+                        ${u.role !== 'superadmin' ? `
+                            <button onclick="promptTransferAdmin('${u.email}')" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-[11px] font-semibold shadow-sm transition">Передать главные права</button>
+                        ` : `<span class="text-[11px] text-purple-700 font-bold uppercase tracking-wider">Текущий Главный</span>`}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.updateUserAccountGroup = function(email, newGroup) {
+            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+            savedUsers = savedUsers.map(u => u.email === email ? { ...u, group: newGroup } : u);
+            localStorage.setItem('users_db', JSON.stringify(savedUsers));
+            if (db) {
+                const found = savedUsers.find(u => u.email === email);
+                if (found) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', email.replace(/[@.]/g, '_'));
+                    setDoc(docRef, found, { merge: true }).catch(() => {});
+                }
+            }
+        };
+
+        window.updateUserAccountRole = function(email, newRole) {
+            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+            savedUsers = savedUsers.map(u => u.email === email ? { ...u, role: newRole } : u);
+            localStorage.setItem('users_db', JSON.stringify(savedUsers));
+            if (db) {
+                const found = savedUsers.find(u => u.email === email);
+                if (found) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', email.replace(/[@.]/g, '_'));
+                    setDoc(docRef, found, { merge: true }).catch(() => {});
+                }
+            }
+        };
+
+        window.promptTransferAdmin = function(email) {
+            pendingTransferEmail = email;
+            document.getElementById('transfer-target-email').textContent = email;
+            document.getElementById('transfer-modal').classList.remove('hidden');
+        };
+
+        document.getElementById('cancel-transfer-btn').addEventListener('click', () => {
+            document.getElementById('transfer-modal').classList.add('hidden');
+            pendingTransferEmail = null;
+        });
+
+        document.getElementById('confirm-transfer-btn').addEventListener('click', () => {
+            if (pendingTransferEmail) {
+                let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+                savedUsers = savedUsers.map(u => {
+                    if (u.email === pendingTransferEmail) return { ...u, role: 'superadmin' };
+                    if (u.email === currentUser.email) return { ...u, role: 'admin' };
+                    return u;
+                });
+                localStorage.setItem('users_db', JSON.stringify(savedUsers));
+                
+                currentUser.role = 'admin';
+                document.getElementById('transfer-modal').classList.add('hidden');
+                document.getElementById('superadmin-modal').classList.add('hidden');
+                alert("Права Главного Администратора успешно переданы. Вы переведены в режим Администратора.");
+                enterDashboard();
+            }
         });
     </script>
 </body>
