@@ -174,7 +174,7 @@
 
         <!-- User Dashboard View -->
         <main id="user-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-            <!-- Filter Bar with Save & Add Row buttons -->
+            <!-- Filter Bar with Add Row button -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div>
@@ -203,9 +203,6 @@
                 </div>
                 
                 <div class="flex items-center space-x-3">
-                    <button id="manual-save-user-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить
-                    </button>
                     <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-plus mr-2"></i> Добавить строку
                     </button>
@@ -257,9 +254,15 @@
 
             <!-- User Report Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <!-- Карточка таблицы с кнопкой «Сохранить все записи» над подзаголовками -->
+                <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Мои отчеты за выбранный период</h2>
-                    <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold border border-indigo-200">Группа №<span id="user-group-display"></span></span>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="saveAllModifiedRows()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все записи
+                        </button>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold border border-indigo-200">Группа №<span id="user-group-display"></span></span>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
@@ -331,9 +334,6 @@
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <button id="manual-save-admin-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить
-                    </button>
                     <button id="admin-add-entry" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-user-plus mr-2"></i> Внести запись
                     </button>
@@ -408,8 +408,12 @@
 
             <!-- Consolidated Database Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <!-- Шапка админской таблицы с кнопкой «Сохранить все записи» над подзаголовками -->
+                <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Сводная база данных отчетов (Все группы)</h2>
+                    <button onclick="saveAllModifiedRows()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все записи
+                    </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
@@ -996,22 +1000,6 @@
         }
 
         function setupEventListeners() {
-            // Manual Save Buttons Handlers
-            const triggerManualSave = () => {
-                if (document.activeElement && typeof document.activeElement.blur === 'function') {
-                    document.activeElement.blur();
-                }
-                saveToStorage();
-                refreshCurrentView();
-                showSaveNotification('Данные и анализ обновлены!');
-            };
-
-            const userSaveBtn = document.getElementById('manual-save-user-btn');
-            if (userSaveBtn) userSaveBtn.addEventListener('click', triggerManualSave);
-
-            const adminSaveBtn = document.getElementById('manual-save-admin-btn');
-            if (adminSaveBtn) adminSaveBtn.addEventListener('click', triggerManualSave);
-
             // Auth Tab Switcher
             const loginTab = document.getElementById('tab-login-btn');
             const regTab = document.getElementById('tab-register-btn');
@@ -1344,6 +1332,7 @@
             }
         };
 
+        // Сохранение конкретной строки (вызывается автоматически при пакетном сохранении или отдельно)
         window.saveRow = function(id) {
             const tr = document.querySelector(`tr[data-row-id="${id}"]`);
             const entry = reportsData.find(item => item.id === id);
@@ -1391,16 +1380,32 @@
                     saveBtn.classList.add('hidden');
                     saveBtn.classList.remove('inline-flex', 'items-center', 'justify-center', 'animate-pulse');
                 }
-
-                if (document.activeElement && tr.contains(document.activeElement)) {
-                    document.activeElement.blur();
-                }
-
-                saveToStorage(entry);
-                populateAdminGroupFilter();
-                refreshCurrentView();
-                showSaveNotification('Запись сохранена!');
             }
+        };
+
+        // Глобальная функция для кнопки «Сохранить все записи» (сохраняет сразу все видимые строки таблицы)
+        window.saveAllModifiedRows = function() {
+            if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+            }
+
+            const rows = document.querySelectorAll('tr[data-row-id]');
+            if (rows.length === 0) {
+                showSaveNotification('Нет записей для сохранения');
+                return;
+            }
+
+            rows.forEach(tr => {
+                const id = tr.getAttribute('data-row-id');
+                if (id) {
+                    window.saveRow(id);
+                }
+            });
+
+            saveToStorage();
+            populateAdminGroupFilter();
+            refreshCurrentView();
+            showSaveNotification('Все записи успешно сохранены!');
         };
 
         function renderUserDashboard() {
@@ -1492,7 +1497,7 @@
                                 class="input-dp w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
                         </td>
                         <td class="p-2 text-center space-x-1">
-                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}')" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
+                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}'); saveToStorage(); refreshCurrentView(); showSaveNotification('Запись сохранена!');" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
                                 <i class="fa-solid fa-check"></i>
                             </button>
                             <button onclick="openPublisherCard('${entry.personId}')" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50" title="Карточка возвещателя">
@@ -1629,7 +1634,7 @@
                                 class="input-dp w-16 px-2 py-1 border border-slate-200 rounded text-sm">
                         </td>
                         <td class="p-2 text-center space-x-1">
-                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}')" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
+                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}'); saveToStorage(); refreshCurrentView(); showSaveNotification('Запись сохранена!');" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
                                 <i class="fa-solid fa-check"></i>
                             </button>
                             <button onclick="openPublisherCard('${entry.personId}')" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50" title="Карточка возвещателя">
