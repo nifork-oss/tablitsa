@@ -720,51 +720,6 @@
             setDoc(docRef, userObj, { merge: true }).catch(console.error);
         }
 
-                    isCloudConnected = true;
-                    updateCloudUIStatus('connected', 'Облако подключено');
-                    subscribeToReports();
-                } catch (err) {
-                    console.warn('Firebase initialization failed:', err);
-                    let errDetail = 'Ошибка сети или конфигурации';
-                    if (err.code === 'auth/operation-not-allowed') {
-                        errDetail = 'Включите Анонимный вход в Firebase Console!';
-                    } else if (err.message) {
-                        errDetail = err.message;
-                    }
-                    updateCloudUIStatus('error', 'Ошибка облака', errDetail);
-                }
-            } else {
-                updateCloudUIStatus('offline', 'Автономный режим');
-            }
-        }
-
-        function subscribeToReports() {
-            if (!db) return;
-            const reportsRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
-
-            onSnapshot(reportsRef, (snapshot) => {
-                const cloudItems = [];
-                snapshot.forEach(docSnap => {
-                    cloudItems.push({ id: docSnap.id, ...docSnap.data() });
-                });
-
-                if (cloudItems.length > 0) {
-                    reportsData = cloudItems;
-                    localStorage.setItem('reports_db', JSON.stringify(reportsData));
-                    refreshCurrentView();
-                }
-            }, (error) => {
-                console.error('Firestore listener error:', error);
-                let errDetail = 'Ошибка доступа Firestore';
-                if (error.code === 'permission-denied') {
-                    errDetail = 'Проверьте Правила Доступа (Rules) в Firestore Database!';
-                } else if (error.message) {
-                    errDetail = error.message;
-                }
-                updateCloudUIStatus('error', 'Ошибка подписки', errDetail);
-            });
-        }
-
         function updateCloudUIStatus(status, text, detailMessage = '') {
             const dot = document.getElementById('cloud-status-dot');
             const statusText = document.getElementById('cloud-status-text');
@@ -806,11 +761,22 @@
             // Load Users DB
             const savedUsers = localStorage.getItem('app_users_db');
             if (savedUsers) {
-                usersData = JSON.parse(savedUsers);
+                try {
+                    usersData = JSON.parse(savedUsers);
+                } catch(e) {
+                    usersData = [...initialUsers];
+                }
             } else {
                 usersData = [...initialUsers];
                 localStorage.setItem('app_users_db', JSON.stringify(usersData));
             }
+
+            // Гарантируем наличие тестовых аккаунтов в списке
+            initialUsers.forEach(initU => {
+                if (!usersData.some(u => u.email.toLowerCase() === initU.email.toLowerCase())) {
+                    usersData.push(initU);
+                }
+            });
 
             // Load Reports DB
             const savedReports = localStorage.getItem('reports_db');
