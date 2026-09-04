@@ -59,18 +59,23 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        По умолчанию система использует локальное хранилище браузера. Укажите конфигурацию <strong>Firebase</strong> для синхронизации в реальном времени.
+                        По умолчанию система использует локальное хранилище браузера. Укажите конфигурацию <strong>Firebase</strong> для синхронизации в реальном времени. Можно вставлять весь JS-код с `const firebaseConfig = ...`.
                     </p>
+                    
+                    <div id="firebase-requirements-info" class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[11px] text-amber-800 space-y-1">
+                        <div class="font-bold flex items-center"><i class="fa-solid fa-circle-info mr-1.5"></i> Внимание! В консоли Firebase необходимо включить:</div>
+                        <div>1. <strong>Authentication:</strong> Вкладка <i>Sign-in method</i> &rarr; активируйте <b>Анонимный (Anonymous)</b> вход.</div>
+                        <div>2. <strong>Firestore Database:</strong> Создайте базу данных и проверьте вкладку <i>Rules (Правила)</i>.</div>
+                    </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Конфигурация Firebase (JSON или JS объект)</label>
-                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='{
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Конфигурация Firebase (JS или JSON)</label>
+                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = {
   apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
   authDomain: "tablitsa-40cf4.firebaseapp.com",
   projectId: "tablitsa-40cf4",
-  storageBucket: "tablitsa-40cf4.firebasestorage.app",
-  messagingSenderId: "785699516187",
-  appId: "1:785699516187:web:727bf55a5df125fc43edbe"
-}'></textarea>
+  ...
+};'></textarea>
                     </div>
                     <div id="cloud-modal-msg" class="text-xs p-2.5 rounded-lg hidden"></div>
                     <div class="flex space-x-2 pt-2">
@@ -503,16 +508,164 @@
             measurementId: "G-SRZ42R8TNM"
         };
 
-        // Flexible parser to support both valid JSON and JS object syntax paste
-        function parseFlexibleJson(inputStr) {
+        // Smart parser to extract firebaseConfig object from full JS code snippets or raw JSON
+        function extractFirebaseConfig(inputStr) {
+            if (!inputStr) return null;
+            let cleanStr = inputStr.trim();
+            
+            // Extract `{ ... }` block containing `apiKey` if user pasted full JS code snippet
+            if (cleanStr.includes('apiKey')) {
+                const apiKeyIdx = cleanStr.indexOf('apiKey');
+                const openBraceIdx = cleanStr.lastIndexOf('{', apiKeyIdx);
+                if (openBraceIdx !== -1) {
+                    let closeBraceIdx = -1;
+                    let depth = 0;
+                    for (let i = openBraceIdx; i < cleanStr.length; i++) {
+                        if (cleanStr[i] === '{') depth++;
+                        else if (cleanStr[i] === '}') {
+                            depth--;
+                            if (depth === 0) {
+                                closeBraceIdx = i;
+                                break;
+                            }
+                        }
+                    }
+                    if (closeBraceIdx !== -1) {
+                        cleanStr = cleanStr.substring(openBraceIdx, closeBraceIdx + 1);
+                    }
+                }
+            }
+
             try {
-                return JSON.parse(inputStr);
+                return JSON.parse(cleanStr);
             } catch (e) {
-                const formatted = inputStr
-                    .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Quote keys
-                    .replace(/'/g, '"') // Normalize single quotes
-                    .replace(/,\s*([}\]])/g, '$1'); // Remove trailing commas
-                return JSON.parse(formatted);
+                try {
+                    const formatted = cleanStr
+                        .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '') // remove comments
+                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Quote keys
+                        .replace(/'/g, '"') // Normalize single quotes
+                        .replace(/,\s*([}\]])/g, '$1'); // Remove trailing commas
+                    return JSON.parse(formatted);
+                } catch (err) {
+                    console.error("Config parse error:", err);
+                    return null;
+                }
+            }
+        }
+
+        // Predefined initial users list
+        const initialUsers = [
+            { email: 'superadmin@system.com', password: 'admin', group: '1', role: 'superadmin' },
+            { email: 'admin@system.com', password: '123', group: '1', role: 'admin' },
+            { email: 'user1@test.com', password: '123', group: '1', role: 'user' },
+            { email: 'user2@test.com', password: '123', group: '2', role: 'user' }
+        ];
+
+        // Default mock reports data with publisher IDs (personId)
+        const initialMockData = [
+            { id: '1', personId: 'p1', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Иванов И.', hours: '', participated: true, status: 'Возвещатель', studies: '1', notes: 'Участвовал', dp: '0' },
+            { id: '2', personId: 'p2', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Петрова А.', hours: '50', participated: true, status: 'ПП', studies: '4', notes: 'Отличный месяц', dp: '2' },
+            { id: '3', personId: 'p3', email: 'user2@test.com', group: '2', month: '09', year: currentYear.toString(), name: 'Сидоров В.', hours: '30', participated: true, status: 'ОП', studies: '2', notes: '', dp: '0' },
+            { id: '4', personId: 'p4', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Кузнецов С.', hours: '', participated: true, status: 'Некрещеный возвещатель', studies: '0', notes: '', dp: '0' }
+        ];
+
+        async function initCloud() {
+            let firebaseConfig = null;
+
+            const customConfigStr = localStorage.getItem('custom_firebase_config');
+            if (customConfigStr) {
+                firebaseConfig = extractFirebaseConfig(customConfigStr);
+            }
+
+            if (!firebaseConfig && typeof __firebase_config !== 'undefined') {
+                try { firebaseConfig = JSON.parse(__firebase_config); } catch (e) { console.error('Environment Firebase config error:', e); }
+            }
+
+            // Fallback to project default config
+            if (!firebaseConfig) {
+                firebaseConfig = DEFAULT_FIREBASE_CONFIG;
+            }
+
+            if (firebaseConfig && firebaseConfig.apiKey) {
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    isCloudConnected = true;
+                    updateCloudUIStatus('connected', 'Облако подключено');
+                    subscribeToReports();
+                } catch (err) {
+                    console.warn('Firebase initialization failed:', err);
+                    let errDetail = 'Ошибка сети или конфигурации';
+                    if (err.code === 'auth/operation-not-allowed') {
+                        errDetail = 'Включите Анонимный вход в Firebase Console (Authentication -> Sign-in method)!';
+                    } else if (err.message) {
+                        errDetail = err.message;
+                    }
+                    updateCloudUIStatus('error', 'Ошибка облака', errDetail);
+                }
+            } else {
+                updateCloudUIStatus('offline', 'Автономный режим');
+            }
+        }
+
+        function subscribeToReports() {
+            if (!db) return;
+            const reportsRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
+
+            onSnapshot(reportsRef, (snapshot) => {
+                const cloudItems = [];
+                snapshot.forEach(docSnap => {
+                    cloudItems.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                if (cloudItems.length > 0) {
+                    reportsData = cloudItems;
+                    localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                    refreshCurrentView();
+                }
+            }, (error) => {
+                console.error('Firestore listener error:', error);
+                let errDetail = 'Ошибка доступа Firestore';
+                if (error.code === 'permission-denied') {
+                    errDetail = 'Проверьте Правила Доступа (Rules) в Firestore Database!';
+                } else if (error.message) {
+                    errDetail = error.message;
+                }
+                updateCloudUIStatus('error', 'Ошибка подписки', errDetail);
+            });
+        }
+
+        function updateCloudUIStatus(status, text, detailMessage = '') {
+            const dot = document.getElementById('cloud-status-dot');
+            const statusText = document.getElementById('cloud-status-text');
+            const cloudBtn = document.getElementById('cloud-config-btn');
+
+            if (status === 'connected') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+                statusText.innerText = text || "Облако подключено";
+                cloudBtn.title = "Облако активно";
+            } else if (status === 'error') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse";
+                statusText.innerText = text || "Ошибка связи";
+                cloudBtn.title = detailMessage || "Ошибка подключения к Firebase";
+                
+                const msg = document.getElementById('cloud-modal-msg');
+                if (msg && detailMessage) {
+                    msg.className = "text-xs p-2.5 rounded-lg bg-rose-100 text-rose-800 block font-medium";
+                    msg.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> <strong>Ошибка:</strong> ${detailMessage}`;
+                }
+            } else {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400";
+                statusText.innerText = text || "Автономно";
+                cloudBtn.title = "Автономный режим";
             }
         }
 
