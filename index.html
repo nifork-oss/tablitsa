@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учет Отчетов Возвещателей — Облачная система</title>
+    <title>Учет Отчетов Возвещателей — JSONBin / Custom REST API</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons CDN -->
@@ -28,15 +28,15 @@
                     <i class="fa-solid fa-clipboard-list text-2xl text-indigo-200"></i>
                     <div>
                         <h1 class="text-lg font-bold tracking-wide leading-tight">Система Отчетов</h1>
-                        <p class="text-[10px] text-indigo-200 uppercase tracking-widest font-medium">Сводный учет возвещателей</p>
+                        <p class="text-[10px] text-indigo-200 uppercase tracking-widest font-medium">JSONBin.io / REST API</p>
                     </div>
                 </div>
 
                 <!-- Cloud Status Indicator & Navigation -->
                 <div class="flex items-center space-x-3">
-                    <button id="cloud-config-btn" class="flex items-center space-x-1.5 bg-indigo-800/80 hover:bg-indigo-800 px-3 py-1.5 rounded-lg text-xs transition border border-indigo-500/30" title="Настройки облака">
-                        <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span id="cloud-status-text" class="hidden sm:inline text-indigo-100 font-medium">Подключение...</span>
+                    <button id="cloud-config-btn" class="flex items-center space-x-1.5 bg-indigo-800/80 hover:bg-indigo-800 px-3 py-1.5 rounded-lg text-xs transition border border-indigo-500/30" title="Настройки API">
+                        <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                        <span id="cloud-status-text" class="hidden sm:inline text-indigo-100 font-medium">Автономно</span>
                         <i class="fa-solid fa-gear text-indigo-300 ml-1 text-[11px]"></i>
                     </button>
 
@@ -54,41 +54,35 @@
             </div>
         </header>
 
-        <!-- Cloud Settings Modal -->
+        <!-- Cloud Settings Modal (JSONBin / REST API) -->
         <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
                 <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
                     <h3 class="font-bold text-base flex items-center">
-                        <i class="fa-solid fa-cloud text-indigo-200 mr-2"></i> Настройка Облачного Сервера (Firebase)
+                        <i class="fa-solid fa-cloud text-indigo-200 mr-2"></i> Настройка JSONBin.io / REST API
                     </h3>
                     <button id="close-cloud-modal" class="text-indigo-200 hover:text-white text-lg">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <div class="p-6 space-y-4">
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        По умолчанию система использует подключение к <strong>Firebase Firestore</strong> для синхронизации отчетов в реальном времени. Можно вставлять весь JS-код с <code>const firebaseConfig = ...</code>.
+                <div class="p-6 space-y-4 text-xs">
+                    <p class="text-slate-600 leading-relaxed">
+                        Укажите параметры подключения к <strong>JSONBin.io</strong> или вашему собственному REST API серверу.
                     </p>
-                    <div id="firebase-requirements-info" class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[11px] text-amber-800 space-y-1">
-                        <div class="font-bold flex items-center"><i class="fa-solid fa-circle-info mr-1.5"></i> Требования Firebase:</div>
-                        <div>1. <strong>Authentication:</strong> Включите <i>Anonymous (Анонимный)</i> вход.</div>
-                        <div>2. <strong>Firestore Database:</strong> Создайте базу данных и проверьте вкладку <i>Rules (Правила)</i>.</div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 uppercase mb-1">API Endpoint / Base URL</label>
+                        <input type="text" id="api-url-input" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono focus:ring-2 focus:ring-indigo-500" placeholder="https://api.jsonbin.io/v3/b/ВАШ_BIN_ID">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Конфигурация Firebase (JS или JSON)</label>
-                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = {
-  apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
-  authDomain: "tablitsa-40cf4.firebaseapp.com",
-  projectId: "tablitsa-40cf4",
-  ...
-};'></textarea>
+                        <label class="block font-semibold text-slate-700 uppercase mb-1">Master Key / Access Key ($2a$10...)</label>
+                        <input type="password" id="api-key-input" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono focus:ring-2 focus:ring-indigo-500" placeholder="$2a$10$...">
                     </div>
-                    <div id="cloud-modal-msg" class="text-xs p-2.5 rounded-lg hidden"></div>
+                    <div id="cloud-modal-msg" class="p-2.5 rounded-lg hidden"></div>
                     <div class="flex space-x-2 pt-2">
-                        <button id="save-firebase-config" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-xs transition shadow-sm">
+                        <button id="save-api-config" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition shadow-sm">
                             Сохранить и Подключить
                         </button>
-                        <button id="reset-firebase-config" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition">
+                        <button id="reset-api-config" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg transition">
                             Сбросить
                         </button>
                     </div>
@@ -142,14 +136,6 @@
                                 <span class="font-medium">user1@test.com</span>
                                 <span class="text-[10px] bg-slate-300 px-1.5 py-0.5 rounded font-bold">Пользователь (Гр. 1)</span>
                             </button>
-                            <button type="button" onclick="quickFill('user2@test.com', '123')" class="flex justify-between items-center px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg transition border border-slate-200">
-                                <span class="font-medium">user2@test.com</span>
-                                <span class="text-[10px] bg-slate-300 px-1.5 py-0.5 rounded font-bold">Пользователь (Гр. 2)</span>
-                            </button>
-                            <button type="button" onclick="quickFill('user3@test.com', '123')" class="flex justify-between items-center px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg transition border border-slate-200">
-                                <span class="font-medium">user3@test.com</span>
-                                <span class="text-[10px] bg-slate-300 px-1.5 py-0.5 rounded font-bold">Пользователь (Гр. 3)</span>
-                            </button>
                         </div>
                     </div>
                 </form>
@@ -196,7 +182,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm" title="Загрузить тестовые 3 группы × 5 возвещателей">
+                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-rotate-right mr-1.5"></i> Загрузить 15 Возвещателей
                     </button>
                     <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
@@ -299,7 +285,7 @@
                     </div>
                 </div>
                 <div>
-                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm" title="Загрузить тестовые 3 группы × 5 возвещателей">
+                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-rotate-right mr-1.5"></i> Сбросить тест-данные (15 Возв.)
                     </button>
                 </div>
@@ -313,7 +299,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-slate-800 text-base">Анализ служения возвещателей (Все группы)</h3>
-                        <p class="text-xs text-slate-500">Автоматический расчет активности и регулярности отчетов за выбранный год</p>
+                        <p class="text-xs text-slate-500">Автоматический расчет активности и регулярности отчетов</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 text-xs">
@@ -437,115 +423,27 @@
     <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-    <!-- Generic Confirmation Modal -->
-    <div id="confirm-dialog-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 border border-slate-200 text-center">
-            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full inline-flex items-center justify-center mb-3 text-xl">
-                <i class="fa-solid fa-circle-question"></i>
-            </div>
-            <h3 id="confirm-modal-title" class="font-bold text-slate-800 text-base mb-1">Подтверждение</h3>
-            <p id="confirm-modal-msg" class="text-xs text-slate-600 mb-5 leading-relaxed"></p>
-            <div class="flex space-x-3">
-                <button id="confirm-modal-cancel" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-semibold">Отмена</button>
-                <button id="confirm-modal-ok" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg text-xs font-semibold shadow">Продолжить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Super Admin Accounts Modal -->
-    <div id="superadmin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
-            <div class="bg-purple-700 text-white p-4 flex justify-between items-center">
-                <div class="flex items-center space-x-2.5">
-                    <i class="fa-solid fa-user-shield text-xl text-purple-200"></i>
-                    <div>
-                        <h3 class="font-bold text-base leading-snug">Управление Аккаунтами и Правами</h3>
-                        <p class="text-[11px] text-purple-200">Панель Главного Администратора</p>
-                    </div>
-                </div>
-                <button id="close-superadmin-modal" class="text-purple-200 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-5 overflow-y-auto space-y-4">
-                <div class="overflow-x-auto border border-slate-200 rounded-xl">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="bg-purple-50 text-purple-900 uppercase border-b border-purple-100 font-semibold">
-                                <th class="p-3">Email / Почта</th>
-                                <th class="p-3">Группа</th>
-                                <th class="p-3">Роль</th>
-                                <th class="p-3 text-center">Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="superadmin-users-table" class="divide-y divide-slate-100"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Action Confirmation Modals -->
-    <div id="transfer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 text-center">
-            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full inline-flex items-center justify-center mb-3 text-xl">
-                <i class="fa-solid fa-user-gear"></i>
-            </div>
-            <h3 class="font-bold text-slate-800 text-base mb-2">Передать права Главного Админа?</h3>
-            <p class="text-xs text-slate-600 mb-4 leading-relaxed">Вы хотите передать права Главного Администратора пользователю <strong id="transfer-target-email" class="text-indigo-600"></strong>?</p>
-            <div class="flex space-x-3">
-                <button id="cancel-transfer-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-semibold">Отмена</button>
-                <button id="confirm-transfer-btn" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow">Подтвердить</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 border border-slate-200 text-center">
-            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full inline-flex items-center justify-center mb-3">
-                <i class="fa-solid fa-trash-can text-xl"></i>
-            </div>
-            <h3 class="font-bold text-slate-800 text-base mb-1">Удалить запись?</h3>
-            <p class="text-xs text-slate-500 mb-5">Это действие нельзя будет отменить.</p>
-            <div class="flex space-x-3">
-                <button id="cancel-delete-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-semibold">Отмена</button>
-                <button id="confirm-delete-btn" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2 rounded-lg text-xs font-semibold">Удалить</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Config with user's specific projectId (tablitsa-40cf4) preserved as default
-        const DEFAULT_FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
-            authDomain: "tablitsa-40cf4.firebaseapp.com",
-            projectId: "tablitsa-40cf4",
-            storageBucket: "tablitsa-40cf4.appspot.com",
-            messagingSenderId: "1029384756",
-            appId: "1:1029384756:web:abcd1234efgh5678"
-        };
-
+    <script>
         const currentYear = new Date().getFullYear();
         let currentUser = null;
         let reportsData = [];
-        let db = null;
-        let auth = null;
         let isCloudConnected = false;
-        let itemToDeleteId = null;
-        let pendingTransferEmail = null;
-        let confirmCallback = null;
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tablitsa-app-local';
+        // Custom API Config
+        let apiConfig = JSON.parse(localStorage.getItem('custom_api_config')) || { url: '', key: '' };
+
+        const initialUsers = [
+            { email: 'superadmin@system.com', password: 'admin', group: '1', role: 'superadmin' },
+            { email: 'admin@system.com', password: '123', group: '1', role: 'admin' },
+            { email: 'user1@test.com', password: '123', group: '1', role: 'user' },
+            { email: 'user2@test.com', password: '123', group: '2', role: 'user' },
+            { email: 'user3@test.com', password: '123', group: '3', role: 'user' }
+        ];
 
         function populateYearSelectors() {
             const years = [];
-            for (let y = currentYear - 3; y <= currentYear + 2; y++) {
-                years.push(y);
-            }
-            const selectors = ['user-year', 'admin-year', 'analysis-year-admin'];
-            selectors.forEach(id => {
+            for (let y = currentYear - 3; y <= currentYear + 2; y++) years.push(y);
+            ['user-year', 'admin-year', 'analysis-year-admin'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.innerHTML = '';
@@ -572,125 +470,77 @@
             toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i><span>${message}</span>`;
             
             container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        function showConfirmModal(title, message, onConfirm) {
-            const modal = document.getElementById('confirm-dialog-modal');
-            const titleEl = document.getElementById('confirm-modal-title');
-            const msgEl = document.getElementById('confirm-modal-msg');
+        // --- REST API Integration (JSONBin.io / Custom Backend) ---
+        async function syncWithCloud() {
+            if (!apiConfig.url) {
+                updateCloudUIStatus('offline', 'Автономно');
+                return;
+            }
+            updateCloudUIStatus('connecting', 'Подключение...');
             
-            if (!modal || !titleEl || !msgEl) return;
-
-            titleEl.textContent = title;
-            msgEl.textContent = message;
-            confirmCallback = onConfirm;
-
-            modal.classList.remove('hidden');
-        }
-
-        const initialUsers = [
-            { email: 'superadmin@system.com', password: 'admin', group: '1', role: 'superadmin' },
-            { email: 'admin@system.com', password: '123', group: '1', role: 'admin' },
-            { email: 'user1@test.com', password: '123', group: '1', role: 'user' },
-            { email: 'user2@test.com', password: '123', group: '2', role: 'user' },
-            { email: 'user3@test.com', password: '123', group: '3', role: 'user' }
-        ];
-
-        function enterDashboard() {
-            if (!currentUser) return;
-
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('user-info').classList.remove('hidden');
-            document.getElementById('user-info').classList.add('flex');
-
-            const userDisplay = document.getElementById('user-display');
-            const userBadge = document.getElementById('user-badge');
-            const openUsersBtn = document.getElementById('open-users-modal-btn');
-
-            if (userDisplay) userDisplay.textContent = currentUser.email;
-
-            if (currentUser.role === 'superadmin') {
-                if (userBadge) {
-                    userBadge.textContent = "Главный Админ";
-                    userBadge.className = "px-2.5 py-1 bg-purple-900 text-purple-100 rounded-full text-xs font-semibold uppercase tracking-wider";
-                }
-                if (openUsersBtn) {
-                    openUsersBtn.classList.remove('hidden');
-                    openUsersBtn.classList.add('flex');
-                }
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                document.getElementById('user-dashboard').classList.add('hidden');
-            } else if (currentUser.role === 'admin') {
-                if (userBadge) {
-                    userBadge.textContent = "Администратор";
-                    userBadge.className = "px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider";
-                }
-                if (openUsersBtn) openUsersBtn.classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                document.getElementById('user-dashboard').classList.add('hidden');
-            } else {
-                if (userBadge) {
-                    userBadge.textContent = `Группа №${currentUser.group || '1'}`;
-                    userBadge.className = "px-2.5 py-1 bg-emerald-900 text-emerald-100 rounded-full text-xs font-semibold uppercase tracking-wider";
-                }
-                if (openUsersBtn) openUsersBtn.classList.add('hidden');
-                document.getElementById('user-dashboard').classList.remove('hidden');
-                document.getElementById('admin-dashboard').classList.add('hidden');
-
-                const groupInput = document.getElementById('user-group-input');
-                if (groupInput) groupInput.value = currentUser.group || '1';
-            }
-
-            refreshCurrentView();
-        }
-
-        function loginWithCredentials(email, pass) {
-            const errEl = document.getElementById('login-error');
-            let savedUsers = [];
             try {
-                const localUsers = localStorage.getItem('users_db');
-                savedUsers = localUsers ? JSON.parse(localUsers) : initialUsers;
-            } catch(e) {
-                savedUsers = initialUsers;
-            }
-
-            initialUsers.forEach(initU => {
-                if (!savedUsers.some(u => u.email.toLowerCase() === initU.email.toLowerCase())) {
-                    savedUsers.push(initU);
+                const headers = { 'Content-Type': 'application/json' };
+                if (apiConfig.key) {
+                    headers['X-Master-Key'] = apiConfig.key; // For JSONBin.io
+                    headers['Authorization'] = `Bearer ${apiConfig.key}`; // For custom REST API
                 }
-            });
 
-            const found = savedUsers.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
-
-            if (found) {
-                currentUser = found;
-                if (errEl) errEl.classList.add('hidden');
-                enterDashboard();
-                showToast(`Успешный вход: ${found.email}`, 'success');
-            } else {
-                if (errEl) {
-                    errEl.textContent = "Неверный Email или пароль.";
-                    errEl.classList.remove('hidden');
+                // Append /latest if standard JSONBin URL is provided without it
+                let fetchUrl = apiConfig.url;
+                if (fetchUrl.includes('jsonbin.io') && !fetchUrl.endsWith('/latest')) {
+                    fetchUrl += '/latest';
                 }
+
+                const res = await fetch(fetchUrl, { method: 'GET', headers });
+                if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+
+                const responseData = await res.json();
+                // JSONBin.io wraps content inside `record` field
+                reportsData = responseData.record || responseData.reports || responseData;
+
+                if (!Array.isArray(reportsData)) reportsData = [];
+                
+                localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                isCloudConnected = true;
+                updateCloudUIStatus('connected', 'Облако подключено');
+                refreshCurrentView();
+            } catch (err) {
+                console.warn("Cloud sync error:", err);
+                isCloudConnected = false;
+                updateCloudUIStatus('offline', 'Ошибка подключения');
             }
         }
 
-        window.quickFill = function(email, pass) {
-            const emailInput = document.getElementById('login-email');
-            const passInput = document.getElementById('login-password');
-            if (emailInput) emailInput.value = email;
-            if (passInput) passInput.value = pass;
-            loginWithCredentials(email, pass);
-        };
+        async function saveReportsToStorage() {
+            localStorage.setItem('reports_db', JSON.stringify(reportsData));
+            
+            if (isCloudConnected && apiConfig.url) {
+                try {
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (apiConfig.key) {
+                        headers['X-Master-Key'] = apiConfig.key;
+                        headers['Authorization'] = `Bearer ${apiConfig.key}`;
+                    }
+
+                    let putUrl = apiConfig.url.replace('/latest', '');
+                    
+                    await fetch(putUrl, {
+                        method: 'PUT',
+                        headers,
+                        body: JSON.stringify(reportsData)
+                    });
+                } catch (e) {
+                    console.warn("REST API Save Error:", e);
+                }
+            }
+        }
 
         function updateCloudUIStatus(status, text) {
             const dot = document.getElementById('cloud-status-dot');
@@ -708,247 +558,16 @@
             }
         }
 
-        function subscribeToCloudCollections() {
-            if (!db || !isCloudConnected) return;
-            try {
-                const reportsRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
-                onSnapshot(reportsRef, (snapshot) => {
-                    if (!snapshot.empty) {
-                        const cloudReports = [];
-                        snapshot.forEach(docSnap => cloudReports.push(docSnap.data()));
-                        if (cloudReports.length > 0) {
-                            reportsData = cloudReports;
-                            localStorage.setItem('reports_db', JSON.stringify(reportsData));
-                            refreshCurrentView();
-                        }
-                    }
-                }, (error) => {
-                    console.warn("Firestore listener error:", error);
-                });
-            } catch (e) {
-                console.warn("Subscription setup error:", e);
-            }
-        }
-
-        function calculateIrregularAndInactive(groupFilter, targetYear) {
-            const publisherMap = {};
-
-            reportsData.forEach(r => {
-                if (targetYear && String(r.year) !== String(targetYear)) return;
-                if (groupFilter && groupFilter !== 'all' && String(r.group) !== String(groupFilter)) return;
-
-                const key = r.personId || (r.name ? r.name.trim().toLowerCase() : null);
-                if (!key) return;
-
-                if (!publisherMap[key]) {
-                    publisherMap[key] = {
-                        personId: r.personId || key,
-                        name: r.name || 'Без имени',
-                        group: r.group || '1',
-                        activeCount: 0,
-                        totalReports: 0
-                    };
-                }
-
-                publisherMap[key].totalReports += 1;
-                const isActive = r.participated === true || (parseFloat(r.hours) > 0);
-                if (isActive) {
-                    publisherMap[key].activeCount += 1;
-                }
-            });
-
-            const irregular = [];
-            const inactive = [];
-
-            Object.values(publisherMap).forEach(p => {
-                if (p.activeCount === 0) {
-                    inactive.push(p);
-                } else if (p.activeCount < 12) {
-                    irregular.push(p);
-                }
-            });
-
-            return { irregular, inactive };
-        }
-
-        function renderTableRow(r, idx, isAdmin) {
-            const isPioneer = r.status === 'ПП' || r.status === 'ОП';
-            return `
-                <tr id="row_${r.id}" class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
-                    <td class="p-3 text-center text-slate-400 font-mono">${idx + 1}</td>
-                    ${isAdmin ? `<td class="p-3 font-bold text-indigo-700">Гр. ${r.group || '1'}</td>` : ''}
-                    <td class="p-3 font-semibold text-slate-700">${r.month}.${r.year}</td>
-                    <td class="p-3 font-semibold text-slate-500">${r.year}</td>
-                    ${!isAdmin ? `<td class="p-3 font-bold text-indigo-700">Гр. ${r.group || '1'}</td>` : ''}
-                    <td class="p-3">
-                        <input type="text" value="${r.name || ''}" placeholder="ФИО / Сокращение" onchange="updateField('${r.id}', 'name', this.value)" class="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 font-medium">
-                    </td>
-                    <td class="p-3">
-                        <select onchange="onStatusChange(this, '${r.id}')" class="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 bg-white">
-                            <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
-                            <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный</option>
-                            <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
-                            <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>ОП (Спец. пионер)</option>
-                        </select>
-                    </td>
-                    <td class="p-3 participation-cell-content">
-                        ${isPioneer 
-                            ? `<div class="flex items-center space-x-1"><input type="number" min="0" value="${r.hours || ''}" placeholder="Часы" onchange="updateField('${r.id}', 'hours', this.value)" onkeydown="if(event.key==='Enter') saveRow('${r.id}')" class="w-16 px-2 py-1 text-xs border border-indigo-300 rounded focus:ring-2 focus:ring-indigo-500 font-bold text-indigo-700 bg-white"> <span class="text-[11px] text-slate-500">ч.</span></div>`
-                            : `<label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" ${r.participated ? 'checked' : ''} onchange="updateField('${r.id}', 'participated', this.checked)" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"><span class="text-xs text-slate-600">Участвовал</span></label>`
-                        }
-                    </td>
-                    <td class="p-3">
-                        <input type="number" min="0" value="${r.studies || '0'}" onchange="updateField('${r.id}', 'studies', this.value)" class="w-16 px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 text-center font-medium">
-                    </td>
-                    <td class="p-3">
-                        <input type="text" value="${r.notes || ''}" placeholder="Заметки" onchange="updateField('${r.id}', 'notes', this.value)" class="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500">
-                    </td>
-                    <td class="p-3">
-                        <input type="number" min="0" value="${r.dp || '0'}" placeholder="0" onchange="updateField('${r.id}', 'dp', this.value)" class="w-16 px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 text-right">
-                    </td>
-                    <td class="p-3 text-center space-x-1">
-                        <button onclick="openPublisherCard('${r.personId || r.name}')" title="Карточка возвещателя" class="p-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded transition"><i class="fa-solid fa-id-card"></i></button>
-                        <button onclick="saveRow('${r.id}')" title="Сохранить строку" class="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded transition"><i class="fa-solid fa-floppy-disk"></i></button>
-                        <button onclick="promptDelete('${r.id}')" title="Удалить" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded transition"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
-        }
-
-        function refreshCurrentView() {
-            if (!currentUser) return;
-            if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
-                renderAdminDashboard();
-            } else {
-                renderUserDashboard();
-            }
-        }
-
-        function renderUserDashboard() {
-            const group = currentUser?.group || '1';
-            const selMonth = document.getElementById('user-month')?.value || '01';
-            const selYear = document.getElementById('user-year')?.value || currentYear.toString();
-
-            const tbody = document.getElementById('user-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const groupReports = reportsData.filter(r => String(r.group) === String(group) && r.month === selMonth && r.year === selYear);
-
-            if (groupReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400 italic">Нет записей за ${selMonth}.${selYear} для группы №${group}. Нажмите «Добавить», чтобы создать.</td></tr>`;
-            } else {
-                groupReports.forEach((r, idx) => {
-                    tbody.innerHTML += renderTableRow(r, idx, false);
-                });
-            }
-
-            const { irregular, inactive } = calculateIrregularAndInactive(group, selYear);
-            
-            const countIrregularEl = document.getElementById('user-count-irregular');
-            const listIrregularEl = document.getElementById('user-list-irregular');
-            if (countIrregularEl) countIrregularEl.textContent = irregular.length;
-            if (listIrregularEl) {
-                listIrregularEl.innerHTML = irregular.length === 0 
-                    ? '<div class="italic text-amber-700/70">Все возвещатели подают отчеты регулярно</div>' 
-                    : irregular.map(p => `<div class="flex justify-between items-center bg-amber-100/60 p-1.5 rounded"><span><strong>${p.name}</strong> (${p.activeCount}/12 отчетов)</span><button onclick="openPublisherCard('${p.personId}')" class="text-amber-900 font-semibold underline text-[11px]">Карточка</button></div>`).join('');
-            }
-
-            const countInactiveEl = document.getElementById('user-count-inactive');
-            const listInactiveEl = document.getElementById('user-list-inactive');
-            if (countInactiveEl) countInactiveEl.textContent = inactive.length;
-            if (listInactiveEl) {
-                listInactiveEl.innerHTML = inactive.length === 0 
-                    ? '<div class="italic text-rose-700/70">Нет неактивных возвещателей</div>' 
-                    : inactive.map(p => `<div class="flex justify-between items-center bg-rose-100/60 p-1.5 rounded"><span><strong>${p.name}</strong> (0 отчетов)</span><button onclick="openPublisherCard('${p.personId}')" class="text-rose-900 font-semibold underline text-[11px]">Карточка</button></div>`).join('');
-            }
-        }
-
-        function renderAdminDashboard() {
-            const selMonth = document.getElementById('admin-month')?.value || 'all';
-            const selYear = document.getElementById('admin-year')?.value || currentYear.toString();
-            const selGroup = document.getElementById('admin-group-filter')?.value || 'all';
-            const selStatus = document.getElementById('admin-status-filter')?.value || 'all';
-            const analysisYear = document.getElementById('analysis-year-admin')?.value || selYear;
-
-            const groupFilterSelect = document.getElementById('admin-group-filter');
-            if (groupFilterSelect) {
-                const uniqueGroups = Array.from(new Set(reportsData.map(r => String(r.group || '1')))).sort((a,b) => a - b);
-                const currentGroupVal = groupFilterSelect.value || 'all';
-                groupFilterSelect.innerHTML = '<option value="all">Все группы</option>';
-                uniqueGroups.forEach(g => {
-                    const opt = document.createElement('option');
-                    opt.value = g;
-                    opt.textContent = `Группа №${g}`;
-                    if (g === currentGroupVal) opt.selected = true;
-                    groupFilterSelect.appendChild(opt);
-                });
-            }
-
-            const tbody = document.getElementById('admin-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            let filtered = reportsData.filter(r => {
-                if (selYear !== 'all' && String(r.year) !== String(selYear)) return false;
-                if (selMonth !== 'all' && String(r.month) !== String(selMonth)) return false;
-                if (selGroup !== 'all' && String(r.group) !== String(selGroup)) return false;
-                if (selStatus !== 'all' && r.status !== selStatus) return false;
-                return true;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400 italic">Записи по выбранным фильтрам не найдены.</td></tr>`;
-            } else {
-                filtered.forEach((r, idx) => {
-                    tbody.innerHTML += renderTableRow(r, idx, true);
-                });
-            }
-
-            const { irregular, inactive } = calculateIrregularAndInactive(selGroup, analysisYear);
-
-            const countIrregularEl = document.getElementById('count-irregular');
-            const listIrregularEl = document.getElementById('list-irregular');
-            if (countIrregularEl) countIrregularEl.textContent = irregular.length;
-            if (listIrregularEl) {
-                listIrregularEl.innerHTML = irregular.length === 0 
-                    ? '<div class="italic text-amber-700/70">Все возвещатели подают отчеты регулярно</div>' 
-                    : irregular.map(p => `<div class="flex justify-between items-center bg-amber-100/60 p-1.5 rounded"><span><strong>${p.name}</strong> (Гр. ${p.group}, ${p.activeCount}/12 мес.)</span><button onclick="openPublisherCard('${p.personId}')" class="text-amber-900 font-semibold underline text-[11px]">Карточка</button></div>`).join('');
-            }
-
-            const countInactiveEl = document.getElementById('count-inactive');
-            const listInactiveEl = document.getElementById('list-inactive');
-            if (countInactiveEl) countInactiveEl.textContent = inactive.length;
-            if (listInactiveEl) {
-                listInactiveEl.innerHTML = inactive.length === 0 
-                    ? '<div class="italic text-rose-700/70">Нет неактивных возвещателей</div>' 
-                    : inactive.map(p => `<div class="flex justify-between items-center bg-rose-100/60 p-1.5 rounded"><span><strong>${p.name}</strong> (Гр. ${p.group}, 0 отчетов)</span><button onclick="openPublisherCard('${p.personId}')" class="text-rose-900 font-semibold underline text-[11px]">Карточка</button></div>`).join('');
-            }
-        }
-
+        // --- Initial Mock Data ---
         function generate15PublishersYearData(yearStr) {
             const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
             const publishers = [
-                // Group 1
-                { id: 'p_g1_1', group: '1', name: 'Иванов И.И.', status: 'Возвещатель', email: 'user1@test.com', activeMonths: months, hours: '', studies: 1, dp: '100', notes: 'Регулярный' },
-                { id: 'p_g1_2', group: '1', name: 'Петрова А.С.', status: 'ПП', email: 'user1@test.com', activeMonths: months, hours: '50', studies: 3, dp: '200', notes: 'Общий пионер' },
-                { id: 'p_g1_3', group: '1', name: 'Сидоров В.К.', status: 'Возвещатель', email: 'user1@test.com', activeMonths: ['01','03','05','07','09','11'], hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
-                { id: 'p_g1_4', group: '1', name: 'Смирнова Е.В.', status: 'Некрещеный возвещатель', email: 'user1@test.com', activeMonths: months, hours: '', studies: 1, dp: '50', notes: 'Некрещеный' },
-                { id: 'p_g1_5', group: '1', name: 'Козлов Д.А.', status: 'ОП', email: 'user1@test.com', activeMonths: months, hours: '100', studies: 5, dp: '500', notes: 'Специальный пионер' },
-
-                // Group 2
-                { id: 'p_g2_1', group: '2', name: 'Морозов М.Н.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 2, dp: '150', notes: '' },
-                { id: 'p_g2_2', group: '2', name: 'Новикова О.И.', status: 'ПП', email: 'user2@test.com', activeMonths: months, hours: '55', studies: 4, dp: '250', notes: 'Пионер' },
-                { id: 'p_g2_3', group: '2', name: 'Федоров С.П.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: [], hours: '', studies: 0, dp: '0', notes: 'Неактивный' },
-                { id: 'p_g2_4', group: '2', name: 'Волкова Т.А.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: months, hours: '', studies: 1, dp: '100', notes: '' },
-                { id: 'p_g2_5', group: '2', name: 'Алексеев Г.В.', status: 'Возвещатель', email: 'user2@test.com', activeMonths: ['02','04','06','08','10','12'], hours: '', studies: 1, dp: '0', notes: '' },
-
-                // Group 3
-                { id: 'p_g3_1', group: '3', name: 'Васильев Н.С.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 2, dp: '200', notes: '' },
-                { id: 'p_g3_2', group: '3', name: 'Зайцева Л.М.', status: 'ПП', email: 'user3@test.com', activeMonths: months, hours: '50', studies: 3, dp: '300', notes: 'Пионер' },
-                { id: 'p_g3_3', group: '3', name: 'Семенов А.В.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: ['01','02','03'], hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
-                { id: 'p_g3_4', group: '3', name: 'Голубева Е.Н.', status: 'Некрещеный возвещатель', email: 'user3@test.com', activeMonths: months, hours: '', studies: 1, dp: '50', notes: '' },
-                { id: 'p_g3_5', group: '3', name: 'Виноградов К.Д.', status: 'Возвещатель', email: 'user3@test.com', activeMonths: [], hours: '', studies: 0, dp: '0', notes: 'Неактивный' }
+                { id: 'p_g1_1', group: '1', name: 'Иванов И.И.', status: 'Возвещатель', activeMonths: months, hours: '', studies: 1, dp: '100', notes: 'Регулярный' },
+                { id: 'p_g1_2', group: '1', name: 'Петрова А.С.', status: 'ПП', activeMonths: months, hours: '50', studies: 3, dp: '200', notes: 'Общий пионер' },
+                { id: 'p_g1_3', group: '1', name: 'Сидоров В.К.', status: 'Возвещатель', activeMonths: ['01','03','05','07','09','11'], hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
+                { id: 'p_g2_1', group: '2', name: 'Морозов М.Н.', status: 'Возвещатель', activeMonths: months, hours: '', studies: 2, dp: '150', notes: '' },
+                { id: 'p_g2_2', group: '2', name: 'Новикова О.И.', status: 'ПП', activeMonths: months, hours: '55', studies: 4, dp: '250', notes: 'Пионер' },
+                { id: 'p_g3_1', group: '3', name: 'Васильев Н.С.', status: 'Возвещатель', activeMonths: months, hours: '', studies: 2, dp: '200', notes: '' }
             ];
 
             const reports = [];
@@ -958,7 +577,6 @@
                     reports.push({
                         id: `rep_${p.id}_${yearStr}_${m}`,
                         personId: p.id,
-                        email: p.email,
                         group: p.group,
                         month: m,
                         year: yearStr,
@@ -975,516 +593,180 @@
             return reports;
         }
 
-        const initialMockData = generate15PublishersYearData(currentYear.toString());
-
-        function extractFirebaseConfig(inputStr) {
-            if (!inputStr) return null;
-            let cleanStr = inputStr.trim();
-            try {
-                return JSON.parse(cleanStr);
-            } catch (e) {
-                try {
-                    const formatted = cleanStr
-                        .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '')
-                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
-                        .replace(/'/g, '"')
-                        .replace(/,\s*([}\]])/g, '$1');
-                    return JSON.parse(formatted);
-                } catch (err) {
-                    return null;
-                }
-            }
-        }
-
-        function fallbackToLocal() {
-            isCloudConnected = false;
-            updateCloudUIStatus('offline', 'Автономно');
-            reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
-            refreshCurrentView();
-        }
-
-        async function initCloud() {
-            try {
-                let config = null;
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-                } else {
-                    const savedConfigStr = localStorage.getItem('custom_firebase_config');
-                    config = savedConfigStr ? JSON.parse(savedConfigStr) : DEFAULT_FIREBASE_CONFIG;
-                }
-
-                if (!config || !config.apiKey) {
-                    fallbackToLocal();
-                    return;
-                }
-
-                updateCloudUIStatus('connecting', 'Подключение к облаку...');
-
-                const app = initializeApp(config);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (authErr) {
-                    console.warn("Custom token auth failed, using anonymous auth fallback:", authErr);
-                    try {
-                        await signInAnonymously(auth);
-                    } catch (anonErr) {
-                        console.error("Anonymous auth failed:", anonErr);
-                    }
-                }
-
-                if (auth.currentUser) {
-                    isCloudConnected = true;
-                    updateCloudUIStatus('connected', 'Облако подключено');
-                    subscribeToCloudCollections();
-                } else {
-                    fallbackToLocal();
-                }
-            } catch (err) {
-                console.warn("Cloud init error, using local mode:", err);
-                fallbackToLocal();
-            }
-        }
-
-        async function saveReportsToStorage() {
-            localStorage.setItem('reports_db', JSON.stringify(reportsData));
-            if (db && isCloudConnected && auth?.currentUser) {
-                for (const r of reportsData) {
-                    try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', r.id);
-                        await setDoc(docRef, r, { merge: true });
-                    } catch (e) {
-                        console.warn("Error saving report to Firestore:", e);
-                    }
-                }
-            }
-        }
-
-        window.refreshCurrentView = refreshCurrentView;
-
-        window.addNewReportRow = function() {
+        // --- Core Functions ---
+        function enterDashboard() {
             if (!currentUser) return;
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('user-info').classList.add('flex');
 
-            let group = currentUser.group || '1';
-            let month = document.getElementById('user-month')?.value || String(new Date().getMonth() + 1).padStart(2, '0');
-            let year = document.getElementById('user-year')?.value || currentYear.toString();
+            document.getElementById('user-display').textContent = currentUser.email;
 
-            if (currentUser.role === 'admin' || currentUser.role === 'superadmin') {
-                const adminMonth = document.getElementById('admin-month')?.value;
-                const adminYear = document.getElementById('admin-year')?.value;
-                const adminGroup = document.getElementById('admin-group-filter')?.value;
-
-                if (adminMonth && adminMonth !== 'all') month = adminMonth;
-                if (adminYear && adminYear !== 'all') year = adminYear;
-                if (adminGroup && adminGroup !== 'all') group = adminGroup;
+            if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('user-dashboard').classList.add('hidden');
+            } else {
+                document.getElementById('user-dashboard').classList.remove('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
             }
-
-            const uniqueId = 'rep_new_' + Date.now();
-            const personId = 'p_' + Date.now();
-
-            const newReport = {
-                id: uniqueId,
-                personId: personId,
-                email: currentUser.email,
-                group: group,
-                month: month,
-                year: year,
-                name: 'Новый возвещатель',
-                hours: '',
-                participated: true,
-                status: 'Возвещатель',
-                studies: '0',
-                notes: '',
-                dp: '0'
-            };
-
-            reportsData.unshift(newReport);
-            saveReportsToStorage();
             refreshCurrentView();
-            showToast("Добавлен новый возвещатель в список", "success");
+        }
+
+        function refreshCurrentView() {
+            if (!currentUser) return;
+            if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
+                renderAdminDashboard();
+            } else {
+                renderUserDashboard();
+            }
+        }
+
+        function renderTableRow(r, idx, isAdmin) {
+            const isPioneer = r.status === 'ПП' || r.status === 'ОП';
+            return `
+                <tr id="row_${r.id}" class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
+                    <td class="p-3 text-center text-slate-400 font-mono">${idx + 1}</td>
+                    ${isAdmin ? `<td class="p-3 font-bold text-indigo-700">Гр. ${r.group || '1'}</td>` : ''}
+                    <td class="p-3 font-semibold text-slate-700">${r.month}.${r.year}</td>
+                    <td class="p-3 font-semibold text-slate-500">${r.year}</td>
+                    ${!isAdmin ? `<td class="p-3 font-bold text-indigo-700">Гр. ${r.group || '1'}</td>` : ''}
+                    <td class="p-3">
+                        <input type="text" value="${r.name || ''}" onchange="updateField('${r.id}', 'name', this.value)" class="w-full px-2 py-1 text-xs border rounded">
+                    </td>
+                    <td class="p-3">
+                        <select onchange="updateField('${r.id}', 'status', this.value)" class="w-full px-2 py-1 text-xs border rounded bg-white">
+                            <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
+                            <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный</option>
+                            <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
+                            <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>ОП (Спец. пионер)</option>
+                        </select>
+                    </td>
+                    <td class="p-3">
+                        ${isPioneer 
+                            ? `<input type="number" value="${r.hours || ''}" onchange="updateField('${r.id}', 'hours', this.value)" class="w-16 px-2 py-1 border rounded"> ч.`
+                            : `<input type="checkbox" ${r.participated ? 'checked' : ''} onchange="updateField('${r.id}', 'participated', this.checked)">`
+                        }
+                    </td>
+                    <td class="p-3">
+                        <input type="number" value="${r.studies || '0'}" onchange="updateField('${r.id}', 'studies', this.value)" class="w-16 px-2 py-1 border rounded text-center">
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${r.notes || ''}" onchange="updateField('${r.id}', 'notes', this.value)" class="w-full px-2 py-1 border rounded">
+                    </td>
+                    <td class="p-3">
+                        <input type="number" value="${r.dp || '0'}" onchange="updateField('${r.id}', 'dp', this.value)" class="w-16 px-2 py-1 border rounded text-right">
+                    </td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="saveRow('${r.id}')" class="p-1.5 bg-emerald-50 text-emerald-600 rounded"><i class="fa-solid fa-floppy-disk"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function renderUserDashboard() {
+            const group = currentUser?.group || '1';
+            const selMonth = document.getElementById('user-month')?.value || '01';
+            const selYear = document.getElementById('user-year')?.value || currentYear.toString();
+
+            const tbody = document.getElementById('user-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const groupReports = reportsData.filter(r => String(r.group) === String(group) && r.month === selMonth && r.year === selYear);
+            groupReports.forEach((r, idx) => {
+                tbody.innerHTML += renderTableRow(r, idx, false);
+            });
+        }
+
+        function renderAdminDashboard() {
+            const tbody = document.getElementById('admin-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            reportsData.forEach((r, idx) => {
+                tbody.innerHTML += renderTableRow(r, idx, true);
+            });
+        }
+
+        window.updateField = function(id, field, val) {
+            const entry = reportsData.find(r => r.id === id);
+            if (entry) entry[field] = val;
         };
 
         window.saveRow = function(id) {
-            const rowEl = document.getElementById('row_' + id);
-            if (rowEl) {
-                rowEl.classList.add('row-saved');
-                setTimeout(() => rowEl.classList.remove('row-saved'), 1000);
-            }
             saveReportsToStorage();
-            refreshCurrentView();
-            showToast("Запись успешно сохранена", "success");
+            showToast("Запись сохранена", "success");
         };
 
         window.saveAllModifiedRows = function() {
             saveReportsToStorage();
-            refreshCurrentView();
-            showToast("Все изменения сохранены!", "success");
+            showToast("Все данные обновлены!", "success");
         };
 
-        window.promptDelete = function(id) {
-            itemToDeleteId = id;
-            document.getElementById('delete-modal').classList.remove('hidden');
+        window.quickFill = function(email, pass) {
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = pass;
+            currentUser = initialUsers.find(u => u.email === email);
+            enterDashboard();
         };
 
-        window.reloadDemoData = function() {
-            showConfirmModal(
-                "Перезагрузка тестовых данных",
-                "Вы уверены, что хотите восстановить 15 тестовых возвещателей (180 отчетов)? Текущие локальные данные будут перезаписаны.",
-                () => {
-                    const yr = (document.getElementById('admin-year') && document.getElementById('admin-year').value) || currentYear.toString();
-                    reportsData = generate15PublishersYearData(yr);
-                    saveReportsToStorage();
-                    refreshCurrentView();
-                    showToast("Успешно загружено 15 возвещателей!", "success");
-                }
-            );
-        };
-
-        window.updateUserGroup = async function(val) {
-            if (!currentUser) return;
-            currentUser.group = val;
-            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-            savedUsers = savedUsers.map(u => u.email === currentUser.email ? currentUser : u);
-            localStorage.setItem('users_db', JSON.stringify(savedUsers));
-            if (db && isCloudConnected && auth?.currentUser) {
-                try {
-                    const uId = currentUser.email.replace(/[@.]/g, '_');
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId);
-                    await setDoc(docRef, currentUser, { merge: true });
-                } catch(e) {
-                    console.warn("User update cloud error:", e);
-                }
-            }
-            refreshCurrentView();
-            showToast(`Номер группы изменен на №${val}`, "info");
-        };
-
-        window.onStatusChange = function(selectEl, rowId) {
-            const newStatus = selectEl.value;
-            const entry = reportsData.find(r => r.id === rowId);
-            if (!entry) return;
-            entry.status = newStatus;
-            
-            const tr = document.getElementById('row_' + rowId);
-            if (tr) {
-                const container = tr.querySelector('.participation-cell-content');
-                if (container) {
-                    if (newStatus === 'ПП' || newStatus === 'ОП') {
-                        container.innerHTML = `<input type="number" min="0" value="${entry.hours || ''}" placeholder="Часы" onchange="updateField('${rowId}', 'hours', this.value)" onkeydown="if(event.key==='Enter') saveRow('${rowId}')" class="w-20 px-2 py-1 text-xs border border-indigo-300 rounded focus:ring-2 focus:ring-indigo-500 font-bold text-indigo-700 bg-white"> <span class="text-[11px] text-slate-500">ч.</span>`;
-                    } else {
-                        container.innerHTML = `<label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" ${entry.participated ? 'checked' : ''} onchange="updateField('${rowId}', 'participated', this.checked)" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"><span class="text-xs text-slate-600">Участвовал</span></label>`;
-                    }
-                }
-            }
-        };
-
-        window.updateField = function(id, field, val) {
-            const entry = reportsData.find(r => r.id === id);
-            if (entry) {
-                entry[field] = val;
-                if (field === 'name' && val.trim()) {
-                    const match = reportsData.find(r => r.id !== id && r.name && r.name.trim().toLowerCase() === val.trim().toLowerCase());
-                    if (match && match.personId) {
-                        entry.personId = match.personId;
-                    }
-                }
-            }
-        };
-
-        window.openPublisherCard = function(identifier) {
-            if (!identifier) return;
-
-            const sample = reportsData.find(r => 
-                r.id === identifier || 
-                r.personId === identifier || 
-                (r.name && r.name.trim().toLowerCase() === identifier.trim().toLowerCase())
-            );
-
-            const targetPersonId = sample ? sample.personId : identifier;
-            const targetName = sample ? sample.name : identifier;
-
-            let publisherReports = reportsData.filter(r => {
-                if (targetPersonId && r.personId && r.personId === targetPersonId) return true;
-                if (targetName && r.name && r.name.trim().toLowerCase() === targetName.trim().toLowerCase()) return true;
-                return false;
-            });
-
-            if (publisherReports.length === 0) {
-                showToast("Записи для данного возвещателя не найдены.", "error");
-                return;
-            }
-
-            const primary = publisherReports[0];
-            document.getElementById('card-publisher-name').textContent = primary.name || targetName || 'Без имени';
-            document.getElementById('card-publisher-id').textContent = primary.personId || targetPersonId || 'ID_Неизвестен';
-            document.getElementById('card-publisher-group').textContent = primary.group || '-';
-            document.getElementById('card-total-reports').textContent = publisherReports.length;
-
-            let totalH = 0;
-            publisherReports.forEach(r => {
-                totalH += parseFloat(r.hours || 0);
-            });
-            document.getElementById('card-total-hours').textContent = totalH + ' ч.';
-
-            const tbody = document.getElementById('card-history-tbody');
-            tbody.innerHTML = '';
-            publisherReports.sort((a, b) => (b.year + b.month).localeCompare(a.year + a.month)).forEach(r => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50";
-                tr.innerHTML = `
-                    <td class="p-2 font-mono font-medium">${r.month}.${r.year}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100">${r.status || 'Возвещатель'}</span></td>
-                    <td class="p-2">${r.status === 'ПП' || r.status === 'ОП' ? (r.hours || '0') + ' ч.' : (r.participated ? 'Да' : 'Нет')}</td>
-                    <td class="p-2">${r.studies || '0'}</td>
-                    <td class="p-2">${r.dp || '0'}</td>
-                    <td class="p-2 text-slate-500">${r.notes || ''}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('publisher-card-modal').classList.remove('hidden');
-        };
-
-        function renderSuperAdminUsersTable() {
-            const tbody = document.getElementById('superadmin-users-table');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-            
-            savedUsers.forEach(u => {
-                const isCurrent = currentUser && currentUser.email === u.email;
-                const isSuper = u.role === 'superadmin';
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 border-b border-slate-100";
-                tr.innerHTML = `
-                    <td class="p-3 font-medium text-slate-800">${u.email} ${isCurrent ? '<span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded ml-1">Вы</span>' : ''}</td>
-                    <td class="p-3">Группа №${u.group || '1'}</td>
-                    <td class="p-3">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isSuper ? 'bg-purple-100 text-purple-800' : u.role === 'admin' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700'}">
-                            ${isSuper ? 'Главный Админ' : u.role === 'admin' ? 'Администратор' : 'Пользователь'}
-                        </span>
-                    </td>
-                    <td class="p-3 text-center space-x-1">
-                        ${!isSuper ? `
-                            <button onclick="promptTransferSuperadmin('${u.email}')" title="Передать SuperAdmin" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded text-[11px] font-medium"><i class="fa-solid fa-crown mr-1"></i>Сделать Главным</button>
-                        ` : '<span class="text-slate-400 italic text-[11px]">Текущий владелец</span>'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        window.promptTransferSuperadmin = function(email) {
-            pendingTransferEmail = email;
-            document.getElementById('transfer-target-email').textContent = email;
-            document.getElementById('transfer-modal').classList.remove('hidden');
-        };
-
+        // --- DOM Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             populateYearSelectors();
-            initCloud();
 
-            const curMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
-            const userMonthSel = document.getElementById('user-month');
-            if (userMonthSel) userMonthSel.value = curMonthStr;
+            // Load Local Data
+            reportsData = JSON.parse(localStorage.getItem('reports_db')) || generate15PublishersYearData(currentYear.toString());
 
-            // Confirm modal buttons
-            document.getElementById('confirm-modal-cancel')?.addEventListener('click', () => {
-                document.getElementById('confirm-dialog-modal').classList.add('hidden');
-                confirmCallback = null;
-            });
+            // Load REST API Configuration
+            if (apiConfig.url) {
+                document.getElementById('api-url-input').value = apiConfig.url;
+                document.getElementById('api-key-input').value = apiConfig.key;
+                syncWithCloud();
+            }
 
-            document.getElementById('confirm-modal-ok')?.addEventListener('click', () => {
-                document.getElementById('confirm-dialog-modal').classList.add('hidden');
-                if (typeof confirmCallback === 'function') {
-                    confirmCallback();
-                }
-                confirmCallback = null;
-            });
-
-            document.getElementById('cancel-delete-btn')?.addEventListener('click', () => {
-                document.getElementById('delete-modal').classList.add('hidden');
-                itemToDeleteId = null;
-            });
-
-            document.getElementById('confirm-delete-btn')?.addEventListener('click', async () => {
-                if (itemToDeleteId) {
-                    reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
-                    if (db && isCloudConnected && auth?.currentUser) {
-                        try {
-                            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', itemToDeleteId);
-                            await deleteDoc(docRef);
-                        } catch (e) {
-                            console.warn("Error deleting report from cloud:", e);
-                        }
-                    }
-                    saveReportsToStorage();
-                    refreshCurrentView();
-                    document.getElementById('delete-modal').classList.add('hidden');
-                    itemToDeleteId = null;
-                    showToast("Запись удалена", "info");
-                }
-            });
-
-            document.getElementById('close-publisher-card')?.addEventListener('click', () => {
-                document.getElementById('publisher-card-modal').classList.add('hidden');
-            });
-
-            document.getElementById('tab-login-btn')?.addEventListener('click', () => {
-                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
-                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
-                document.getElementById('login-form').classList.remove('hidden');
-                document.getElementById('register-form').classList.add('hidden');
-            });
-
-            document.getElementById('tab-register-btn')?.addEventListener('click', () => {
-                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
-                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
-                document.getElementById('register-form').classList.remove('hidden');
-                document.getElementById('login-form').classList.add('hidden');
-            });
-
-            document.getElementById('cloud-config-btn')?.addEventListener('click', () => {
+            // Cloud modal listeners
+            document.getElementById('cloud-config-btn').addEventListener('click', () => {
                 document.getElementById('cloud-modal').classList.remove('hidden');
-                const cur = localStorage.getItem('custom_firebase_config') || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
-                document.getElementById('firebase-json-input').value = cur;
             });
 
-            document.getElementById('close-cloud-modal')?.addEventListener('click', () => {
+            document.getElementById('close-cloud-modal').addEventListener('click', () => {
                 document.getElementById('cloud-modal').classList.add('hidden');
             });
 
-            document.getElementById('save-firebase-config')?.addEventListener('click', () => {
-                const val = document.getElementById('firebase-json-input').value;
-                const parsed = extractFirebaseConfig(val);
-                const msg = document.getElementById('cloud-modal-msg');
-                if (parsed && parsed.apiKey) {
-                    localStorage.setItem('custom_firebase_config', JSON.stringify(parsed));
-                    msg.textContent = "Конфигурация сохранена! Перезагрузка...";
-                    msg.className = "text-xs p-2.5 rounded-lg bg-emerald-100 text-emerald-800 block font-medium";
-                    setTimeout(() => window.location.reload(), 1200);
-                } else {
-                    msg.textContent = "Ошибка: неверный формат конфигурации Firebase.";
-                    msg.className = "text-xs p-2.5 rounded-lg bg-rose-100 text-rose-800 block font-medium";
-                }
+            document.getElementById('save-api-config').addEventListener('click', () => {
+                const url = document.getElementById('api-url-input').value.trim();
+                const key = document.getElementById('api-key-input').value.trim();
+
+                apiConfig = { url, key };
+                localStorage.setItem('custom_api_config', JSON.stringify(apiConfig));
+
+                document.getElementById('cloud-modal').classList.add('hidden');
+                showToast("Настройки REST API сохранены", "success");
+                syncWithCloud();
             });
 
-            document.getElementById('reset-firebase-config')?.addEventListener('click', () => {
-                localStorage.removeItem('custom_firebase_config');
-                window.location.reload();
+            document.getElementById('reset-api-config').addEventListener('click', () => {
+                localStorage.removeItem('custom_api_config');
+                apiConfig = { url: '', key: '' };
+                document.getElementById('api-url-input').value = '';
+                document.getElementById('api-key-input').value = '';
+                updateCloudUIStatus('offline', 'Автономно');
+                showToast("Настройки REST API сброшены", "info");
             });
 
-            document.getElementById('login-form')?.addEventListener('submit', (e) => {
+            document.getElementById('login-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const email = document.getElementById('login-email').value.trim().toLowerCase();
-                const pass = document.getElementById('login-password').value;
-                loginWithCredentials(email, pass);
-            });
-
-            document.getElementById('register-form')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('reg-email').value.trim().toLowerCase();
-                const pass = document.getElementById('reg-password').value;
-                const group = document.getElementById('reg-group').value;
-                const errEl = document.getElementById('reg-error');
-
-                if (pass.length < 4) {
-                    errEl.textContent = "Пароль должен быть не менее 4 символов.";
-                    errEl.classList.remove('hidden');
-                    return;
-                }
-
-                let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-                if (savedUsers.some(u => u.email.toLowerCase() === email)) {
-                    errEl.textContent = "Пользователь с таким email уже существует.";
-                    errEl.classList.remove('hidden');
-                    return;
-                }
-
-                const newUser = { email, password: pass, group, role: 'user' };
-                savedUsers.push(newUser);
-                localStorage.setItem('users_db', JSON.stringify(savedUsers));
-
-                if (db && isCloudConnected && auth?.currentUser) {
-                    try {
-                        const uId = email.replace(/[@.]/g, '_');
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId);
-                        await setDoc(docRef, newUser, { merge: true });
-                    } catch(e) {
-                        console.warn("User register cloud error:", e);
-                    }
-                }
-
-                currentUser = newUser;
-                errEl.classList.add('hidden');
+                const email = document.getElementById('login-email').value;
+                currentUser = initialUsers.find(u => u.email === email) || { email, role: 'user', group: '1' };
                 enterDashboard();
-                showToast("Аккаунт успешно зарегистрирован!", "success");
             });
 
-            document.getElementById('logout-btn')?.addEventListener('click', () => {
+            document.getElementById('logout-btn').addEventListener('click', () => {
                 currentUser = null;
                 document.getElementById('user-dashboard').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.add('hidden');
                 document.getElementById('login-view').classList.remove('hidden');
                 document.getElementById('user-info').classList.add('hidden');
-                showToast("Вы вышли из системы", "info");
-            });
-
-            document.getElementById('add-row-btn')?.addEventListener('click', window.addNewReportRow);
-            document.getElementById('user-add-row-bottom')?.addEventListener('click', window.addNewReportRow);
-            document.getElementById('admin-add-entry')?.addEventListener('click', window.addNewReportRow);
-
-            ['user-month', 'user-year', 'admin-month', 'admin-year', 'admin-group-filter', 'admin-status-filter', 'analysis-year-admin'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('change', refreshCurrentView);
-            });
-
-            document.getElementById('open-users-modal-btn')?.addEventListener('click', () => {
-                renderSuperAdminUsersTable();
-                document.getElementById('superadmin-modal').classList.remove('hidden');
-            });
-
-            document.getElementById('close-superadmin-modal')?.addEventListener('click', () => {
-                document.getElementById('superadmin-modal').classList.add('hidden');
-            });
-
-            document.getElementById('cancel-transfer-btn')?.addEventListener('click', () => {
-                document.getElementById('transfer-modal').classList.add('hidden');
-                pendingTransferEmail = null;
-            });
-
-            document.getElementById('confirm-transfer-btn')?.addEventListener('click', async () => {
-                if (pendingTransferEmail) {
-                    let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-                    savedUsers = savedUsers.map(u => {
-                        if (u.email === pendingTransferEmail) return { ...u, role: 'superadmin' };
-                        if (u.email === currentUser.email) return { ...u, role: 'admin' };
-                        return u;
-                    });
-                    localStorage.setItem('users_db', JSON.stringify(savedUsers));
-                    
-                    if (db && isCloudConnected && auth?.currentUser) {
-                        for (const u of savedUsers) {
-                            try {
-                                const uId = u.email.replace(/[@.]/g, '_');
-                                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uId), u, { merge: true });
-                            } catch(e) {}
-                        }
-                    }
-
-                    currentUser.role = 'admin';
-                    document.getElementById('transfer-modal').classList.add('hidden');
-                    document.getElementById('superadmin-modal').classList.add('hidden');
-                    showToast("Права Главного Администратора успешно переданы!", "success");
-                    enterDashboard();
-                }
             });
         });
     </script>
