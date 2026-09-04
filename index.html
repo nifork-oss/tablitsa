@@ -36,7 +36,6 @@
                     </button>
 
                     <div id="user-info" class="hidden items-center space-x-3">
-                        <!-- SuperAdmin Dedicated Account Management Button -->
                         <button id="open-users-modal-btn" onclick="openSuperAdminModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
                             <i class="fa-solid fa-users-gear mr-1.5"></i> <span class="hidden sm:inline">Аккаунты</span>
                         </button>
@@ -51,7 +50,6 @@
         </header>
 
         <!-- Cloud Settings Modal -->
-        <!-- ... (Пропущен для краткости, без изменений) ... -->
         <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
                 <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
@@ -76,9 +74,9 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Конфигурация Firebase (JS или JSON)</label>
                         <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = {
-  apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
-  authDomain: "tablitsa-40cf4.firebaseapp.com",
-  projectId: "tablitsa-40cf4",
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
   ...
 };'></textarea>
                     </div>
@@ -95,8 +93,7 @@
             </div>
         </div>
 
-        <!-- Auth View (Login & Register Tabs) -->
-        <!-- ... (Без изменений) ... -->
+        <!-- Auth View -->
         <main id="login-view" class="flex-grow flex items-center justify-center p-4">
             <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
                 <div class="flex border-b border-slate-200 mb-6 text-sm font-medium">
@@ -171,9 +168,7 @@
         </main>
 
         <!-- User Dashboard View -->
-        <!-- ... (Без изменений) ... -->
         <main id="user-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-            <!-- Filter Bar with Add Row button -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div>
@@ -196,7 +191,6 @@
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Год отчета</label>
                         <select id="user-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                            <!-- Populated dynamically -->
                         </select>
                     </div>
                 </div>
@@ -209,7 +203,6 @@
                 </div>
             </div>
 
-            <!-- Analysis Header for User -->
             <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-chart-line text-indigo-600 text-base"></i>
@@ -224,9 +217,7 @@
                 </div>
             </div>
 
-            <!-- Group-scoped Analytics -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Group Irregular -->
                 <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-amber-900 text-sm flex items-center">
@@ -238,7 +229,6 @@
                     <div id="user-list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- Group Inactive -->
                 <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
@@ -251,7 +241,6 @@
                 </div>
             </div>
 
-            <!-- User Report Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Мои отчеты за выбранный период</h2>
@@ -277,7 +266,6 @@
                             </tr>
                         </thead>
                         <tbody id="user-table-body" class="divide-y divide-slate-100">
-                            <!-- Dynamically populated rows -->
                         </tbody>
                     </table>
                 </div>
@@ -286,8 +274,6 @@
 
         <!-- Admin Dashboard View -->
         <main id="admin-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-            <!-- Filter Bar for Admin -->
-            <!-- ... (Без изменений) ... -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex flex-wrap items-center gap-3">
                     <div>
@@ -311,7 +297,6 @@
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Год</label>
                         <select id="admin-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                            <!-- Populated dynamically -->
                         </select>
                     </div>
                     <div>
@@ -333,8 +318,6 @@
                 </div>
             </div>
 
-            <!-- Analytics Cards -->
-            <!-- ... (Без изменений) ... -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div class="text-xs font-semibold text-slate-400 uppercase">Всего отчетов</div>
@@ -354,7 +337,6 @@
                 </div>
             </div>
 
-            <!-- Analysis Header & Specific Year Selector for Admin -->
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
@@ -368,14 +350,11 @@
                 <div class="flex items-center space-x-2 text-xs">
                     <span class="text-slate-600 font-semibold">Год для анализа:</span>
                     <select id="analysis-year-admin" class="border border-slate-300 font-bold text-indigo-900 bg-indigo-50 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500">
-                        <!-- Populated dynamically -->
                     </select>
                 </div>
             </div>
 
-            <!-- Analysis Section (All Groups) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Missing 1+ Month -->
                 <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-amber-900 text-sm flex items-center">
@@ -387,7 +366,6 @@
                     <div id="list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- Missing ALL 6 Months -->
                 <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
@@ -400,7 +378,6 @@
                 </div>
             </div>
 
-            <!-- Consolidated Database Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Сводная база данных отчетов (Все группы)</h2>
@@ -419,7 +396,7 @@
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-10 text-center">№</th>
                                 <th class="p-3 w-16">Группа</th>
-                                <th class="p-3 w-32">Месяц</th> <!-- ИЗМЕНЕНО: Заголовок "Месяц" -->
+                                <th class="p-3 w-32">Месяц</th>
                                 <th class="p-3">Имя сокр.</th>
                                 <th class="p-3 w-28">Часы / Участие</th>
                                 <th class="p-3 w-40">Статус</th>
@@ -430,7 +407,6 @@
                             </tr>
                         </thead>
                         <tbody id="admin-table-body" class="divide-y divide-slate-100">
-                            <!-- Consolidated rows dynamically filled -->
                         </tbody>
                     </table>
                 </div>
@@ -438,7 +414,7 @@
         </main>
     </div>
 
-    <!-- Publisher Card Modal ("Карточка возвещателя") -->
+    <!-- Publisher Card Modal -->
     <div id="publisher-card-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
@@ -478,7 +454,7 @@
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
                                 <tr>
-                                    <th class="p-2">Месяц</th> <!-- ИЗМЕНЕНО: Заголовок "Месяц" -->
+                                    <th class="p-2">Месяц</th>
                                     <th class="p-2">Статус</th>
                                     <th class="p-2">Участие / Часы</th>
                                     <th class="p-2">Изучения</th>
@@ -495,7 +471,6 @@
     </div>
 
     <!-- Super Admin Accounts Modal, Custom Transfer and Delete Dialogs -->
-    <!-- ... (Без изменений) ... -->
     <div id="superadmin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
             <div class="bg-purple-700 text-white p-4 flex justify-between items-center">
@@ -567,7 +542,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Глобальные словари и хелперы для месяца (ИЗМЕНЕНО)
         window.monthNames = {
             "01": "Январь", "02": "Февраль", "03": "Март", "04": "Апрель",
             "05": "Май", "06": "Июнь", "07": "Июль", "08": "Август",
@@ -596,7 +570,6 @@
             window.markRowDirty(input.getAttribute('data-row-id-ref'));
         };
 
-        // Application State
         const currentYear = new Date().getFullYear();
         let currentUser = null;
         let usersData = [];
@@ -609,7 +582,6 @@
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'tablitsa-app';
 
-        // Default Project Firebase Configuration
         const DEFAULT_FIREBASE_CONFIG = {
             apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
             authDomain: "tablitsa-40cf4.firebaseapp.com",
@@ -621,29 +593,531 @@
             measurementId: "G-SRZ42R8TNM"
         };
 
-        // ... (Все Firebase функции до window.saveRow остались без изменений, опущены для краткости) ...
-        function extractFirebaseConfig(inputStr) { /* ... */ }
-        const initialUsers = [ /* ... */ ];
-        const initialMockData = [ /* ... */ ];
-        
-        async function initCloud() { /* ... */ }
-        function subscribeToReports() { /* ... */ }
-        function subscribeToUsers() { /* ... */ }
-        function saveUserToCloud(userObj) { /* ... */ }
-        function updateCloudUIStatus(status, text, detailMessage = '') { /* ... */ }
-        window.quickFill = function(email, pass) { /* ... */ };
-        function getAvailableYears() { /* ... */ }
-        function populateYearSelectors() { /* ... */ }
-        function initApp() { /* ... */ }
-        function applyUserSession() { /* ... */ }
-        function refreshCurrentView() { /* ... */ }
-        function saveToStorage(entryToSync = null) { /* ... */ }
-        function showSaveNotification(customMsg = null) { /* ... */ }
-        function setupEventListeners() { /* ... */ }
-        window.openSuperAdminModal = function() { /* ... */ };
-        function renderSuperAdminUsers() { /* ... */ }
-        window.toggleAdminRole = function(email) { /* ... */ };
-        window.transferSuperAdmin = function(email) { /* ... */ };
+        function extractFirebaseConfig(inputStr) {
+            try {
+                if (!inputStr.trim()) return null;
+                let clean = inputStr.trim();
+                if (clean.includes('const firebaseConfig') || clean.includes('firebaseConfig')) {
+                    const start = clean.indexOf('{');
+                    const end = clean.lastIndexOf('}');
+                    if (start !== -1 && end !== -1) {
+                        clean = clean.substring(start, end + 1);
+                    }
+                }
+                clean = clean.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":');
+                clean = clean.replace(/'/g, '"');
+                clean = clean.replace(/,\s*}/g, '}');
+                return JSON.parse(clean);
+            } catch (e) {
+                console.error("Config parse error", e);
+                return null;
+            }
+        }
+
+        const initialUsers = [
+            { email: "superadmin@system.com", pass: "admin", role: "superadmin", group: "1" },
+            { email: "admin@system.com", pass: "123", role: "admin", group: "1" },
+            { email: "user1@test.com", pass: "123", role: "user", group: "1" },
+            { email: "user2@test.com", pass: "123", role: "user", group: "2" }
+        ];
+
+        const initialMockData = [
+            { id: "rep-1", personId: "p1", name: "Иванов И.", group: "1", month: "05", year: String(currentYear), status: "Возвещатель", participated: true, hours: "", studies: "1", notes: "Хорошо", dp: "100" },
+            { id: "rep-2", personId: "p2", name: "Петров П.", group: "1", month: "05", year: String(currentYear), status: "ПП", participated: false, hours: "50", studies: "2", notes: "", dp: "200" },
+            { id: "rep-3", personId: "p3", name: "Сидоров С.", group: "2", month: "05", year: String(currentYear), status: "ОП", participated: false, hours: "70", studies: "0", notes: "Болел", dp: "0" }
+        ];
+
+        async function initCloud(configObj = null) {
+            try {
+                let conf = configObj || DEFAULT_FIREBASE_CONFIG;
+                const appInstance = initializeApp(conf);
+                auth = getAuth(appInstance);
+                db = getFirestore(appInstance);
+                
+                await signInAnonymously(auth);
+                isCloudConnected = true;
+                updateCloudUIStatus('online', 'В облаке');
+                subscribeToReports();
+                subscribeToUsers();
+            } catch (e) {
+                console.warn("Cloud connection fallback to local:", e);
+                isCloudConnected = false;
+                updateCloudUIStatus('offline', 'Автономно');
+                loadLocalData();
+            }
+        }
+
+        function loadLocalData() {
+            const savedUsers = localStorage.getItem(appId + '_users');
+            usersData = savedUsers ? JSON.parse(savedUsers) : initialUsers;
+
+            const savedReports = localStorage.getItem(appId + '_reports');
+            reportsData = savedReports ? JSON.parse(savedReports) : initialMockData;
+
+            initApp();
+        }
+
+        function subscribeToReports() {
+            if (!db) return;
+            onSnapshot(collection(db, appId + '_reports_col'), (snapshot) => {
+                const cloudReports = [];
+                snapshot.forEach(docSnap => {
+                    cloudReports.push(docSnap.data());
+                });
+                if (cloudReports.length > 0) {
+                    reportsData = cloudReports;
+                } else if (reportsData.length > 0) {
+                    reportsData.forEach(r => saveToCloudDirect(r));
+                }
+                initApp();
+            }, (error) => {
+                console.warn("Firestore reports error:", error);
+                loadLocalData();
+            });
+        }
+
+        function subscribeToUsers() {
+            if (!db) return;
+            onSnapshot(collection(db, appId + '_users_col'), (snapshot) => {
+                const cloudUsers = [];
+                snapshot.forEach(docSnap => {
+                    cloudUsers.push(docSnap.data());
+                });
+                if (cloudUsers.length > 0) {
+                    usersData = cloudUsers;
+                } else {
+                    initialUsers.forEach(u => saveUserToCloud(u));
+                }
+                if (currentUser) {
+                    const fresh = usersData.find(u => u.email === currentUser.email);
+                    if (fresh) currentUser = fresh;
+                }
+                renderSuperAdminUsers();
+            }, (error) => {
+                console.warn("Firestore users error:", error);
+            });
+        }
+
+        async function saveToCloudDirect(item) {
+            if (!db || !isCloudConnected) return;
+            try {
+                await setDoc(doc(db, appId + '_reports_col', String(item.id)), item);
+            } catch (e) {
+                console.error("Error saving report to cloud:", e);
+            }
+        }
+
+        async function deleteFromCloudDirect(id) {
+            if (!db || !isCloudConnected) return;
+            try {
+                await deleteDoc(doc(db, appId + '_reports_col', String(id)));
+            } catch (e) {
+                console.error("Error deleting from cloud:", e);
+            }
+        }
+
+        async function saveUserToCloud(userObj) {
+            if (!db || !isCloudConnected) return;
+            try {
+                await setDoc(doc(db, appId + '_users_col', userObj.email.replace(/[@.]/g, '_')), userObj);
+            } catch (e) {
+                console.error("Error saving user:", e);
+            }
+        }
+
+        function updateCloudUIStatus(status, text, detailMessage = '') {
+            const dot = document.getElementById('cloud-status-dot');
+            const txt = document.getElementById('cloud-status-text');
+            if (!dot || !txt) return;
+
+            txt.innerText = text;
+            if (status === 'online') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+            } else if (status === 'error') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+            } else {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400";
+            }
+        }
+
+        window.quickFill = function(email, pass) {
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = pass;
+        };
+
+        function getAvailableYears() {
+            const yearsSet = new Set();
+            yearsSet.add(String(currentYear));
+            yearsSet.add(String(currentYear - 1));
+            yearsSet.add(String(currentYear - 2));
+            reportsData.forEach(r => {
+                if (r.year) yearsSet.add(String(r.year));
+            });
+            return Array.from(yearsSet).sort((a, b) => b.localeCompare(a));
+        }
+
+        function populateYearSelectors() {
+            const years = getAvailableYears();
+            const selects = ['user-year', 'admin-year', 'analysis-year-admin'];
+            
+            selects.forEach(selectId => {
+                const el = document.getElementById(selectId);
+                if (!el) return;
+                const currentVal = el.value;
+                el.innerHTML = '';
+                if (selectId === 'admin-year') {
+                    const optAll = document.createElement('option');
+                    optAll.value = 'all';
+                    optAll.innerText = 'Все годы';
+                    el.appendChild(optAll);
+                }
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.innerText = y;
+                    el.appendChild(opt);
+                });
+                if (years.includes(currentVal)) {
+                    el.value = currentVal;
+                } else if (selectId === 'user-year' || selectId === 'analysis-year-admin') {
+                    el.value = String(currentYear);
+                }
+            });
+        }
+
+        function initApp() {
+            populateYearSelectors();
+            populateAdminGroupFilter();
+            if (currentUser) {
+                applyUserSession();
+            }
+        }
+
+        function applyUserSession() {
+            const loginView = document.getElementById('login-view');
+            const userDash = document.getElementById('user-dashboard');
+            const adminDash = document.getElementById('admin-dashboard');
+            const userInfo = document.getElementById('user-info');
+            const userBadge = document.getElementById('user-badge');
+            const userDisplay = document.getElementById('user-display');
+            const usersBtn = document.getElementById('open-users-modal-btn');
+
+            loginView.classList.add('hidden');
+            userInfo.classList.remove('hidden');
+            userInfo.classList.add('flex');
+            userDisplay.innerText = currentUser.email;
+
+            if (currentUser.role === 'superadmin') {
+                userBadge.innerText = 'Главный Админ';
+                userBadge.className = 'px-2.5 py-1 bg-purple-900 text-purple-100 rounded-full text-xs font-semibold uppercase tracking-wider';
+                usersBtn.classList.remove('hidden');
+                usersBtn.classList.add('inline-flex');
+                adminDash.classList.remove('hidden');
+                userDash.classList.add('hidden');
+                renderAdminDashboard();
+            } else if (currentUser.role === 'admin') {
+                userBadge.innerText = 'Администратор';
+                userBadge.className = 'px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider';
+                usersBtn.classList.add('hidden');
+                usersBtn.classList.remove('inline-flex');
+                adminDash.classList.remove('hidden');
+                userDash.classList.add('hidden');
+                renderAdminDashboard();
+            } else {
+                userBadge.innerText = `Пользователь (Гр. ${currentUser.group || 1})`;
+                userBadge.className = 'px-2.5 py-1 bg-emerald-900 text-emerald-100 rounded-full text-xs font-semibold uppercase tracking-wider';
+                usersBtn.classList.add('hidden');
+                userDash.classList.remove('hidden');
+                adminDash.classList.add('hidden');
+                document.getElementById('user-group-display').innerText = currentUser.group || 1;
+                renderUserDashboard();
+            }
+        }
+
+        function refreshCurrentView() {
+            if (!currentUser) return;
+            if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
+                renderAdminDashboard();
+            } else {
+                renderUserDashboard();
+            }
+        }
+
+        function saveToStorage(entryToSync = null) {
+            localStorage.setItem(appId + '_reports', JSON.stringify(reportsData));
+            localStorage.setItem(appId + '_users', JSON.stringify(usersData));
+            if (entryToSync) {
+                saveToCloudDirect(entryToSync);
+            }
+        }
+
+        function showSaveNotification(customMsg = null) {
+            const status = document.getElementById('save-status');
+            if (!status) return;
+            status.innerText = customMsg || 'Изменения сохранены';
+            status.className = 'text-xs text-emerald-600 font-semibold transition';
+            setTimeout(() => {
+                status.innerText = 'Все изменения сохранены';
+                status.className = 'text-xs text-slate-400 italic';
+            }, 3000);
+        }
+
+        // Event Listeners setup
+        function setupEventListeners() {
+            document.getElementById('tab-login-btn').addEventListener('click', () => {
+                document.getElementById('tab-login-btn').className = 'flex-1 py-2 text-center tab-active focus:outline-none';
+                document.getElementById('tab-register-btn').className = 'flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none';
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+            });
+
+            document.getElementById('tab-register-btn').addEventListener('click', () => {
+                document.getElementById('tab-register-btn').className = 'flex-1 py-2 text-center tab-active focus:outline-none';
+                document.getElementById('tab-login-btn').className = 'flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none';
+                document.getElementById('register-form').classList.remove('hidden');
+                document.getElementById('login-form').classList.add('hidden');
+            });
+
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value.trim();
+                const pass = document.getElementById('login-password').value;
+                const err = document.getElementById('login-error');
+
+                const found = usersData.find(u => u.email === email && u.pass === pass);
+                if (found) {
+                    currentUser = found;
+                    err.classList.add('hidden');
+                    applyUserSession();
+                } else {
+                    err.innerText = 'Неверный Email или пароль';
+                    err.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('register-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('reg-email').value.trim();
+                const pass = document.getElementById('reg-password').value;
+                const group = document.getElementById('reg-group').value;
+                const err = document.getElementById('reg-error');
+
+                if (usersData.some(u => u.email === email)) {
+                    err.innerText = 'Пользователь с таким email уже существует';
+                    err.classList.remove('hidden');
+                    return;
+                }
+
+                const newUser = { email, pass, role: 'user', group };
+                usersData.push(newUser);
+                saveUserToCloud(newUser);
+                saveToStorage();
+
+                currentUser = newUser;
+                err.classList.add('hidden');
+                applyUserSession();
+            });
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                currentUser = null;
+                document.getElementById('user-info').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('flex');
+                document.getElementById('login-view').classList.remove('hidden');
+                document.getElementById('user-dashboard').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
+            });
+
+            // Cloud Modal
+            const cloudModal = document.getElementById('cloud-modal');
+            document.getElementById('cloud-config-btn').addEventListener('click', () => {
+                cloudModal.classList.remove('hidden');
+                document.getElementById('firebase-json-input').value = JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
+            });
+            document.getElementById('close-cloud-modal').addEventListener('click', () => cloudModal.classList.add('hidden'));
+
+            document.getElementById('save-firebase-config').addEventListener('click', async () => {
+                const text = document.getElementById('firebase-json-input').value;
+                const config = extractFirebaseConfig(text);
+                const msg = document.getElementById('cloud-modal-msg');
+                msg.classList.remove('hidden');
+                if (config && config.apiKey && config.projectId) {
+                    msg.className = 'text-xs p-2.5 rounded-lg bg-emerald-50 text-emerald-800 font-medium';
+                    msg.innerText = 'Подключение к Firebase...';
+                    await initCloud(config);
+                    setTimeout(() => cloudModal.classList.add('hidden'), 1000);
+                } else {
+                    msg.className = 'text-xs p-2.5 rounded-lg bg-rose-50 text-rose-800 font-medium';
+                    msg.innerText = 'Неверный формат конфигурации Firebase.';
+                }
+            });
+
+            document.getElementById('reset-firebase-config').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.reload();
+            });
+
+            // Add row buttons
+            document.getElementById('add-row-btn').addEventListener('click', () => {
+                if (!currentUser) return;
+                const month = document.getElementById('user-month').value;
+                const year = document.getElementById('user-year').value;
+                const newId = 'rep-' + Date.now() + Math.random().toString(36).substring(2, 5);
+                const newEntry = {
+                    id: newId,
+                    personId: 'p-' + Date.now(),
+                    name: 'Новый возвещатель',
+                    group: currentUser.group || "1",
+                    month: month,
+                    year: year,
+                    status: 'Возвещатель',
+                    participated: true,
+                    hours: '',
+                    studies: '0',
+                    notes: '',
+                    dp: '0'
+                };
+                reportsData.push(newEntry);
+                saveToStorage(newEntry);
+                refreshCurrentView();
+            });
+
+            document.getElementById('admin-add-entry').addEventListener('click', () => {
+                const month = document.getElementById('admin-month').value === 'all' ? '05' : document.getElementById('admin-month').value;
+                const year = document.getElementById('admin-year').value === 'all' ? String(currentYear) : document.getElementById('admin-year').value;
+                const newId = 'rep-' + Date.now() + Math.random().toString(36).substring(2, 5);
+                const newEntry = {
+                    id: newId,
+                    personId: 'p-' + Date.now(),
+                    name: 'Новый возвещатель',
+                    group: "1",
+                    month: month,
+                    year: year,
+                    status: 'Возвещатель',
+                    participated: true,
+                    hours: '',
+                    studies: '0',
+                    notes: '',
+                    dp: '0'
+                };
+                reportsData.push(newEntry);
+                saveToStorage(newEntry);
+                populateAdminGroupFilter();
+                refreshCurrentView();
+            });
+
+            // Filters change listeners
+            ['user-month', 'user-year', 'admin-month', 'admin-year', 'admin-group-filter', 'admin-status-filter', 'analysis-year-admin'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => refreshCurrentView());
+                }
+            });
+
+            // Delete modal
+            document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+                document.getElementById('delete-modal').classList.add('hidden');
+                itemToDeleteId = null;
+            });
+            document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+                if (itemToDeleteId) {
+                    reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
+                    deleteFromCloudDirect(itemToDeleteId);
+                    saveToStorage();
+                    document.getElementById('delete-modal').classList.add('hidden');
+                    itemToDeleteId = null;
+                    refreshCurrentView();
+                }
+            });
+
+            // Publisher Card Close
+            document.getElementById('close-publisher-card').addEventListener('click', () => {
+                document.getElementById('publisher-card-modal').classList.add('hidden');
+            });
+
+            // Super Admin modal close
+            document.getElementById('close-superadmin-modal').addEventListener('click', () => {
+                document.getElementById('superadmin-modal').classList.add('hidden');
+            });
+            document.getElementById('cancel-transfer-btn').addEventListener('click', () => {
+                document.getElementById('transfer-modal').classList.add('hidden');
+                pendingTransferEmail = null;
+            });
+            document.getElementById('confirm-transfer-btn').addEventListener('click', () => {
+                if (pendingTransferEmail) {
+                    usersData.forEach(u => {
+                        if (u.email === pendingTransferEmail) u.role = 'superadmin';
+                        if (u.email === currentUser.email) u.role = 'admin';
+                        saveUserToCloud(u);
+                    });
+                    saveToStorage();
+                    currentUser = usersData.find(u => u.email === currentUser.email);
+                    document.getElementById('transfer-modal').classList.add('hidden');
+                    document.getElementById('superadmin-modal').classList.add('hidden');
+                    pendingTransferEmail = null;
+                    applyUserSession();
+                }
+            });
+        }
+
+        window.openSuperAdminModal = function() {
+            renderSuperAdminUsers();
+            document.getElementById('superadmin-modal').classList.remove('hidden');
+        };
+
+        function renderSuperAdminUsers() {
+            const tbody = document.getElementById('superadmin-users-table');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            usersData.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-purple-50/50";
+                
+                let roleBadge = '';
+                let actionBtn = '';
+
+                if (u.role === 'superadmin') {
+                    roleBadge = `<span class="px-2 py-0.5 bg-purple-200 text-purple-900 rounded font-bold text-[10px]">Главный Админ</span>`;
+                    actionBtn = `<span class="text-slate-400 text-xs">Главный аккаунт</span>`;
+                } else if (u.role === 'admin') {
+                    roleBadge = `<span class="px-2 py-0.5 bg-indigo-200 text-indigo-900 rounded font-bold text-[10px]">Администратор</span>`;
+                    actionBtn = `
+                        <button onclick="toggleAdminRole('${u.email}')" class="text-rose-600 hover:underline mr-2">Снять админа</button>
+                        <button onclick="transferSuperAdmin('${u.email}')" class="text-amber-600 hover:underline">Передать главные права</button>
+                    `;
+                } else {
+                    roleBadge = `<span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded font-bold text-[10px]">Пользователь</span>`;
+                    actionBtn = `
+                        <button onclick="toggleAdminRole('${u.email}')" class="text-indigo-600 hover:underline">Сделать админом</button>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td class="p-3 font-medium text-slate-800">${u.email}</td>
+                    <td class="p-3">Группа №${u.group || 1}</td>
+                    <td class="p-3">${roleBadge}</td>
+                    <td class="p-3 text-center text-xs font-medium">${actionBtn}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.toggleAdminRole = function(email) {
+            usersData.forEach(u => {
+                if (u.email === email) {
+                    u.role = u.role === 'admin' ? 'user' : 'admin';
+                    saveUserToCloud(u);
+                }
+            });
+            saveToStorage();
+            renderSuperAdminUsers();
+        };
+
+        window.transferSuperAdmin = function(email) {
+            pendingTransferEmail = email;
+            document.getElementById('transfer-target-email').innerText = email;
+            document.getElementById('transfer-modal').classList.remove('hidden');
+        };
 
         window.markRowDirty = function(id) {
             const saveBtn = document.getElementById(`save-btn-${id}`);
@@ -664,7 +1138,6 @@
             }
         };
 
-        // Сохранение конкретной строки (ИЗМЕНЕНО: Добавлено сохранение месяца)
         window.saveRow = function(id) {
             const tr = document.querySelector(`tr[data-row-id="${id}"]`);
             const entry = reportsData.find(item => item.id === id);
@@ -725,6 +1198,7 @@
                     saveBtn.classList.add('hidden');
                     saveBtn.classList.remove('inline-flex', 'items-center', 'justify-center', 'animate-pulse');
                 }
+                saveToStorage(entry);
             }
         };
 
@@ -752,9 +1226,225 @@
             showSaveNotification('Все записи успешно сохранены!');
         };
 
-        function renderUserDashboard() { /* ...Без изменений, таблица пользователя фильтруется сверху... */ }
+        function populateAdminGroupFilter() {
+            const select = document.getElementById('admin-group-filter');
+            if (!select) return;
+            const currentVal = select.value;
+            const groupsSet = new Set();
+            reportsData.forEach(r => {
+                if (r.group) groupsSet.add(r.group);
+            });
+            select.innerHTML = '<option value="all">Все группы</option>';
+            Array.from(groupsSet).sort().forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.innerText = `Группа №${g}`;
+                select.appendChild(opt);
+            });
+            if (groupsSet.has(currentVal) || currentVal === 'all') {
+                select.value = currentVal;
+            }
+        }
 
-        // ИЗМЕНЕНО: Добавлено поле input для месяца в таблицу Администратора
+        function calculate6MonthsWindow(targetYear, targetMonth) {
+            let year = parseInt(targetYear, 10);
+            let month = parseInt(targetMonth, 10);
+            const monthsWindow = [];
+            for (let i = 0; i < 6; i++) {
+                let mStr = String(month).padStart(2, '0');
+                let yStr = String(year);
+                monthsWindow.push({ month: mStr, year: yStr });
+                month--;
+                if (month < 1) {
+                    month = 12;
+                    year--;
+                }
+            }
+            return monthsWindow;
+        }
+
+        function analyzeSixMonthsActivity() {
+            const isUser = currentUser && currentUser.role === 'user';
+            const targetYear = isUser ? document.getElementById('user-year').value : document.getElementById('analysis-year-admin').value;
+            const targetMonth = isUser ? document.getElementById('user-month').value : '12';
+
+            const periodBadge = document.getElementById('user-analysis-period-badge');
+            if (periodBadge) {
+                periodBadge.innerText = `${window.monthNames[targetMonth] || targetMonth} ${targetYear} (назад на 6 мес.)`;
+            }
+
+            const windowMonths = calculate6MonthsWindow(targetYear, targetMonth);
+
+            // publishers map
+            const publishersMap = {};
+            reportsData.forEach(r => {
+                if (!r.name) return;
+                if (isUser && r.group !== currentUser.group) return;
+
+                const pId = r.personId || r.name;
+                if (!publishersMap[pId]) {
+                    publishersMap[pId] = {
+                        name: r.name,
+                        group: r.group,
+                        reports: {}
+                    };
+                }
+                const key = `${r.year}-${r.month}`;
+                let hasReported = false;
+                if (r.status === 'Возвещатель' || r.status === 'Некрещеный возвещатель') {
+                    hasReported = !!r.participated;
+                } else {
+                    hasReported = (parseFloat(r.hours) || 0) > 0 || !!r.participated;
+                }
+                publishersMap[pId].reports[key] = hasReported;
+            });
+
+            const irregularList = [];
+            const inactiveList = [];
+
+            Object.values(publishersMap).forEach(pub => {
+                let missingCount = 0;
+                let zeroReportsTotal = true;
+
+                windowMonths.forEach(wm => {
+                    const key = `${wm.year}-${wm.month}`;
+                    const reported = pub.reports[key];
+                    if (reported) {
+                        zeroReportsTotal = false;
+                    } else {
+                        missingCount++;
+                    }
+                });
+
+                if (zeroReportsTotal) {
+                    inactiveList.push(pub);
+                } else if (missingCount > 0) {
+                    irregularList.push({ ...pub, missingCount });
+                }
+            });
+
+            const prefix = isUser ? 'user-' : '';
+            const countIrregEl = document.getElementById(prefix + 'count-irregular');
+            const listIrregEl = document.getElementById(prefix + 'list-irregular');
+            const countInactEl = document.getElementById(prefix + 'count-inactive');
+            const listInactEl = document.getElementById(prefix + 'list-inactive');
+
+            if (countIrregEl) countIrregEl.innerText = irregularList.length;
+            if (countInactEl) countInactEl.innerText = inactiveList.length;
+
+            if (listIrregEl) {
+                listIrregEl.innerHTML = irregularList.length === 0 ? '<span class="text-slate-400 italic">Нет нерегулярных возвещателей</span>' : 
+                    irregularList.map(item => `<div class="bg-amber-100/60 px-2.5 py-1 rounded flex justify-between"><span>${item.name} (Гр. ${item.group})</span><span class="font-bold text-amber-900">Пропусков: ${item.missingCount}</span></div>`).join('');
+            }
+
+            if (listInactEl) {
+                listInactEl.innerHTML = inactiveList.length === 0 ? '<span class="text-slate-400 italic">Нет неактивных возвещателей</span>' : 
+                    inactiveList.map(item => `<div class="bg-rose-100/60 px-2.5 py-1 rounded flex justify-between"><span>${item.name} (Гр. ${item.group})</span><span class="font-bold text-rose-900">0 отчетов за 6 мес.</span></div>`).join('');
+            }
+        }
+
+        function renderUserDashboard() {
+            const tbody = document.getElementById('user-table-body');
+            tbody.innerHTML = '';
+
+            const selectedMonth = document.getElementById('user-month').value;
+            const selectedYear = document.getElementById('user-year').value;
+            const userGroup = currentUser.group || "1";
+
+            const filtered = reportsData.filter(item => {
+                return item.group === userGroup && item.month === selectedMonth && item.year === selectedYear;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-8 text-slate-400 text-xs">
+                            У вашей группы нет отчетов за выбранный месяц. Нажмите «Добавить строку».
+                        </td>
+                    </tr>
+                `;
+            } else {
+                filtered.forEach((entry, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition duration-150";
+                    tr.setAttribute('data-row-id', entry.id);
+
+                    const isSimplePublisher = entry.status === 'Возвещатель' || entry.status === 'Некрещеный возвещатель';
+                    let hoursInputHtml = '';
+                    if (isSimplePublisher) {
+                        hoursInputHtml = `
+                            <label class="inline-flex items-center space-x-1.5 cursor-pointer bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded border border-slate-200">
+                                <input type="checkbox" ${entry.participated ? 'checked' : ''} 
+                                    onchange="markRowDirty('${entry.id}')"
+                                    class="input-participated w-3.5 h-3.5 text-indigo-600 rounded">
+                                <span class="text-xs font-medium ${entry.participated ? 'text-emerald-700' : 'text-slate-500'}">
+                                    ${entry.participated ? 'Да' : 'Нет'}
+                                </span>
+                            </label>
+                        `;
+                    } else {
+                        hoursInputHtml = `
+                            <input type="number" value="${entry.hours || ''}" placeholder="Часы" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-hours w-24 px-2 py-1 border border-slate-200 rounded text-sm font-medium">
+                        `;
+                    }
+
+                    tr.innerHTML = `
+                        <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
+                        <td class="p-2">
+                            <input type="text" value="${entry.name || ''}" placeholder="Имя сокр." 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-name w-full px-2 py-1 border border-slate-200 rounded text-sm font-medium text-slate-800">
+                        </td>
+                        <td class="p-2">
+                            ${hoursInputHtml}
+                        </td>
+                        <td class="p-2">
+                            <select onchange="markRowDirty('${entry.id}')"
+                                class="input-status px-2 py-1 border border-slate-200 rounded text-xs bg-white">
+                                <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
+                                <option value="Некрещеный возвещатель" ${entry.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный возвещатель</option>
+                                <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
+                                <option value="ОП" ${entry.status === 'ОП' ? 'selected' : ''}>ОП</option>
+                            </select>
+                        </td>
+                        <td class="p-2">
+                            <input type="number" value="${entry.studies || ''}" placeholder="0" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-studies w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2">
+                            <input type="text" value="${entry.notes || ''}" placeholder="Примечание" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-notes w-full px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2">
+                            <input type="number" value="${entry.dp || ''}" placeholder="0" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-dp w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2 text-center space-x-1">
+                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}'); showSaveNotification('Запись сохранена!');" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button onclick="requestDelete('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1.5 rounded hover:bg-rose-50" title="Удалить">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            analyzeSixMonthsActivity();
+        }
+
         function renderAdminDashboard() {
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
@@ -804,7 +1494,6 @@
                     tr.setAttribute('data-row-id', entry.id);
 
                     const isSimplePublisher = entry.status === 'Возвещатель' || entry.status === 'Некрещеный возвещатель';
-
                     let hoursInputHtml = '';
                     if (isSimplePublisher) {
                         hoursInputHtml = `
@@ -883,7 +1572,7 @@
                                 class="input-dp w-16 px-2 py-1 border border-slate-200 rounded text-sm">
                         </td>
                         <td class="p-2 text-center space-x-1">
-                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}'); saveToStorage(); refreshCurrentView(); showSaveNotification('Запись сохранена!');" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
+                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}'); showSaveNotification('Запись сохранена!');" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
                                 <i class="fa-solid fa-check"></i>
                             </button>
                             <button onclick="openPublisherCard('${entry.personId}')" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50" title="Карточка возвещателя">
@@ -901,15 +1590,6 @@
             analyzeSixMonthsActivity();
         }
 
-        // ... (Остальные вспомогательные функции опущены для краткости, они остались без изменений) ...
-        function populateAdminGroupFilter() { /* ... */ }
-        window.updateReportData = function(id, key, value) { /* ... */ };
-        window.updatePublisherName = function(reportId, personId, newName) { /* ... */ };
-        function calculate6MonthsWindow(targetYear, targetMonth) { /* ... */ }
-        function renderGroupActivityAnalysis() { /* ... */ }
-        function analyzeSixMonthsActivity() { /* ... */ }
-        
-        // ИЗМЕНЕНО: Открытие карточки возвещателя с отображением текстового месяца
         window.openPublisherCard = function(personId) {
             const personReports = reportsData.filter(r => r.personId === personId || (r.name && r.personId === personId));
             if (personReports.length === 0) return;
@@ -963,11 +1643,14 @@
             document.getElementById('publisher-card-modal').classList.remove('hidden');
         };
 
-        window.requestDelete = function(id) { /* ... */ };
+        window.requestDelete = function(id) {
+            itemToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        };
 
-        // Инициализация
-        // ...
-        // ... (Все Firebase и onload функции остались без изменений, опущены для краткости) ...
+        // Запуск при загрузке
+        setupEventListeners();
+        initCloud();
     </script>
 </body>
 </html>
