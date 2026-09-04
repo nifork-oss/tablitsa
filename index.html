@@ -642,10 +642,9 @@
 
         // Default mock reports data with publisher IDs (personId)
         const initialMockData = [
-            { id: '1', personId: 'p1', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Иванов И.', hours: '', participated: true, status: 'Возвещатель', studies: '1', notes: 'Участвовал', dp: '0' },
-            { id: '2', personId: 'p2', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Петрова А.', hours: '50', participated: true, status: 'ПП', studies: '4', notes: 'Отличный месяц', dp: '2' },
-            { id: '3', personId: 'p3', email: 'user2@test.com', group: '2', month: '09', year: currentYear.toString(), name: 'Сидоров В.', hours: '30', participated: true, status: 'ОП', studies: '2', notes: '', dp: '0' },
-            { id: '4', personId: 'p4', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Кузнецов С.', hours: '', participated: true, status: 'Некрещеный возвещатель', studies: '0', notes: '', dp: '0' }
+            { id: '1', personId: 'p1', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Иванов И.И.', hours: '', participated: true, status: 'Возвещатель', studies: '1', notes: 'Участвовал', dp: '0' },
+            { id: '2', personId: 'p2', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Петрова А.С.', hours: '50', participated: true, status: 'ПП', studies: '4', notes: 'Отличный месяц', dp: '2' },
+            { id: '3', personId: 'p3', email: 'user2@test.com', group: '2', month: '09', year: currentYear.toString(), name: 'Сидоров В.К.', hours: '', participated: true, status: 'Возвещатель', studies: '2', notes: 'Примечание', dp: '0' }
         ];
 
         async function initCloud() {
@@ -815,11 +814,9 @@
         // Helper to dynamically build year options
         function getAvailableYears() {
             const yearsSet = new Set();
-            // Standard range: recent 4 years to next year
             for (let y = currentYear - 3; y <= currentYear + 1; y++) {
                 yearsSet.add(y.toString());
             }
-            // Add any year present in reportsData
             reportsData.forEach(r => {
                 if (r.year) yearsSet.add(r.year.toString());
             });
@@ -1160,7 +1157,7 @@
 
             document.getElementById('admin-add-entry').addEventListener('click', () => {
                 const selectedMonth = document.getElementById('admin-month').value;
-                const monthVal = selectedMonth === 'all' ? '01' : selectedMonth;
+                const monthVal = selectedMonth === 'all' ? String(new Date().getMonth() + 1).padStart(2, '0') : selectedMonth;
                 const selectedYear = document.getElementById('admin-year').value;
                 const yearVal = selectedYear === 'all' ? currentYear.toString() : selectedYear;
                 const groupFilter = document.getElementById('admin-group-filter').value;
@@ -1429,9 +1426,12 @@
             let totalDP = 0;
 
             filtered.forEach(item => {
-                totalHours += parseFloat(item.hours) || 0;
-                totalStudies += parseInt(item.studies) || 0;
-                totalDP += parseInt(item.dp) || 0;
+                // Strictly calculate hours ONLY for Pioneers (ПП + ОП)
+                if (item.status === 'ПП' || item.status === 'ОП') {
+                    totalHours += parseFloat(item.hours) || 0;
+                }
+                totalStudies += parseInt(item.studies, 10) || 0;
+                totalDP += parseInt(item.dp, 10) || 0;
             });
 
             document.getElementById('stat-total').innerText = filtered.length;
@@ -1543,6 +1543,12 @@
             const entry = reportsData.find(item => item.id === id);
             if (entry) {
                 entry[key] = value;
+
+                // Clear hours when status changes to simple publisher
+                if (key === 'status' && (value === 'Возвещатель' || value === 'Некрещеный возвещатель')) {
+                    entry.hours = '';
+                }
+
                 saveToStorage(entry);
                 if (key === 'group') populateAdminGroupFilter();
                 if (key === 'year') populateYearSelectors();
@@ -1565,8 +1571,19 @@
         function calculate6MonthsWindow(targetYear, targetMonth) {
             const monthsList = [];
             let y = parseInt(targetYear, 10) || currentYear;
-            let m = parseInt(targetMonth, 10);
-            if (isNaN(m) || m < 1 || m > 12) m = 12; // default to December if 'all' or invalid
+            let m;
+
+            if (!targetMonth || targetMonth === 'all') {
+                if (y === currentYear) {
+                    m = new Date().getMonth() + 1;
+                } else {
+                    m = 12;
+                }
+            } else {
+                m = parseInt(targetMonth, 10);
+            }
+
+            if (isNaN(m) || m < 1 || m > 12) m = 12;
 
             for (let i = 0; i < 6; i++) {
                 const monthStr = String(m).padStart(2, '0');
@@ -1599,19 +1616,19 @@
                 badge.innerText = `${startPeriod.month}.${startPeriod.year} — ${endPeriod.month}.${endPeriod.year}`;
             }
 
-            const groupReports = reportsData.filter(r => r.group === currentUser.group);
-            const publishersInGroup = [...new Set(groupReports.map(item => item.personId).filter(id => id))];
+            const groupReports = reportsData.filter(r => r.group === currentUser.group && r.name && r.name.trim() !== '');
+            const validPersonIds = [...new Set(groupReports.map(item => item.personId).filter(id => id))];
 
             let countIrregular = 0;
             let countInactive = 0;
 
-            publishersInGroup.forEach(pId => {
+            validPersonIds.forEach(pId => {
                 const pReports = groupReports.filter(r => r.personId === pId);
                 if (pReports.length === 0) return;
 
-                const name = pReports[pReports.length - 1].name || 'Имя не указано';
+                const latest = pReports[pReports.length - 1];
+                const name = latest.name.trim();
 
-                // Count how many of the 6 target months have a report
                 const submittedCount = last6Months.filter(period => 
                     pReports.some(r => r.year === period.year && r.month === period.month)
                 ).length;
@@ -1627,7 +1644,7 @@
                     const missedCount = 6 - submittedCount;
                     const item = document.createElement('div');
                     item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
+                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес. (${submittedCount}/6)</span>`;
                     irregularList.appendChild(item);
                 }
             });
@@ -1651,17 +1668,23 @@
 
             const last6Months = calculate6MonthsWindow(selectedAnalysisYear, selectedMonth);
 
-            const allPersonIds = [...new Set(reportsData.map(item => item.personId).filter(id => id))];
+            // Filter to publishers who actually have a name entered
+            const validPersonIds = [...new Set(
+                reportsData
+                    .filter(r => r.name && r.name.trim() !== '')
+                    .map(r => r.personId)
+                    .filter(id => id)
+            )];
 
             let countIrregular = 0;
             let countInactive = 0;
 
-            allPersonIds.forEach(pId => {
-                const pReports = reportsData.filter(r => r.personId === pId);
+            validPersonIds.forEach(pId => {
+                const pReports = reportsData.filter(r => r.personId === pId && r.name && r.name.trim() !== '');
                 if (pReports.length === 0) return;
 
                 const latest = pReports[pReports.length - 1];
-                const name = latest.name || 'Без имени';
+                const name = latest.name.trim();
                 const group = latest.group;
 
                 const submittedCount = last6Months.filter(period => 
@@ -1679,7 +1702,7 @@
                     const missedCount = 6 - submittedCount;
                     const item = document.createElement('div');
                     item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
+                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес. (${submittedCount}/6)</span>`;
                     irregularList.appendChild(item);
                 }
             });
@@ -1705,8 +1728,10 @@
             let totalHours = 0;
             let totalStudies = 0;
             personReports.forEach(r => {
-                totalHours += parseFloat(r.hours) || 0;
-                totalStudies += parseInt(r.studies) || 0;
+                if (r.status === 'ПП' || r.status === 'ОП') {
+                    totalHours += parseFloat(r.hours) || 0;
+                }
+                totalStudies += parseInt(r.studies, 10) || 0;
             });
 
             document.getElementById('card-total-hours').innerText = `${totalHours} ч.`;
