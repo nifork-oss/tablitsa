@@ -37,7 +37,7 @@
 
                     <div id="user-info" class="hidden items-center space-x-3">
                         <!-- SuperAdmin Dedicated Account Management Button -->
-                        <button id="open-users-modal-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
+                        <button id="open-users-modal-btn" onclick="openSuperAdminModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
                             <i class="fa-solid fa-users-gear mr-1.5"></i> <span class="hidden sm:inline">Аккаунты</span>
                         </button>
                         <span id="user-badge" class="px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
@@ -410,6 +410,44 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
+            <div class="p-6 overflow-y-auto space-y-4">
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                        <div class="text-[10px] uppercase font-bold text-indigo-600">Группа</div>
+                        <div id="card-publisher-group" class="text-lg font-bold text-indigo-900 mt-0.5">-</div>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                        <div class="text-[10px] uppercase font-bold text-emerald-600">Отчетов всего</div>
+                        <div id="card-total-reports" class="text-lg font-bold text-emerald-900 mt-0.5">0</div>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
+                        <div class="text-[10px] uppercase font-bold text-amber-600">Часы / Изуч.</div>
+                        <div class="text-sm font-bold text-amber-900 mt-0.5">
+                            <span id="card-total-hours">0 ч.</span> / <span id="card-total-studies">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">История отчетов</h4>
+                    <div class="border border-slate-200 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
+                                <tr>
+                                    <th class="p-2">Период</th>
+                                    <th class="p-2">Статус</th>
+                                    <th class="p-2">Участие / Часы</th>
+                                    <th class="p-2">Изучения</th>
+                                    <th class="p-2">Доб. пож.</th>
+                                    <th class="p-2">Заметки</th>
+                                </tr>
+                            </thead>
+                            <tbody id="card-history-tbody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Super Admin Accounts Modal ("Управление Аккаунтами и Правами") -->
     <div id="superadmin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
@@ -610,7 +648,6 @@
 
             onSnapshot(reportsRef, (snapshot) => {
                 if (snapshot.empty) {
-                    // Seed cloud with initial local reports if cloud database is empty
                     if (reportsData.length > 0) {
                         reportsData.forEach(entry => {
                             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
@@ -737,7 +774,7 @@
                 localStorage.setItem('app_users_db', JSON.stringify(usersData));
             }
 
-            // Гарантируем наличие тестовых аккаунтов в списке
+            // Ensure demo accounts are always present
             initialUsers.forEach(initU => {
                 if (!usersData.some(u => u.email.toLowerCase() === initU.email.toLowerCase())) {
                     usersData.push(initU);
@@ -1057,16 +1094,22 @@
                         deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reports', itemToDeleteId)).catch(console.error);
                     }
 
+                    itemToDeleteId = null;
+                    document.getElementById('delete-modal').classList.add('hidden');
                     populateAdminGroupFilter();
                     refreshCurrentView();
                 }
-                itemToDeleteId = null;
-                document.getElementById('delete-modal').classList.add('hidden');
             });
         }
 
+        window.openSuperAdminModal = function() {
+            renderSuperAdminUsers();
+            document.getElementById('superadmin-modal').classList.remove('hidden');
+        };
+
         function renderSuperAdminUsers() {
             const tbody = document.getElementById('superadmin-users-table');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             usersData.forEach(user => {
@@ -1369,7 +1412,6 @@
         };
 
         window.updatePublisherName = function(reportId, personId, newName) {
-            // Synchronize name across all reports for this unique publisher ID
             reportsData.forEach(r => {
                 if (r.personId === personId || (personId && r.personId === personId)) {
                     r.name = newName;
@@ -1447,7 +1489,6 @@
                 last6Months.push(m);
             }
 
-            // Group-scoped publishers
             const groupReports = reportsData.filter(r => r.group === currentUser.group);
             const publishersInGroup = [...new Set(groupReports.map(item => item.personId))];
 
