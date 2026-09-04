@@ -515,6 +515,14 @@
             appId: "1:785699516187:web:727bf55a5df125fc43edbe"
         };
 
+        const initialUsers = [
+            { email: 'superadmin@system.com', password: 'admin', group: '1', role: 'superadmin' },
+            { email: 'admin@system.com', password: '123', group: '1', role: 'admin' },
+            { email: 'user1@test.com', password: '123', group: '1', role: 'user' },
+            { email: 'user2@test.com', password: '123', group: '2', role: 'user' },
+            { email: 'user3@test.com', password: '123', group: '3', role: 'user' }
+        ];
+
         function extractFirebaseConfig(inputStr) {
             if (!inputStr) return null;
             let cleanStr = inputStr.trim();
@@ -533,14 +541,6 @@
                 }
             }
         }
-
-        const initialUsers = [
-            { email: 'superadmin@system.com', password: 'admin', group: '1', role: 'superadmin' },
-            { email: 'admin@system.com', password: '123', group: '1', role: 'admin' },
-            { email: 'user1@test.com', password: '123', group: '1', role: 'user' },
-            { email: 'user2@test.com', password: '123', group: '2', role: 'user' },
-            { email: 'user3@test.com', password: '123', group: '3', role: 'user' }
-        ];
 
         function generate15PublishersYearData(yearStr) {
             const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -592,502 +592,6 @@
 
         const initialMockData = generate15PublishersYearData(currentYear.toString());
 
-        async function initCloud() {
-            try {
-                let config;
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    try {
-                        config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-                    } catch (e) {
-                        config = DEFAULT_FIREBASE_CONFIG;
-                    }
-                } else {
-                    const savedConfigStr = localStorage.getItem('custom_firebase_config');
-                    config = savedConfigStr ? JSON.parse(savedConfigStr) : DEFAULT_FIREBASE_CONFIG;
-                }
-
-                const app = initializeApp(config);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Authenticate before Firestore queries (Rule 3)
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (e) {
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                isCloudConnected = true;
-                updateCloudUIStatus('connected', 'Облако подключено');
-
-                subscribeToCloudCollections();
-            } catch (err) {
-                console.warn("Cloud init failed, switching to local mode:", err);
-                fallbackToLocal();
-            }
-        }
-
-        function subscribeToCloudCollections() {
-            if (!db || !auth.currentUser) return;
-
-            // Strict collection path for reports
-            const reportsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
-            onSnapshot(reportsColRef, (snapshot) => {
-                const cloudReports = [];
-                snapshot.forEach(docSnap => {
-                    cloudReports.push(docSnap.data());
-                });
-
-                if (cloudReports.length > 0) {
-                    reportsData = cloudReports;
-                } else {
-                    reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
-                    reportsData.forEach(r => {
-                        const dRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', r.id);
-                        setDoc(dRef, r, { merge: true }).catch(() => {});
-                    });
-                }
-                localStorage.setItem('reports_db', JSON.stringify(reportsData));
-                refreshCurrentView();
-            }, (err) => {
-                console.warn("Firestore snapshot error on reports:", err);
-            });
-
-            // Strict collection path for user accounts
-            const usersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-            onSnapshot(usersColRef, (snapshot) => {
-                const cloudUsers = [];
-                snapshot.forEach(docSnap => {
-                    cloudUsers.push(docSnap.data());
-                });
-                if (cloudUsers.length > 0) {
-                    localStorage.setItem('users_db', JSON.stringify(cloudUsers));
-                } else {
-                    initialUsers.forEach(u => {
-                        const uId = u.email.replace(/[@.]/g, '_');
-                        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uId), u, { merge: true }).catch(() => {});
-                    });
-                }
-            }, (err) => {
-                console.warn("Firestore snapshot error on users:", err);
-            });
-        }
-
-        function fallbackToLocal() {
-            isCloudConnected = false;
-            updateCloudUIStatus('offline', 'Локальный режим');
-            reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
-            refreshCurrentView();
-        }
-
-        async function saveReportsToStorage() {
-            localStorage.setItem('reports_db', JSON.stringify(reportsData));
-            if (db && isCloudConnected && auth?.currentUser) {
-                for (const r of reportsData) {
-                    try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', r.id);
-                        await setDoc(docRef, r, { merge: true });
-                    } catch (e) {
-                        console.warn("Error saving report to Firestore:", e);
-                    }
-                }
-            }
-        }
-
-        window.saveRow = function(id) {
-            const rowEl = document.getElementById('row_' + id);
-            if (rowEl) {
-                rowEl.classList.add('row-saved');
-                setTimeout(() => rowEl.classList.remove('row-saved'), 1000);
-            }
-            saveReportsToStorage();
-            refreshCurrentView();
-        };
-
-        window.saveAllModifiedRows = function() {
-            saveReportsToStorage();
-            refreshCurrentView();
-            alert("Все изменения успешно сохранены в облаке!");
-        };
-
-        window.promptDelete = function(id) {
-            itemToDeleteId = id;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        };
-
-        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
-            document.getElementById('delete-modal').classList.add('hidden');
-            itemToDeleteId = null;
-        });
-
-        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
-            if (itemToDeleteId) {
-                reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
-                if (db && isCloudConnected && auth?.currentUser) {
-                    try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', itemToDeleteId);
-                        await deleteDoc(docRef);
-                    } catch (e) {
-                        console.warn("Error deleting report from cloud:", e);
-                    }
-                }
-                saveReportsToStorage();
-                refreshCurrentView();
-                document.getElementById('delete-modal').classList.add('hidden');
-                itemToDeleteId = null;
-            }
-        });
-
-        function refreshCurrentView() {
-            if (!currentUser) return;
-            if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
-                renderAdminDashboard();
-            } else {
-                renderUserDashboard();
-            }
-        }
-
-        window.reloadDemoData = function() {
-            if (confirm("Загрузить полную тестовую базу? (3 группы × 5 возвещателей × 12 месяцев)")) {
-                const yr = (document.getElementById('admin-year') && document.getElementById('admin-year').value) || currentYear.toString();
-                reportsData = generate15PublishersYearData(yr);
-                saveReportsToStorage();
-                refreshCurrentView();
-                alert("Успешно загружено 15 возвещателей (180 отчетов)!");
-            }
-        };
-
-        function updateCloudUIStatus(status, text) {
-            const dot = document.getElementById('cloud-status-dot');
-            const txt = document.getElementById('cloud-status-text');
-            if (!dot || !txt) return;
-            txt.textContent = text;
-            dot.className = "w-2.5 h-2.5 rounded-full " + (status === 'connected' ? 'bg-emerald-400' : status === 'error' ? 'bg-rose-500' : 'bg-amber-400 animate-pulse');
-        }
-
-        function populateYearSelectors() {
-            const years = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
-            ['user-year', 'admin-year', 'analysis-year-admin'].forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                const currentVal = el.value || currentYear.toString();
-                el.innerHTML = '';
-                years.forEach(y => {
-                    const opt = document.createElement('option');
-                    opt.value = y.toString();
-                    opt.textContent = y.toString();
-                    if (opt.value === currentVal) opt.selected = true;
-                    el.appendChild(opt);
-                });
-                if (!el.value) el.value = currentYear.toString();
-            });
-        }
-
-        window.quickFill = function(email, pass) {
-            document.getElementById('login-email').value = email;
-            document.getElementById('login-password').value = pass;
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initCloud();
-            populateYearSelectors();
-
-            const curMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
-            const userMonthSel = document.getElementById('user-month');
-            if (userMonthSel) userMonthSel.value = curMonthStr;
-
-            document.getElementById('tab-login-btn').addEventListener('click', () => {
-                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
-                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
-                document.getElementById('login-form').classList.remove('hidden');
-                document.getElementById('register-form').classList.add('hidden');
-            });
-            document.getElementById('tab-register-btn').addEventListener('click', () => {
-                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
-                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
-                document.getElementById('register-form').classList.remove('hidden');
-                document.getElementById('login-form').classList.add('hidden');
-            });
-
-            document.getElementById('cloud-config-btn').addEventListener('click', () => {
-                document.getElementById('cloud-modal').classList.remove('hidden');
-                const cur = localStorage.getItem('custom_firebase_config') || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
-                document.getElementById('firebase-json-input').value = cur;
-            });
-            document.getElementById('close-cloud-modal').addEventListener('click', () => {
-                document.getElementById('cloud-modal').classList.add('hidden');
-            });
-            document.getElementById('save-firebase-config').addEventListener('click', () => {
-                const val = document.getElementById('firebase-json-input').value;
-                const parsed = extractFirebaseConfig(val);
-                const msg = document.getElementById('cloud-modal-msg');
-                if (parsed && parsed.apiKey) {
-                    localStorage.setItem('custom_firebase_config', JSON.stringify(parsed));
-                    msg.textContent = "Конфигурация сохранена! Перезагрузка...";
-                    msg.className = "text-xs p-2.5 rounded-lg bg-emerald-100 text-emerald-800 block font-medium";
-                    setTimeout(() => window.location.reload(), 1200);
-                } else {
-                    msg.textContent = "Ошибка: неверный формат JSON конфигурации Firebase.";
-                    msg.className = "text-xs p-2.5 rounded-lg bg-rose-100 text-rose-800 block font-medium";
-                }
-            });
-            document.getElementById('reset-firebase-config').addEventListener('click', () => {
-                localStorage.removeItem('custom_firebase_config');
-                window.location.reload();
-            });
-
-            document.getElementById('login-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value.trim().toLowerCase();
-                const pass = document.getElementById('login-password').value;
-                const errEl = document.getElementById('login-error');
-
-                const savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-                const found = savedUsers.find(u => u.email.toLowerCase() === email && u.password === pass);
-
-                if (found) {
-                    currentUser = found;
-                    errEl.classList.add('hidden');
-                    enterDashboard();
-                } else {
-                    errEl.textContent = "Неверный Email или пароль.";
-                    errEl.classList.remove('hidden');
-                }
-            });
-
-            document.getElementById('register-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('reg-email').value.trim().toLowerCase();
-                const pass = document.getElementById('reg-password').value;
-                const group = document.getElementById('reg-group').value;
-                const errEl = document.getElementById('reg-error');
-
-                if (pass.length < 4) {
-                    errEl.textContent = "Пароль должен быть не менее 4 символов.";
-                    errEl.classList.remove('hidden');
-                    return;
-                }
-
-                let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-                if (savedUsers.some(u => u.email.toLowerCase() === email)) {
-                    errEl.textContent = "Пользователь с таким email уже существует.";
-                    errEl.classList.remove('hidden');
-                    return;
-                }
-
-                const newUser = { email, password: pass, group, role: 'user' };
-                savedUsers.push(newUser);
-                localStorage.setItem('users_db', JSON.stringify(savedUsers));
-
-                if (db && isCloudConnected && auth?.currentUser) {
-                    try {
-                        const uId = email.replace(/[@.]/g, '_');
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId);
-                        await setDoc(docRef, newUser, { merge: true });
-                    } catch(e) {
-                        console.warn("User register cloud write error:", e);
-                    }
-                }
-
-                currentUser = newUser;
-                errEl.classList.add('hidden');
-                enterDashboard();
-            });
-
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                currentUser = null;
-                document.getElementById('user-dashboard').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.add('hidden');
-                document.getElementById('login-view').classList.remove('hidden');
-                document.getElementById('user-info').classList.add('hidden');
-            });
-
-            document.getElementById('add-row-btn').addEventListener('click', addNewReportRow);
-            document.getElementById('user-add-row-bottom').addEventListener('click', addNewReportRow);
-            document.getElementById('admin-add-entry').addEventListener('click', addNewReportRow);
-
-            ['admin-month', 'admin-year', 'admin-group-filter', 'admin-status-filter', 'analysis-year-admin'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('change', refreshCurrentView);
-            });
-        });
-
-        function enterDashboard() {
-            document.getElementById('login-view').classList.add('hidden');
-            const userInfo = document.getElementById('user-info');
-            userInfo.classList.remove('hidden');
-            userInfo.classList.add('flex');
-
-            const badge = document.getElementById('user-badge');
-            const display = document.getElementById('user-display');
-            const superModalBtn = document.getElementById('open-users-modal-btn');
-
-            display.textContent = currentUser.email;
-
-            if (currentUser.role === 'superadmin') {
-                badge.textContent = "Главный Админ";
-                badge.className = "px-2.5 py-1 bg-purple-900 text-purple-100 rounded-full text-xs font-semibold uppercase tracking-wider";
-                superModalBtn.classList.remove('hidden');
-                superModalBtn.classList.add('flex');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                document.getElementById('user-dashboard').classList.add('hidden');
-                setupSuperAdminModal();
-                renderAdminDashboard();
-            } else if (currentUser.role === 'admin') {
-                badge.textContent = "Администратор";
-                badge.className = "px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider";
-                superModalBtn.classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                document.getElementById('user-dashboard').classList.add('hidden');
-                renderAdminDashboard();
-            } else {
-                badge.textContent = `Группа №${currentUser.group}`;
-                badge.className = "px-2.5 py-1 bg-slate-800 text-slate-100 rounded-full text-xs font-semibold uppercase tracking-wider";
-                superModalBtn.classList.add('hidden');
-                document.getElementById('user-dashboard').classList.remove('hidden');
-                document.getElementById('admin-dashboard').classList.add('hidden');
-                document.getElementById('user-group-input').value = currentUser.group;
-                renderUserDashboard();
-            }
-        }
-
-        window.updateUserGroup = async function(val) {
-            if (!currentUser) return;
-            currentUser.group = val;
-            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-            savedUsers = savedUsers.map(u => u.email === currentUser.email ? currentUser : u);
-            localStorage.setItem('users_db', JSON.stringify(savedUsers));
-            if (db && isCloudConnected && auth?.currentUser) {
-                try {
-                    const uId = currentUser.email.replace(/[@.]/g, '_');
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId);
-                    await setDoc(docRef, currentUser, { merge: true });
-                } catch(e) {
-                    console.warn("User update cloud error:", e);
-                }
-            }
-        };
-
-        function addNewReportRow() {
-            const defaultMonth = document.getElementById('user-month') ? document.getElementById('user-month').value : '09';
-            const defaultYear = document.getElementById('user-year') ? document.getElementById('user-year').value : currentYear.toString();
-            const groupNum = (currentUser.role === 'user') ? currentUser.group : '1';
-
-            const newEntry = {
-                id: 'rep_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                personId: 'p_' + Math.random().toString(36).substr(2, 6),
-                email: currentUser.email,
-                group: groupNum,
-                month: defaultMonth,
-                year: defaultYear,
-                name: '',
-                hours: '',
-                participated: true,
-                status: 'Возвещатель',
-                studies: '0',
-                notes: '',
-                dp: '0'
-            };
-
-            reportsData.push(newEntry);
-            saveReportsToStorage();
-            refreshCurrentView();
-        }
-
-        window.onStatusChange = function(selectEl, rowId) {
-            const newStatus = selectEl.value;
-            const entry = reportsData.find(r => r.id === rowId);
-            if (!entry) return;
-            entry.status = newStatus;
-            
-            const tr = document.getElementById('row_' + rowId);
-            if (tr) {
-                const container = tr.querySelector('.participation-cell-content');
-                if (container) {
-                    if (newStatus === 'ПП' || newStatus === 'ОП') {
-                        container.innerHTML = `<input type="number" min="0" value="${entry.hours || ''}" placeholder="Часы" onchange="updateField('${rowId}', 'hours', this.value)" onkeydown="if(event.key==='Enter') saveRow('${rowId}')" class="w-20 px-2 py-1 text-xs border border-indigo-300 rounded focus:ring-2 focus:ring-indigo-500 font-bold text-indigo-700 bg-white"> <span class="text-[11px] text-slate-500">ч.</span>`;
-                    } else {
-                        container.innerHTML = `<label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" ${entry.participated ? 'checked' : ''} onchange="updateField('${rowId}', 'participated', this.checked)" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"><span class="text-xs text-slate-600">Участвовал</span></label>`;
-                    }
-                }
-            }
-        };
-
-        window.updateField = function(id, field, val) {
-            const entry = reportsData.find(r => r.id === id);
-            if (entry) {
-                entry[field] = val;
-                if (field === 'name' && val.trim()) {
-                    const match = reportsData.find(r => r.id !== id && r.name && r.name.trim().toLowerCase() === val.trim().toLowerCase());
-                    if (match && match.personId) {
-                        entry.personId = match.personId;
-                    }
-                }
-            }
-        };
-
-        window.openPublisherCard = function(identifier) {
-            if (!identifier) return;
-
-            const sample = reportsData.find(r => 
-                r.id === identifier || 
-                r.personId === identifier || 
-                (r.name && r.name.trim().toLowerCase() === identifier.trim().toLowerCase())
-            );
-
-            const targetPersonId = sample ? sample.personId : identifier;
-            const targetName = sample ? sample.name : identifier;
-
-            let publisherReports = reportsData.filter(r => {
-                if (targetPersonId && r.personId && r.personId === targetPersonId) return true;
-                if (targetName && r.name && r.name.trim().toLowerCase() === targetName.trim().toLowerCase()) return true;
-                return false;
-            });
-
-            if (publisherReports.length === 0) {
-                alert("Записи для данного возвещателя не найдены.");
-                return;
-            }
-
-            const primary = publisherReports[0];
-            document.getElementById('card-publisher-name').textContent = primary.name || targetName || 'Без имени';
-            document.getElementById('card-publisher-id').textContent = primary.personId || targetPersonId || 'ID_Неизвестен';
-            document.getElementById('card-publisher-group').textContent = primary.group || '-';
-            document.getElementById('card-total-reports').textContent = publisherReports.length;
-
-            let totalH = 0;
-            publisherReports.forEach(r => {
-                totalH += parseFloat(r.hours || 0);
-            });
-            document.getElementById('card-total-hours').textContent = totalH + ' ч.';
-
-            const tbody = document.getElementById('card-history-tbody');
-            tbody.innerHTML = '';
-            publisherReports.sort((a, b) => (b.year + b.month).localeCompare(a.year + a.month)).forEach(r => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50";
-                tr.innerHTML = `
-                    <td class="p-2 font-mono font-medium">${r.month}.${r.year}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100">${r.status || 'Возвещатель'}</span></td>
-                    <td class="p-2">${r.status === 'ПП' || r.status === 'ОП' ? (r.hours || '0') + ' ч.' : (r.participated ? 'Да' : 'Нет')}</td>
-                    <td class="p-2">${r.studies || '0'}</td>
-                    <td class="p-2">${r.dp || '0'}</td>
-                    <td class="p-2 text-slate-500">${r.notes || ''}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('publisher-card-modal').classList.remove('hidden');
-        };
-
-        document.getElementById('close-publisher-card').addEventListener('click', () => {
-            document.getElementById('publisher-card-modal').classList.add('hidden');
-        });
-
         function calculatePublisherActivity(filteredReports, analysisYear) {
             const publisherMap = {};
             reportsData.forEach(r => {
@@ -1134,8 +638,18 @@
             return { irregular, inactive };
         }
 
+        function refreshCurrentView() {
+            if (!currentUser) return;
+            if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
+                renderAdminDashboard();
+            } else {
+                renderUserDashboard();
+            }
+        }
+
         function renderUserDashboard() {
             const tbody = document.getElementById('user-table-body');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             const userGroup = currentUser.group;
@@ -1234,10 +748,10 @@
         }
 
         function renderAdminDashboard() {
-            const mFilter = document.getElementById('admin-month').value;
-            const yFilter = document.getElementById('admin-year').value;
-            const gFilter = document.getElementById('admin-group-filter').value;
-            const sFilter = document.getElementById('admin-status-filter').value;
+            const mFilter = document.getElementById('admin-month') ? document.getElementById('admin-month').value : 'all';
+            const yFilter = document.getElementById('admin-year') ? document.getElementById('admin-year').value : currentYear.toString();
+            const gFilter = document.getElementById('admin-group-filter') ? document.getElementById('admin-group-filter').value : 'all';
+            const sFilter = document.getElementById('admin-status-filter') ? document.getElementById('admin-status-filter').value : 'all';
 
             const groupsSet = new Set(reportsData.map(r => r.group).filter(Boolean));
             const groupSelect = document.getElementById('admin-group-filter');
@@ -1363,11 +877,343 @@
             }
         }
 
+        function updateCloudUIStatus(status, text) {
+            const dot = document.getElementById('cloud-status-dot');
+            const txt = document.getElementById('cloud-status-text');
+            if (!dot || !txt) return;
+            txt.textContent = text;
+            dot.className = "w-2.5 h-2.5 rounded-full " + (status === 'connected' ? 'bg-emerald-400' : status === 'error' ? 'bg-rose-500' : 'bg-amber-400 animate-pulse');
+        }
+
+        function fallbackToLocal() {
+            isCloudConnected = false;
+            updateCloudUIStatus('offline', 'Локальный режим');
+            reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
+            refreshCurrentView();
+        }
+
+        function subscribeToCloudCollections() {
+            if (!db || !auth.currentUser) return;
+
+            const reportsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
+            onSnapshot(reportsColRef, (snapshot) => {
+                const cloudReports = [];
+                snapshot.forEach(docSnap => {
+                    cloudReports.push(docSnap.data());
+                });
+
+                if (cloudReports.length > 0) {
+                    reportsData = cloudReports;
+                } else {
+                    reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
+                    reportsData.forEach(r => {
+                        const dRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', r.id);
+                        setDoc(dRef, r, { merge: true }).catch(() => {});
+                    });
+                }
+                localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                refreshCurrentView();
+            }, (err) => {
+                console.warn("Firestore snapshot error on reports:", err);
+            });
+
+            const usersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+            onSnapshot(usersColRef, (snapshot) => {
+                const cloudUsers = [];
+                snapshot.forEach(docSnap => {
+                    cloudUsers.push(docSnap.data());
+                });
+                if (cloudUsers.length > 0) {
+                    localStorage.setItem('users_db', JSON.stringify(cloudUsers));
+                } else {
+                    initialUsers.forEach(u => {
+                        const uId = u.email.replace(/[@.]/g, '_');
+                        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uId), u, { merge: true }).catch(() => {});
+                    });
+                }
+            }, (err) => {
+                console.warn("Firestore snapshot error on users:", err);
+            });
+        }
+
+        async function initCloud() {
+            try {
+                let config;
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    try {
+                        config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                    } catch (e) {
+                        config = DEFAULT_FIREBASE_CONFIG;
+                    }
+                } else {
+                    const savedConfigStr = localStorage.getItem('custom_firebase_config');
+                    config = savedConfigStr ? JSON.parse(savedConfigStr) : DEFAULT_FIREBASE_CONFIG;
+                }
+
+                const app = initializeApp(config);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (e) {
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                isCloudConnected = true;
+                updateCloudUIStatus('connected', 'Облако подключено');
+                subscribeToCloudCollections();
+            } catch (err) {
+                console.warn("Cloud init failed, switching to local mode:", err);
+                fallbackToLocal();
+            }
+        }
+
+        async function saveReportsToStorage() {
+            localStorage.setItem('reports_db', JSON.stringify(reportsData));
+            if (db && isCloudConnected && auth?.currentUser) {
+                for (const r of reportsData) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', r.id);
+                        await setDoc(docRef, r, { merge: true });
+                    } catch (e) {
+                        console.warn("Error saving report to Firestore:", e);
+                    }
+                }
+            }
+        }
+
+        window.saveRow = function(id) {
+            const rowEl = document.getElementById('row_' + id);
+            if (rowEl) {
+                rowEl.classList.add('row-saved');
+                setTimeout(() => rowEl.classList.remove('row-saved'), 1000);
+            }
+            saveReportsToStorage();
+            refreshCurrentView();
+        };
+
+        window.saveAllModifiedRows = function() {
+            saveReportsToStorage();
+            refreshCurrentView();
+            alert("Все изменения успешно сохранены в облаке!");
+        };
+
+        window.promptDelete = function(id) {
+            itemToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        };
+
+        window.reloadDemoData = function() {
+            if (confirm("Загрузить полную тестовую базу? (3 группы × 5 возвещателей × 12 месяцев)")) {
+                const yr = (document.getElementById('admin-year') && document.getElementById('admin-year').value) || currentYear.toString();
+                reportsData = generate15PublishersYearData(yr);
+                saveReportsToStorage();
+                refreshCurrentView();
+                alert("Успешно загружено 15 возвещателей (180 отчетов)!");
+            }
+        };
+
+        window.quickFill = function(email, pass) {
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = pass;
+        };
+
+        window.updateUserGroup = async function(val) {
+            if (!currentUser) return;
+            currentUser.group = val;
+            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+            savedUsers = savedUsers.map(u => u.email === currentUser.email ? currentUser : u);
+            localStorage.setItem('users_db', JSON.stringify(savedUsers));
+            if (db && isCloudConnected && auth?.currentUser) {
+                try {
+                    const uId = currentUser.email.replace(/[@.]/g, '_');
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId);
+                    await setDoc(docRef, currentUser, { merge: true });
+                } catch(e) {
+                    console.warn("User update cloud error:", e);
+                }
+            }
+        };
+
+        window.onStatusChange = function(selectEl, rowId) {
+            const newStatus = selectEl.value;
+            const entry = reportsData.find(r => r.id === rowId);
+            if (!entry) return;
+            entry.status = newStatus;
+            
+            const tr = document.getElementById('row_' + rowId);
+            if (tr) {
+                const container = tr.querySelector('.participation-cell-content');
+                if (container) {
+                    if (newStatus === 'ПП' || newStatus === 'ОП') {
+                        container.innerHTML = `<input type="number" min="0" value="${entry.hours || ''}" placeholder="Часы" onchange="updateField('${rowId}', 'hours', this.value)" onkeydown="if(event.key==='Enter') saveRow('${rowId}')" class="w-20 px-2 py-1 text-xs border border-indigo-300 rounded focus:ring-2 focus:ring-indigo-500 font-bold text-indigo-700 bg-white"> <span class="text-[11px] text-slate-500">ч.</span>`;
+                    } else {
+                        container.innerHTML = `<label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" ${entry.participated ? 'checked' : ''} onchange="updateField('${rowId}', 'participated', this.checked)" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"><span class="text-xs text-slate-600">Участвовал</span></label>`;
+                    }
+                }
+            }
+        };
+
+        window.updateField = function(id, field, val) {
+            const entry = reportsData.find(r => r.id === id);
+            if (entry) {
+                entry[field] = val;
+                if (field === 'name' && val.trim()) {
+                    const match = reportsData.find(r => r.id !== id && r.name && r.name.trim().toLowerCase() === val.trim().toLowerCase());
+                    if (match && match.personId) {
+                        entry.personId = match.personId;
+                    }
+                }
+            }
+        };
+
+        window.openPublisherCard = function(identifier) {
+            if (!identifier) return;
+
+            const sample = reportsData.find(r => 
+                r.id === identifier || 
+                r.personId === identifier || 
+                (r.name && r.name.trim().toLowerCase() === identifier.trim().toLowerCase())
+            );
+
+            const targetPersonId = sample ? sample.personId : identifier;
+            const targetName = sample ? sample.name : identifier;
+
+            let publisherReports = reportsData.filter(r => {
+                if (targetPersonId && r.personId && r.personId === targetPersonId) return true;
+                if (targetName && r.name && r.name.trim().toLowerCase() === targetName.trim().toLowerCase()) return true;
+                return false;
+            });
+
+            if (publisherReports.length === 0) {
+                alert("Записи для данного возвещателя не найдены.");
+                return;
+            }
+
+            const primary = publisherReports[0];
+            document.getElementById('card-publisher-name').textContent = primary.name || targetName || 'Без имени';
+            document.getElementById('card-publisher-id').textContent = primary.personId || targetPersonId || 'ID_Неизвестен';
+            document.getElementById('card-publisher-group').textContent = primary.group || '-';
+            document.getElementById('card-total-reports').textContent = publisherReports.length;
+
+            let totalH = 0;
+            publisherReports.forEach(r => {
+                totalH += parseFloat(r.hours || 0);
+            });
+            document.getElementById('card-total-hours').textContent = totalH + ' ч.';
+
+            const tbody = document.getElementById('card-history-tbody');
+            tbody.innerHTML = '';
+            publisherReports.sort((a, b) => (b.year + b.month).localeCompare(a.year + a.month)).forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2 font-mono font-medium">${r.month}.${r.year}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100">${r.status || 'Возвещатель'}</span></td>
+                    <td class="p-2">${r.status === 'ПП' || r.status === 'ОП' ? (r.hours || '0') + ' ч.' : (r.participated ? 'Да' : 'Нет')}</td>
+                    <td class="p-2">${r.studies || '0'}</td>
+                    <td class="p-2">${r.dp || '0'}</td>
+                    <td class="p-2 text-slate-500">${r.notes || ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('publisher-card-modal').classList.remove('hidden');
+        };
+
         window.promptTransferAdmin = function(email) {
             pendingTransferEmail = email;
             document.getElementById('transfer-target-email').textContent = email;
             document.getElementById('transfer-modal').classList.remove('hidden');
         };
+
+        function enterDashboard() {
+            document.getElementById('login-view').classList.add('hidden');
+            const userInfo = document.getElementById('user-info');
+            userInfo.classList.remove('hidden');
+            userInfo.classList.add('flex');
+
+            const badge = document.getElementById('user-badge');
+            const display = document.getElementById('user-display');
+            const superModalBtn = document.getElementById('open-users-modal-btn');
+
+            display.textContent = currentUser.email;
+
+            if (currentUser.role === 'superadmin') {
+                badge.textContent = "Главный Админ";
+                badge.className = "px-2.5 py-1 bg-purple-900 text-purple-100 rounded-full text-xs font-semibold uppercase tracking-wider";
+                superModalBtn.classList.remove('hidden');
+                superModalBtn.classList.add('flex');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('user-dashboard').classList.add('hidden');
+                setupSuperAdminModal();
+                renderAdminDashboard();
+            } else if (currentUser.role === 'admin') {
+                badge.textContent = "Администратор";
+                badge.className = "px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider";
+                superModalBtn.classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                document.getElementById('user-dashboard').classList.add('hidden');
+                renderAdminDashboard();
+            } else {
+                badge.textContent = `Группа №${currentUser.group}`;
+                badge.className = "px-2.5 py-1 bg-slate-800 text-slate-100 rounded-full text-xs font-semibold uppercase tracking-wider";
+                superModalBtn.classList.add('hidden');
+                document.getElementById('user-dashboard').classList.remove('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
+                document.getElementById('user-group-input').value = currentUser.group;
+                renderUserDashboard();
+            }
+        }
+
+        function addNewReportRow() {
+            const defaultMonth = document.getElementById('user-month') ? document.getElementById('user-month').value : '09';
+            const defaultYear = document.getElementById('user-year') ? document.getElementById('user-year').value : currentYear.toString();
+            const groupNum = (currentUser.role === 'user') ? currentUser.group : '1';
+
+            const newEntry = {
+                id: 'rep_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                personId: 'p_' + Math.random().toString(36).substr(2, 6),
+                email: currentUser.email,
+                group: groupNum,
+                month: defaultMonth,
+                year: defaultYear,
+                name: '',
+                hours: '',
+                participated: true,
+                status: 'Возвещатель',
+                studies: '0',
+                notes: '',
+                dp: '0'
+            };
+
+            reportsData.push(newEntry);
+            saveReportsToStorage();
+            refreshCurrentView();
+        }
+
+        function populateYearSelectors() {
+            const years = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+            ['user-year', 'admin-year', 'analysis-year-admin'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const currentVal = el.value || currentYear.toString();
+                el.innerHTML = '';
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y.toString();
+                    opt.textContent = y.toString();
+                    if (opt.value === currentVal) opt.selected = true;
+                    el.appendChild(opt);
+                });
+                if (!el.value) el.value = currentYear.toString();
+            });
+        }
 
         function setupSuperAdminModal() {
             const openBtn = document.getElementById('open-users-modal-btn');
@@ -1418,36 +1264,191 @@
             });
         }
 
-        document.getElementById('cancel-transfer-btn').addEventListener('click', () => {
-            document.getElementById('transfer-modal').classList.add('hidden');
-            pendingTransferEmail = null;
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            initCloud();
+            populateYearSelectors();
 
-        document.getElementById('confirm-transfer-btn').addEventListener('click', async () => {
-            if (pendingTransferEmail) {
-                let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-                savedUsers = savedUsers.map(u => {
-                    if (u.email === pendingTransferEmail) return { ...u, role: 'superadmin' };
-                    if (u.email === currentUser.email) return { ...u, role: 'admin' };
-                    return u;
-                });
-                localStorage.setItem('users_db', JSON.stringify(savedUsers));
-                
-                if (db && isCloudConnected && auth?.currentUser) {
-                    for (const u of savedUsers) {
+            const curMonthStr = String(new Date().getMonth() + 1).padStart(2, '0');
+            const userMonthSel = document.getElementById('user-month');
+            if (userMonthSel) userMonthSel.value = curMonthStr;
+
+            document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+                document.getElementById('delete-modal').classList.add('hidden');
+                itemToDeleteId = null;
+            });
+
+            document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+                if (itemToDeleteId) {
+                    reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
+                    if (db && isCloudConnected && auth?.currentUser) {
                         try {
-                            const uId = u.email.replace(/[@.]/g, '_');
-                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uId), u, { merge: true });
-                        } catch(e) {}
+                            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', itemToDeleteId);
+                            await deleteDoc(docRef);
+                        } catch (e) {
+                            console.warn("Error deleting report from cloud:", e);
+                        }
+                    }
+                    saveReportsToStorage();
+                    refreshCurrentView();
+                    document.getElementById('delete-modal').classList.add('hidden');
+                    itemToDeleteId = null;
+                }
+            });
+
+            document.getElementById('close-publisher-card').addEventListener('click', () => {
+                document.getElementById('publisher-card-modal').classList.add('hidden');
+            });
+
+            document.getElementById('tab-login-btn').addEventListener('click', () => {
+                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
+                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+            });
+
+            document.getElementById('tab-register-btn').addEventListener('click', () => {
+                document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center tab-active focus:outline-none";
+                document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
+                document.getElementById('register-form').classList.remove('hidden');
+                document.getElementById('login-form').classList.add('hidden');
+            });
+
+            document.getElementById('cloud-config-btn').addEventListener('click', () => {
+                document.getElementById('cloud-modal').classList.remove('hidden');
+                const cur = localStorage.getItem('custom_firebase_config') || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
+                document.getElementById('firebase-json-input').value = cur;
+            });
+
+            document.getElementById('close-cloud-modal').addEventListener('click', () => {
+                document.getElementById('cloud-modal').classList.add('hidden');
+            });
+
+            document.getElementById('save-firebase-config').addEventListener('click', () => {
+                const val = document.getElementById('firebase-json-input').value;
+                const parsed = extractFirebaseConfig(val);
+                const msg = document.getElementById('cloud-modal-msg');
+                if (parsed && parsed.apiKey) {
+                    localStorage.setItem('custom_firebase_config', JSON.stringify(parsed));
+                    msg.textContent = "Конфигурация сохранена! Перезагрузка...";
+                    msg.className = "text-xs p-2.5 rounded-lg bg-emerald-100 text-emerald-800 block font-medium";
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    msg.textContent = "Ошибка: неверный формат JSON конфигурации Firebase.";
+                    msg.className = "text-xs p-2.5 rounded-lg bg-rose-100 text-rose-800 block font-medium";
+                }
+            });
+
+            document.getElementById('reset-firebase-config').addEventListener('click', () => {
+                localStorage.removeItem('custom_firebase_config');
+                window.location.reload();
+            });
+
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value.trim().toLowerCase();
+                const pass = document.getElementById('login-password').value;
+                const errEl = document.getElementById('login-error');
+
+                const savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+                const found = savedUsers.find(u => u.email.toLowerCase() === email && u.password === pass);
+
+                if (found) {
+                    currentUser = found;
+                    errEl.classList.add('hidden');
+                    enterDashboard();
+                } else {
+                    errEl.textContent = "Неверный Email или пароль.";
+                    errEl.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('register-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('reg-email').value.trim().toLowerCase();
+                const pass = document.getElementById('reg-password').value;
+                const group = document.getElementById('reg-group').value;
+                const errEl = document.getElementById('reg-error');
+
+                if (pass.length < 4) {
+                    errEl.textContent = "Пароль должен быть не менее 4 символов.";
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+
+                let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+                if (savedUsers.some(u => u.email.toLowerCase() === email)) {
+                    errEl.textContent = "Пользователь с таким email уже существует.";
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+
+                const newUser = { email, password: pass, group, role: 'user' };
+                savedUsers.push(newUser);
+                localStorage.setItem('users_db', JSON.stringify(savedUsers));
+
+                if (db && isCloudConnected && auth?.currentUser) {
+                    try {
+                        const uId = email.replace(/[@.]/g, '_');
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId);
+                        await setDoc(docRef, newUser, { merge: true });
+                    } catch(e) {
+                        console.warn("User register cloud write error:", e);
                     }
                 }
 
-                currentUser.role = 'admin';
-                document.getElementById('transfer-modal').classList.add('hidden');
-                document.getElementById('superadmin-modal').classList.add('hidden');
-                alert("Права Главного Администратора успешно переданы. Вы переведены в режим Администратора.");
+                currentUser = newUser;
+                errEl.classList.add('hidden');
                 enterDashboard();
-            }
+            });
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                currentUser = null;
+                document.getElementById('user-dashboard').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
+                document.getElementById('login-view').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('hidden');
+            });
+
+            document.getElementById('add-row-btn').addEventListener('click', addNewReportRow);
+            document.getElementById('user-add-row-bottom').addEventListener('click', addNewReportRow);
+            document.getElementById('admin-add-entry').addEventListener('click', addNewReportRow);
+
+            ['admin-month', 'admin-year', 'admin-group-filter', 'admin-status-filter', 'analysis-year-admin'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', refreshCurrentView);
+            });
+
+            document.getElementById('cancel-transfer-btn').addEventListener('click', () => {
+                document.getElementById('transfer-modal').classList.add('hidden');
+                pendingTransferEmail = null;
+            });
+
+            document.getElementById('confirm-transfer-btn').addEventListener('click', async () => {
+                if (pendingTransferEmail) {
+                    let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
+                    savedUsers = savedUsers.map(u => {
+                        if (u.email === pendingTransferEmail) return { ...u, role: 'superadmin' };
+                        if (u.email === currentUser.email) return { ...u, role: 'admin' };
+                        return u;
+                    });
+                    localStorage.setItem('users_db', JSON.stringify(savedUsers));
+                    
+                    if (db && isCloudConnected && auth?.currentUser) {
+                        for (const u of savedUsers) {
+                            try {
+                                const uId = u.email.replace(/[@.]/g, '_');
+                                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uId), u, { merge: true });
+                            } catch(e) {}
+                        }
+                    }
+
+                    currentUser.role = 'admin';
+                    document.getElementById('transfer-modal').classList.add('hidden');
+                    document.getElementById('superadmin-modal').classList.add('hidden');
+                    alert("Права Главного Администратора успешно переданы. Вы переведены в режим Администратора.");
+                    enterDashboard();
+                }
+            });
         });
     </script>
 </body>
