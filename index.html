@@ -41,9 +41,6 @@
                     </button>
 
                     <div id="user-info" class="hidden items-center space-x-3">
-                        <button id="open-users-modal-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
-                            <i class="fa-solid fa-users-gear mr-1.5"></i> <span class="hidden sm:inline">Аккаунты</span>
-                        </button>
                         <span id="user-badge" class="px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
                         <span id="user-display" class="font-medium text-sm hidden md:inline"></span>
                         <button id="logout-btn" class="bg-rose-500 hover:bg-rose-600 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 flex items-center shadow-sm">
@@ -54,7 +51,7 @@
             </div>
         </header>
 
-        <!-- Cloud Settings Modal (JSONBin / REST API) -->
+        <!-- Cloud Settings Modal -->
         <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
                 <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
@@ -74,7 +71,7 @@
                         <input type="text" id="api-url-input" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono focus:ring-2 focus:ring-indigo-500" placeholder="https://api.jsonbin.io/v3/b/ВАШ_BIN_ID">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 uppercase mb-1">Master Key / Access Key ($2a$10...)</label>
+                        <label class="block font-semibold text-slate-700 uppercase mb-1">Master Key / Access Key</label>
                         <input type="password" id="api-key-input" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono focus:ring-2 focus:ring-indigo-500" placeholder="$2a$10$...">
                     </div>
                     <div id="cloud-modal-msg" class="p-2.5 rounded-lg hidden"></div>
@@ -93,16 +90,6 @@
         <!-- Login / Register View -->
         <main id="login-view" class="flex-grow flex items-center justify-center p-4">
             <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
-                <div class="flex border-b border-slate-200 mb-6 text-sm font-medium">
-                    <button id="tab-login-btn" class="flex-1 py-2 text-center tab-active focus:outline-none">
-                        <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Вход
-                    </button>
-                    <button id="tab-register-btn" class="flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none">
-                        <i class="fa-solid fa-user-plus mr-1.5"></i> Регистрация
-                    </button>
-                </div>
-
-                <!-- LOGIN FORM -->
                 <form id="login-form" class="space-y-4">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-bold text-slate-800">Авторизация</h2>
@@ -116,21 +103,16 @@
                         <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Пароль</label>
                         <input type="password" id="login-password" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="••••••••">
                     </div>
-                    <div id="login-error" class="text-xs text-rose-600 hidden font-medium"></div>
                     <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition duration-200 text-sm mt-2">
                         Войти в систему
                     </button>
 
                     <div class="mt-4 pt-3 border-t border-slate-100">
-                        <p class="text-[11px] font-semibold text-slate-500 mb-2 text-center">Тестовые аккаунты (быстрый вход):</p>
+                        <p class="text-[11px] font-semibold text-slate-500 mb-2 text-center">Тестовые аккаунты:</p>
                         <div class="flex flex-col space-y-1.5 text-xs">
                             <button type="button" onclick="quickFill('superadmin@system.com', 'admin')" class="flex justify-between items-center px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 rounded-lg transition border border-purple-200">
                                 <span class="font-medium">superadmin@system.com</span>
                                 <span class="text-[10px] bg-purple-200 px-1.5 py-0.5 rounded font-bold">Главный Админ</span>
-                            </button>
-                            <button type="button" onclick="quickFill('admin@system.com', '123')" class="flex justify-between items-center px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 rounded-lg transition border border-indigo-200">
-                                <span class="font-medium">admin@system.com</span>
-                                <span class="text-[10px] bg-indigo-200 px-1.5 py-0.5 rounded font-bold">Администратор</span>
                             </button>
                             <button type="button" onclick="quickFill('user1@test.com', '123')" class="flex justify-between items-center px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg transition border border-slate-200">
                                 <span class="font-medium">user1@test.com</span>
@@ -138,30 +120,6 @@
                             </button>
                         </div>
                     </div>
-                </form>
-
-                <!-- REGISTER FORM -->
-                <form id="register-form" class="space-y-4 hidden">
-                    <div class="text-center mb-4">
-                        <h2 class="text-xl font-bold text-slate-800">Создать аккаунт</h2>
-                        <p class="text-slate-500 text-xs mt-1">Новый аккаунт регистрируется как Пользователь</p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email</label>
-                        <input type="email" id="reg-email" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="user@example.com">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Пароль</label>
-                        <input type="password" id="reg-password" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Минимум 4 символа">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Номер группы</label>
-                        <input type="number" id="reg-group" required min="1" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="1">
-                    </div>
-                    <div id="reg-error" class="text-xs text-rose-600 hidden font-medium"></div>
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition duration-200 text-sm mt-2">
-                        Зарегистрироваться
-                    </button>
                 </form>
             </div>
         </main>
@@ -171,45 +129,20 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц по умолчанию</label>
-                        <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц</label>
+                        <select id="user-month" onchange="refreshCurrentView()" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
                             <option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option><option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option><option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год по умолчанию</label>
-                        <select id="user-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 cursor-pointer"></select>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год</label>
+                        <select id="user-year" onchange="refreshCurrentView()" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 cursor-pointer"></select>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Загрузить 15 Возвещателей
-                    </button>
-                    <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                    <button onclick="addNewReportRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-user-plus mr-2"></i> Добавить (+ возвещатель)
                     </button>
-                </div>
-            </div>
-
-            <!-- Group-scoped Analytics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-amber-900 text-sm flex items-center">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Нерегулярные (Пропустили ≥ 1 отчет)
-                        </h3>
-                        <span id="user-count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
-                    </div>
-                    <div id="user-list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
-                </div>
-                <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-rose-900 text-sm flex items-center">
-                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за период)
-                        </h3>
-                        <span id="user-count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
-                    </div>
-                    <div id="user-list-inactive" class="text-xs text-rose-800 space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
                 </div>
             </div>
 
@@ -217,18 +150,9 @@
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Мои отчеты группы</h2>
-                    <div class="flex items-center space-x-3">
-                        <button id="user-add-row-bottom" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                            <i class="fa-solid fa-user-plus mr-1.5"></i> Добавить (+ возвещатель)
-                        </button>
-                        <button onclick="saveAllModifiedRows()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                            <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все
-                        </button>
-                        <div class="flex items-center space-x-1.5 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200 text-xs">
-                            <span class="font-semibold text-indigo-700">Группа №:</span>
-                            <input type="number" min="1" id="user-group-input" onchange="updateUserGroup(this.value)" class="w-14 text-xs font-bold text-indigo-900 bg-white border border-indigo-300 rounded px-1.5 py-0.5 text-center focus:ring-2 focus:ring-indigo-500">
-                        </div>
-                    </div>
+                    <button onclick="saveAllModifiedRows()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить все
+                    </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
@@ -237,7 +161,6 @@
                                 <th class="p-3 w-10 text-center">№</th>
                                 <th class="p-3 w-28">Месяц</th>
                                 <th class="p-3 w-24">Год</th>
-                                <th class="p-3 w-16">Гр.</th>
                                 <th class="p-3 min-w-[160px]">Имя сокр.</th>
                                 <th class="p-3 w-36">Статус</th>
                                 <th class="p-3 w-40">Участие / Часы</th>
@@ -255,86 +178,11 @@
 
         <!-- Admin Dashboard -->
         <main id="admin-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
-                <div class="flex flex-wrap items-center gap-3">
-                    <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц</label>
-                        <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
-                            <option value="all">Все месяца</option><option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option><option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option><option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год</label>
-                        <select id="admin-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 cursor-pointer"></select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Группа</label>
-                        <select id="admin-group-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
-                            <option value="all">Все группы</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Статус</label>
-                        <select id="admin-status-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
-                            <option value="all">Все статусы</option>
-                            <option value="Возвещатель">Возвещатель</option>
-                            <option value="Некрещеный возвещатель">Некрещеный возвещатель</option>
-                            <option value="ПП">ПП (Пионер)</option>
-                            <option value="ОП">ОП (Спец. пионер)</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Сбросить тест-данные (15 Возв.)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Global Analytics & Year Selector -->
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-chart-pie"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-base">Анализ служения возвещателей (Все группы)</h3>
-                        <p class="text-xs text-slate-500">Автоматический расчет активности и регулярности отчетов</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2 text-xs">
-                    <span class="text-slate-600 font-semibold">Год для анализа:</span>
-                    <select id="analysis-year-admin" class="border border-slate-300 font-bold text-indigo-900 bg-indigo-50 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500"></select>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-amber-900 text-sm flex items-center">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Нерегулярные (Пропустили ≥ 1 отчет)
-                        </h3>
-                        <span id="count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
-                    </div>
-                    <div id="list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
-                </div>
-                <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-rose-900 text-sm flex items-center">
-                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i> Неактивные (0 отчетов за период)
-                        </h3>
-                        <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
-                    </div>
-                    <div id="list-inactive" class="text-xs text-rose-800 space-y-1.5 max-h-40 overflow-y-auto pr-1"></div>
-                </div>
-            </div>
-
-            <!-- Consolidated Database Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Сводная база данных отчетов (Все группы)</h2>
                     <div class="flex items-center space-x-2">
-                        <button id="admin-add-entry" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                        <button onclick="addNewReportRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                             <i class="fa-solid fa-user-plus mr-1.5"></i> Добавить (+ возвещатель)
                         </button>
                         <button onclick="saveAllModifiedRows()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
@@ -366,60 +214,6 @@
         </main>
     </div>
 
-    <!-- Publisher Card Modal -->
-    <div id="publisher-card-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-indigo-500/50 flex items-center justify-center text-lg font-bold border border-indigo-300">
-                        <i class="fa-solid fa-address-card"></i>
-                    </div>
-                    <div>
-                        <h3 id="card-publisher-name" class="font-bold text-lg leading-snug">Карточка возвещателя</h3>
-                        <p class="text-xs text-indigo-200">ID: <span id="card-publisher-id" class="font-mono"></span></p>
-                    </div>
-                </div>
-                <button id="close-publisher-card" class="text-indigo-200 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto space-y-4">
-                <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                        <div class="text-[10px] uppercase font-bold text-indigo-600">Группа</div>
-                        <div id="card-publisher-group" class="text-lg font-bold text-indigo-900 mt-0.5">-</div>
-                    </div>
-                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-                        <div class="text-[10px] uppercase font-bold text-emerald-600">Отчетов всего</div>
-                        <div id="card-total-reports" class="text-lg font-bold text-emerald-900 mt-0.5">0</div>
-                    </div>
-                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
-                        <div class="text-[10px] uppercase font-bold text-amber-600">Часы</div>
-                        <div class="text-sm font-bold text-amber-900 mt-0.5">
-                            <span id="card-total-hours">0 ч.</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">История отчетов</h4>
-                    <div class="border border-slate-200 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
-                                <tr>
-                                    <th class="p-2">Период</th>
-                                    <th class="p-2">Статус</th>
-                                    <th class="p-2">Участие / Часы</th>
-                                    <th class="p-2">Изучения</th>
-                                    <th class="p-2">Доб. пож.</th>
-                                    <th class="p-2">Заметки</th>
-                                </tr>
-                            </thead>
-                            <tbody id="card-history-tbody" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
@@ -429,21 +223,17 @@
         let reportsData = [];
         let isCloudConnected = false;
 
-        // Custom API Config
         let apiConfig = JSON.parse(localStorage.getItem('custom_api_config')) || { url: '', key: '' };
 
         const initialUsers = [
             { email: 'superadmin@system.com', password: 'admin', group: '1', role: 'superadmin' },
-            { email: 'admin@system.com', password: '123', group: '1', role: 'admin' },
-            { email: 'user1@test.com', password: '123', group: '1', role: 'user' },
-            { email: 'user2@test.com', password: '123', group: '2', role: 'user' },
-            { email: 'user3@test.com', password: '123', group: '3', role: 'user' }
+            { email: 'user1@test.com', password: '123', group: '1', role: 'user' }
         ];
 
         function populateYearSelectors() {
             const years = [];
             for (let y = currentYear - 3; y <= currentYear + 2; y++) years.push(y);
-            ['user-year', 'admin-year', 'analysis-year-admin'].forEach(id => {
+            ['user-year'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.innerHTML = '';
@@ -477,7 +267,7 @@
             }, 3000);
         }
 
-        // --- REST API Integration (JSONBin.io / Custom Backend) ---
+        // REST API Integration
         async function syncWithCloud() {
             if (!apiConfig.url) {
                 updateCloudUIStatus('offline', 'Автономно');
@@ -488,11 +278,10 @@
             try {
                 const headers = { 'Content-Type': 'application/json' };
                 if (apiConfig.key) {
-                    headers['X-Master-Key'] = apiConfig.key; // For JSONBin.io
-                    headers['Authorization'] = `Bearer ${apiConfig.key}`; // For custom REST API
+                    headers['X-Master-Key'] = apiConfig.key;
+                    headers['Authorization'] = `Bearer ${apiConfig.key}`;
                 }
 
-                // Append /latest if standard JSONBin URL is provided without it
                 let fetchUrl = apiConfig.url;
                 if (fetchUrl.includes('jsonbin.io') && !fetchUrl.endsWith('/latest')) {
                     fetchUrl += '/latest';
@@ -502,7 +291,6 @@
                 if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
 
                 const responseData = await res.json();
-                // JSONBin.io wraps content inside `record` field
                 reportsData = responseData.record || responseData.reports || responseData;
 
                 if (!Array.isArray(reportsData)) reportsData = [];
@@ -531,13 +319,15 @@
 
                     let putUrl = apiConfig.url.replace('/latest', '');
                     
-                    await fetch(putUrl, {
+                    const res = await fetch(putUrl, {
                         method: 'PUT',
                         headers,
                         body: JSON.stringify(reportsData)
                     });
+                    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
                 } catch (e) {
                     console.warn("REST API Save Error:", e);
+                    showToast("Ошибка сохранения в облако", "error");
                 }
             }
         }
@@ -558,48 +348,11 @@
             }
         }
 
-        // --- Initial Mock Data ---
-        function generate15PublishersYearData(yearStr) {
-            const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-            const publishers = [
-                { id: 'p_g1_1', group: '1', name: 'Иванов И.И.', status: 'Возвещатель', activeMonths: months, hours: '', studies: 1, dp: '100', notes: 'Регулярный' },
-                { id: 'p_g1_2', group: '1', name: 'Петрова А.С.', status: 'ПП', activeMonths: months, hours: '50', studies: 3, dp: '200', notes: 'Общий пионер' },
-                { id: 'p_g1_3', group: '1', name: 'Сидоров В.К.', status: 'Возвещатель', activeMonths: ['01','03','05','07','09','11'], hours: '', studies: 0, dp: '0', notes: 'Нерегулярный' },
-                { id: 'p_g2_1', group: '2', name: 'Морозов М.Н.', status: 'Возвещатель', activeMonths: months, hours: '', studies: 2, dp: '150', notes: '' },
-                { id: 'p_g2_2', group: '2', name: 'Новикова О.И.', status: 'ПП', activeMonths: months, hours: '55', studies: 4, dp: '250', notes: 'Пионер' },
-                { id: 'p_g3_1', group: '3', name: 'Васильев Н.С.', status: 'Возвещатель', activeMonths: months, hours: '', studies: 2, dp: '200', notes: '' }
-            ];
-
-            const reports = [];
-            publishers.forEach(p => {
-                months.forEach(m => {
-                    const isParticipated = p.activeMonths.includes(m);
-                    reports.push({
-                        id: `rep_${p.id}_${yearStr}_${m}`,
-                        personId: p.id,
-                        group: p.group,
-                        month: m,
-                        year: yearStr,
-                        name: p.name,
-                        hours: (p.status === 'ПП' || p.status === 'ОП') ? (isParticipated ? p.hours : '0') : '',
-                        participated: isParticipated,
-                        status: p.status,
-                        studies: isParticipated ? p.studies.toString() : '0',
-                        notes: isParticipated ? p.notes : '',
-                        dp: isParticipated ? p.dp : '0'
-                    });
-                });
-            });
-            return reports;
-        }
-
-        // --- Core Functions ---
         function enterDashboard() {
             if (!currentUser) return;
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('user-info').classList.add('flex');
-
             document.getElementById('user-display').textContent = currentUser.email;
 
             if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
@@ -626,15 +379,14 @@
             return `
                 <tr id="row_${r.id}" class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
                     <td class="p-3 text-center text-slate-400 font-mono">${idx + 1}</td>
-                    ${isAdmin ? `<td class="p-3 font-bold text-indigo-700">Гр. ${r.group || '1'}</td>` : ''}
+                    ${isAdmin ? `<td class="p-3 font-bold text-indigo-700"><input type="number" value="${r.group || '1'}" oninput="updateField('${r.id}', 'group', this.value)" class="w-12 text-center border rounded"></td>` : ''}
                     <td class="p-3 font-semibold text-slate-700">${r.month}.${r.year}</td>
                     <td class="p-3 font-semibold text-slate-500">${r.year}</td>
-                    ${!isAdmin ? `<td class="p-3 font-bold text-indigo-700">Гр. ${r.group || '1'}</td>` : ''}
                     <td class="p-3">
-                        <input type="text" value="${r.name || ''}" onchange="updateField('${r.id}', 'name', this.value)" class="w-full px-2 py-1 text-xs border rounded">
+                        <input type="text" value="${r.name || ''}" oninput="updateField('${r.id}', 'name', this.value)" class="w-full px-2 py-1 text-xs border rounded">
                     </td>
                     <td class="p-3">
-                        <select onchange="updateField('${r.id}', 'status', this.value)" class="w-full px-2 py-1 text-xs border rounded bg-white">
+                        <select onchange="updateField('${r.id}', 'status', this.value); refreshCurrentView();" class="w-full px-2 py-1 text-xs border rounded bg-white">
                             <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                             <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный</option>
                             <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
@@ -643,21 +395,21 @@
                     </td>
                     <td class="p-3">
                         ${isPioneer 
-                            ? `<input type="number" value="${r.hours || ''}" onchange="updateField('${r.id}', 'hours', this.value)" class="w-16 px-2 py-1 border rounded"> ч.`
+                            ? `<input type="number" value="${r.hours || ''}" oninput="updateField('${r.id}', 'hours', this.value)" class="w-16 px-2 py-1 border rounded"> ч.`
                             : `<input type="checkbox" ${r.participated ? 'checked' : ''} onchange="updateField('${r.id}', 'participated', this.checked)">`
                         }
                     </td>
                     <td class="p-3">
-                        <input type="number" value="${r.studies || '0'}" onchange="updateField('${r.id}', 'studies', this.value)" class="w-16 px-2 py-1 border rounded text-center">
+                        <input type="number" value="${r.studies || '0'}" oninput="updateField('${r.id}', 'studies', this.value)" class="w-16 px-2 py-1 border rounded text-center">
                     </td>
                     <td class="p-3">
-                        <input type="text" value="${r.notes || ''}" onchange="updateField('${r.id}', 'notes', this.value)" class="w-full px-2 py-1 border rounded">
+                        <input type="text" value="${r.notes || ''}" oninput="updateField('${r.id}', 'notes', this.value)" class="w-full px-2 py-1 border rounded">
                     </td>
                     <td class="p-3">
-                        <input type="number" value="${r.dp || '0'}" onchange="updateField('${r.id}', 'dp', this.value)" class="w-16 px-2 py-1 border rounded text-right">
+                        <input type="number" value="${r.dp || '0'}" oninput="updateField('${r.id}', 'dp', this.value)" class="w-16 px-2 py-1 border rounded text-right">
                     </td>
                     <td class="p-3 text-center space-x-1">
-                        <button onclick="saveRow('${r.id}')" class="p-1.5 bg-emerald-50 text-emerald-600 rounded"><i class="fa-solid fa-floppy-disk"></i></button>
+                        <button onclick="saveRow('${r.id}')" class="p-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded"><i class="fa-solid fa-floppy-disk"></i></button>
                     </td>
                 </tr>
             `;
@@ -670,27 +422,54 @@
 
             const tbody = document.getElementById('user-table-body');
             if (!tbody) return;
-            tbody.innerHTML = '';
 
             const groupReports = reportsData.filter(r => String(r.group) === String(group) && r.month === selMonth && r.year === selYear);
-            groupReports.forEach((r, idx) => {
-                tbody.innerHTML += renderTableRow(r, idx, false);
-            });
+            tbody.innerHTML = groupReports.map((r, idx) => renderTableRow(r, idx, false)).join('');
         }
 
         function renderAdminDashboard() {
             const tbody = document.getElementById('admin-table-body');
             if (!tbody) return;
-            tbody.innerHTML = '';
 
-            reportsData.forEach((r, idx) => {
-                tbody.innerHTML += renderTableRow(r, idx, true);
-            });
+            tbody.innerHTML = reportsData.map((r, idx) => renderTableRow(r, idx, true)).join('');
         }
 
         window.updateField = function(id, field, val) {
             const entry = reportsData.find(r => r.id === id);
-            if (entry) entry[field] = val;
+            if (!entry) return;
+            
+            entry[field] = val;
+
+            // Синхронизация personId по ФИО
+            if (field === 'name' && val.trim()) {
+                const cleanName = val.trim().toLowerCase();
+                const existing = reportsData.find(r => r.name && r.name.trim().toLowerCase() === cleanName && r.personId);
+                entry.personId = existing ? existing.personId : 'p_' + cleanName.replace(/\s+/g, '_');
+            }
+        };
+
+        window.addNewReportRow = function() {
+            const selMonth = document.getElementById('user-month')?.value || '01';
+            const selYear = document.getElementById('user-year')?.value || currentYear.toString();
+            const group = currentUser?.group || '1';
+
+            const newId = 'rep_' + Date.now();
+            reportsData.push({
+                id: newId,
+                personId: 'p_' + Date.now(),
+                group: group,
+                month: selMonth,
+                year: selYear,
+                name: '',
+                hours: '',
+                participated: false,
+                status: 'Возвещатель',
+                studies: '0',
+                notes: '',
+                dp: '0'
+            });
+
+            refreshCurrentView();
         };
 
         window.saveRow = function(id) {
@@ -700,7 +479,7 @@
 
         window.saveAllModifiedRows = function() {
             saveReportsToStorage();
-            showToast("Все данные обновлены!", "success");
+            showToast("Все данные сохранены!", "success");
         };
 
         window.quickFill = function(email, pass) {
@@ -710,21 +489,17 @@
             enterDashboard();
         };
 
-        // --- DOM Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             populateYearSelectors();
 
-            // Load Local Data
-            reportsData = JSON.parse(localStorage.getItem('reports_db')) || generate15PublishersYearData(currentYear.toString());
+            reportsData = JSON.parse(localStorage.getItem('reports_db')) || [];
 
-            // Load REST API Configuration
             if (apiConfig.url) {
                 document.getElementById('api-url-input').value = apiConfig.url;
                 document.getElementById('api-key-input').value = apiConfig.key;
                 syncWithCloud();
             }
 
-            // Cloud modal listeners
             document.getElementById('cloud-config-btn').addEventListener('click', () => {
                 document.getElementById('cloud-modal').classList.remove('hidden');
             });
@@ -741,7 +516,7 @@
                 localStorage.setItem('custom_api_config', JSON.stringify(apiConfig));
 
                 document.getElementById('cloud-modal').classList.add('hidden');
-                showToast("Настройки REST API сохранены", "success");
+                showToast("Настройки API сохранены", "success");
                 syncWithCloud();
             });
 
@@ -751,7 +526,7 @@
                 document.getElementById('api-url-input').value = '';
                 document.getElementById('api-key-input').value = '';
                 updateCloudUIStatus('offline', 'Автономно');
-                showToast("Настройки REST API сброшены", "info");
+                showToast("Настройки API сброшены", "info");
             });
 
             document.getElementById('login-form').addEventListener('submit', (e) => {
