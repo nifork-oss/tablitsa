@@ -179,7 +179,7 @@
                 <div class="flex items-center space-x-4">
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц отчета</label>
-                        <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                        <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
                             <option value="01">Январь</option>
                             <option value="02">Февраль</option>
                             <option value="03">Март</option>
@@ -195,8 +195,10 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год</label>
-                        <input type="number" id="user-year" readonly class="border border-slate-200 bg-slate-50 text-slate-600 font-bold rounded-lg px-3 py-1.5 text-sm w-24 text-center">
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год отчета</label>
+                        <select id="user-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                            <!-- Populated dynamically -->
+                        </select>
                     </div>
                 </div>
                 
@@ -208,6 +210,21 @@
                 </div>
             </div>
 
+            <!-- Analysis Selector Header for User -->
+            <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-chart-line text-indigo-600 text-base"></i>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm">Анализ служения группы</h3>
+                        <p class="text-[11px] text-slate-500">Оценка активности за 6 месяцев до выбранной даты</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-xs">
+                    <span class="text-slate-500 font-medium">Период анализа:</span>
+                    <span id="user-analysis-period-badge" class="bg-indigo-100 text-indigo-800 font-bold px-2.5 py-1 rounded-lg border border-indigo-200"></span>
+                </div>
+            </div>
+
             <!-- Group-scoped Analytics (for Group Overseers / Users) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Group Irregular -->
@@ -215,7 +232,7 @@
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-amber-900 text-sm flex items-center">
                             <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i>
-                            Нерегулярные нашей группы (Пропустили ≥ 1 отчет за 6 мес.)
+                            Нерегулярные нашей группы (Пропустили ≥ 1 отчет)
                         </h3>
                         <span id="user-count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
@@ -227,7 +244,7 @@
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
                             <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
-                            Неактивные нашей группы (0 отчетов за 6 месяцев)
+                            Неактивные нашей группы (0 отчетов за 6 мес.)
                         </h3>
                         <span id="user-count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
@@ -271,7 +288,7 @@
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц / Год</label>
                         <div class="flex space-x-2">
-                            <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                            <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
                                 <option value="all">Все месяцы</option>
                                 <option value="01">Январь</option>
                                 <option value="02">Февраль</option>
@@ -286,20 +303,23 @@
                                 <option value="11">Ноябрь</option>
                                 <option value="12">Декабрь</option>
                             </select>
-                            <input type="number" id="admin-year" readonly class="border border-slate-200 bg-slate-50 text-slate-600 font-bold rounded-lg px-3 py-1.5 text-sm w-20 text-center">
+                            <select id="admin-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">Все года</option>
+                                <!-- Populated dynamically -->
+                            </select>
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Фильтр группы</label>
-                        <select id="admin-group-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                        <select id="admin-group-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
                             <option value="all">Все группы</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Фильтр статуса</label>
-                        <select id="admin-status-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                        <select id="admin-status-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
                             <option value="all">Все статусы</option>
                             <option value="Возвещатель">Возвещатель</option>
                             <option value="Некрещеный возвещатель">Некрещеный возвещатель</option>
@@ -336,6 +356,25 @@
                 </div>
             </div>
 
+            <!-- Analysis Header & Specific Year Selector for Admin -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Анализ служения возвещателей (Все группы)</h3>
+                        <p class="text-xs text-slate-500">Автоматический расчет активности и регулярности отчетов за 6 месяцев</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-xs">
+                    <span class="text-slate-600 font-semibold">Год для анализа:</span>
+                    <select id="analysis-year-admin" class="border border-slate-300 font-bold text-indigo-900 bg-indigo-50 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+            </div>
+
             <!-- Analysis Section (All Groups) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Missing 1+ Month -->
@@ -355,7 +394,7 @@
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
                             <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
-                            Неактивные (0 отчетов за последние 6 месяцев)
+                            Неактивные (0 отчетов за 6 месяцев)
                         </h3>
                         <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
@@ -486,6 +525,23 @@
         </div>
     </div>
 
+    <!-- Custom Transfer Confirmation Modal -->
+    <div id="transfer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 text-center">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full inline-flex items-center justify-center mb-3 text-xl">
+                <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-2">Передать права Главного Админа?</h3>
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                Вы действительно хотите передать права Главного Администратора пользователю <strong id="transfer-target-email" class="text-indigo-600"></strong>? Ваш статус будет изменен на Администратора.
+            </p>
+            <div class="flex space-x-3">
+                <button id="cancel-transfer-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-semibold">Отмена</button>
+                <button id="confirm-transfer-btn" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Delete Modal Dialog -->
     <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 border border-slate-200 text-center">
@@ -516,10 +572,11 @@
         let auth = null;
         let isCloudConnected = false;
         let itemToDeleteId = null;
+        let pendingTransferEmail = null;
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'tablitsa-app';
 
-        // Default Project Firebase Configuration (tablitsa-40cf4)
+        // Default Project Firebase Configuration
         const DEFAULT_FIREBASE_CONFIG = {
             apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
             authDomain: "tablitsa-40cf4.firebaseapp.com",
@@ -665,6 +722,7 @@
                 if (cloudItems.length > 0) {
                     reportsData = cloudItems;
                     localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                    populateYearSelectors();
                     refreshCurrentView();
                 }
             }, (error) => {
@@ -754,10 +812,61 @@
             document.getElementById('login-password').value = pass;
         };
 
-        function initApp() {
-            document.getElementById('user-year').value = currentYear;
-            document.getElementById('admin-year').value = currentYear;
+        // Helper to dynamically build year options
+        function getAvailableYears() {
+            const yearsSet = new Set();
+            // Standard range: recent 4 years to next year
+            for (let y = currentYear - 3; y <= currentYear + 1; y++) {
+                yearsSet.add(y.toString());
+            }
+            // Add any year present in reportsData
+            reportsData.forEach(r => {
+                if (r.year) yearsSet.add(r.year.toString());
+            });
+            return Array.from(yearsSet).sort((a, b) => b.localeCompare(a));
+        }
 
+        function populateYearSelectors() {
+            const years = getAvailableYears();
+
+            // Populate User Dashboard Year Selector
+            const userYearSelect = document.getElementById('user-year');
+            const currentUserYearVal = userYearSelect.value || currentYear.toString();
+            userYearSelect.innerHTML = '';
+            years.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.innerText = y;
+                userYearSelect.appendChild(opt);
+            });
+            userYearSelect.value = years.includes(currentUserYearVal) ? currentUserYearVal : currentYear.toString();
+
+            // Populate Admin Dashboard Year Selector
+            const adminYearSelect = document.getElementById('admin-year');
+            const currentAdminYearVal = adminYearSelect.value || currentYear.toString();
+            adminYearSelect.innerHTML = '<option value="all">Все года</option>';
+            years.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.innerText = y;
+                adminYearSelect.appendChild(opt);
+            });
+            adminYearSelect.value = currentAdminYearVal;
+
+            // Populate Admin Analysis Year Selector
+            const adminAnalysisYear = document.getElementById('analysis-year-admin');
+            const currentAnalysisYearVal = adminAnalysisYear.value || currentYear.toString();
+            adminAnalysisYear.innerHTML = '';
+            years.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.innerText = y + " год";
+                adminAnalysisYear.appendChild(opt);
+            });
+            adminAnalysisYear.value = years.includes(currentAnalysisYearVal) ? currentAnalysisYearVal : currentYear.toString();
+        }
+
+        function initApp() {
             const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
             document.getElementById('user-month').value = currentMonth;
 
@@ -790,6 +899,7 @@
                 saveToStorage();
             }
 
+            populateYearSelectors();
             setupEventListeners();
 
             // Restore saved session
@@ -1009,11 +1119,12 @@
 
             // User Dashboard controls
             document.getElementById('user-month').addEventListener('change', renderUserDashboard);
+            document.getElementById('user-year').addEventListener('change', renderUserDashboard);
 
             // Add Row with Empty fields
             document.getElementById('add-row-btn').addEventListener('click', () => {
                 const month = document.getElementById('user-month').value;
-                const year = currentYear.toString();
+                const year = document.getElementById('user-year').value || currentYear.toString();
                 const personId = 'p_' + Date.now();
 
                 const newEntry = {
@@ -1033,18 +1144,25 @@
                 };
 
                 reportsData.push(newEntry);
+                populateYearSelectors();
                 saveToStorage(newEntry);
                 renderUserDashboard();
             });
 
             // Admin controls
             document.getElementById('admin-month').addEventListener('change', renderAdminDashboard);
+            document.getElementById('admin-year').addEventListener('change', renderAdminDashboard);
             document.getElementById('admin-group-filter').addEventListener('change', renderAdminDashboard);
             document.getElementById('admin-status-filter').addEventListener('change', renderAdminDashboard);
+
+            // Admin analysis year change listener
+            document.getElementById('analysis-year-admin').addEventListener('change', analyzeSixMonthsActivity);
 
             document.getElementById('admin-add-entry').addEventListener('click', () => {
                 const selectedMonth = document.getElementById('admin-month').value;
                 const monthVal = selectedMonth === 'all' ? '01' : selectedMonth;
+                const selectedYear = document.getElementById('admin-year').value;
+                const yearVal = selectedYear === 'all' ? currentYear.toString() : selectedYear;
                 const groupFilter = document.getElementById('admin-group-filter').value;
                 const groupVal = groupFilter === 'all' ? '1' : groupFilter;
                 const personId = 'p_' + Date.now();
@@ -1055,7 +1173,7 @@
                     email: 'admin_created@system.com',
                     group: groupVal,
                     month: monthVal,
-                    year: currentYear.toString(),
+                    year: yearVal,
                     name: '',
                     hours: '',
                     participated: false,
@@ -1066,6 +1184,7 @@
                 };
 
                 reportsData.push(newEntry);
+                populateYearSelectors();
                 saveToStorage(newEntry);
                 populateAdminGroupFilter();
                 renderAdminDashboard();
@@ -1074,6 +1193,36 @@
             // Close Publisher Card Modal
             document.getElementById('close-publisher-card').addEventListener('click', () => {
                 document.getElementById('publisher-card-modal').classList.add('hidden');
+            });
+
+            // Transfer SuperAdmin Custom Modal Buttons
+            document.getElementById('cancel-transfer-btn').addEventListener('click', () => {
+                pendingTransferEmail = null;
+                document.getElementById('transfer-modal').classList.add('hidden');
+            });
+
+            document.getElementById('confirm-transfer-btn').addEventListener('click', () => {
+                if (pendingTransferEmail) {
+                    const targetUser = usersData.find(u => u.email === pendingTransferEmail);
+                    const currentSuper = usersData.find(u => u.email === currentUser.email);
+
+                    if (targetUser && currentSuper) {
+                        currentSuper.role = 'admin';
+                        targetUser.role = 'superadmin';
+                        currentUser.role = 'admin';
+
+                        localStorage.setItem('app_users_db', JSON.stringify(usersData));
+                        localStorage.setItem('current_user_session', JSON.stringify(currentUser));
+                        saveUserToCloud(currentSuper);
+                        saveUserToCloud(targetUser);
+
+                        document.getElementById('transfer-modal').classList.add('hidden');
+                        document.getElementById('superadmin-modal').classList.add('hidden');
+                        pendingTransferEmail = null;
+
+                        applyUserSession();
+                    }
+                }
             });
 
             // Delete Modal Handlers
@@ -1096,6 +1245,7 @@
 
                     itemToDeleteId = null;
                     document.getElementById('delete-modal').classList.add('hidden');
+                    populateYearSelectors();
                     populateAdminGroupFilter();
                     refreshCurrentView();
                 }
@@ -1154,23 +1304,9 @@
         };
 
         window.transferSuperAdmin = function(email) {
-            if (confirm(`Вы уверены, что хотите передать статус Главного Администратора пользователю ${email}?`)) {
-                const targetUser = usersData.find(u => u.email === email);
-                const currentSuper = usersData.find(u => u.email === currentUser.email);
-
-                if (targetUser && currentSuper) {
-                    currentSuper.role = 'admin';
-                    targetUser.role = 'superadmin';
-                    currentUser.role = 'admin';
-
-                    localStorage.setItem('app_users_db', JSON.stringify(usersData));
-                    localStorage.setItem('current_user_session', JSON.stringify(currentUser));
-                    saveUserToCloud(currentSuper);
-                    saveUserToCloud(targetUser);
-
-                    applyUserSession();
-                }
-            }
+            pendingTransferEmail = email;
+            document.getElementById('transfer-target-email').innerText = email;
+            document.getElementById('transfer-modal').classList.remove('hidden');
         };
 
         function renderUserDashboard() {
@@ -1178,7 +1314,7 @@
             tbody.innerHTML = '';
 
             const selectedMonth = document.getElementById('user-month').value;
-            const selectedYear = currentYear.toString();
+            const selectedYear = document.getElementById('user-year').value;
 
             const userEntries = reportsData.filter(item => 
                 item.group === currentUser.group &&
@@ -1190,7 +1326,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="8" class="text-center py-8 text-slate-400 text-xs">
-                            Записей за выбранный месяц не найдено. Нажмите "Добавить строку" для ввода отчета.
+                            Записей за выбранный месяц (${selectedMonth}/${selectedYear}) не найдено. Нажмите "Добавить строку" для ввода отчета.
                         </td>
                     </tr>
                 `;
@@ -1276,14 +1412,16 @@
             tbody.innerHTML = '';
 
             const selectedMonth = document.getElementById('admin-month').value;
+            const selectedYear = document.getElementById('admin-year').value;
             const selectedGroup = document.getElementById('admin-group-filter').value;
             const selectedStatus = document.getElementById('admin-status-filter').value;
 
             let filtered = reportsData.filter(item => {
                 const matchMonth = selectedMonth === 'all' || item.month === selectedMonth;
+                const matchYear = selectedYear === 'all' || item.year === selectedYear;
                 const matchGroup = selectedGroup === 'all' || item.group === selectedGroup;
                 const matchStatus = selectedStatus === 'all' || item.status === selectedStatus;
-                return matchMonth && matchGroup && matchStatus;
+                return matchMonth && matchYear && matchGroup && matchStatus;
             });
 
             let totalHours = 0;
@@ -1407,6 +1545,7 @@
                 entry[key] = value;
                 saveToStorage(entry);
                 if (key === 'group') populateAdminGroupFilter();
+                if (key === 'year') populateYearSelectors();
                 refreshCurrentView();
             }
         };
@@ -1421,6 +1560,136 @@
             saveToStorage(updatedEntry);
             refreshCurrentView();
         };
+
+        // Helper function to calculate previous 6 months list relative to selected year and month
+        function calculate6MonthsWindow(targetYear, targetMonth) {
+            const monthsList = [];
+            let y = parseInt(targetYear, 10) || currentYear;
+            let m = parseInt(targetMonth, 10);
+            if (isNaN(m) || m < 1 || m > 12) m = 12; // default to December if 'all' or invalid
+
+            for (let i = 0; i < 6; i++) {
+                const monthStr = String(m).padStart(2, '0');
+                monthsList.push({ year: y.toString(), month: monthStr });
+                m--;
+                if (m < 1) {
+                    m = 12;
+                    y--;
+                }
+            }
+            return monthsList;
+        }
+
+        function renderGroupActivityAnalysis() {
+            const irregularList = document.getElementById('user-list-irregular');
+            const inactiveList = document.getElementById('user-list-inactive');
+            const badge = document.getElementById('user-analysis-period-badge');
+            
+            irregularList.innerHTML = '';
+            inactiveList.innerHTML = '';
+
+            const selectedMonth = document.getElementById('user-month').value;
+            const selectedYear = document.getElementById('user-year').value || currentYear.toString();
+
+            const last6Months = calculate6MonthsWindow(selectedYear, selectedMonth);
+            const startPeriod = last6Months[last6Months.length - 1];
+            const endPeriod = last6Months[0];
+
+            if (badge) {
+                badge.innerText = `${startPeriod.month}.${startPeriod.year} — ${endPeriod.month}.${endPeriod.year}`;
+            }
+
+            const groupReports = reportsData.filter(r => r.group === currentUser.group);
+            const publishersInGroup = [...new Set(groupReports.map(item => item.personId).filter(id => id))];
+
+            let countIrregular = 0;
+            let countInactive = 0;
+
+            publishersInGroup.forEach(pId => {
+                const pReports = groupReports.filter(r => r.personId === pId);
+                if (pReports.length === 0) return;
+
+                const name = pReports[pReports.length - 1].name || 'Имя не указано';
+
+                // Count how many of the 6 target months have a report
+                const submittedCount = last6Months.filter(period => 
+                    pReports.some(r => r.year === period.year && r.month === period.month)
+                ).length;
+
+                if (submittedCount === 0) {
+                    countInactive++;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center py-1 border-b border-rose-100';
+                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-rose-600 font-mono font-semibold">0/6 мес.</span>`;
+                    inactiveList.appendChild(item);
+                } else if (submittedCount < 6) {
+                    countIrregular++;
+                    const missedCount = 6 - submittedCount;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
+                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
+                    irregularList.appendChild(item);
+                }
+            });
+
+            document.getElementById('user-count-irregular').innerText = countIrregular;
+            document.getElementById('user-count-inactive').innerText = countInactive;
+
+            if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600 italic">Все возвещатели вашей группы сдавали отчеты регулярно!</div>';
+            if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600 italic">За указанные 6 месяцев в группе нет неактивных.</div>';
+        }
+
+        function analyzeSixMonthsActivity() {
+            const irregularList = document.getElementById('list-irregular');
+            const inactiveList = document.getElementById('list-inactive');
+            
+            irregularList.innerHTML = '';
+            inactiveList.innerHTML = '';
+
+            const selectedAnalysisYear = document.getElementById('analysis-year-admin').value || currentYear.toString();
+            const selectedMonth = document.getElementById('admin-month').value;
+
+            const last6Months = calculate6MonthsWindow(selectedAnalysisYear, selectedMonth);
+
+            const allPersonIds = [...new Set(reportsData.map(item => item.personId).filter(id => id))];
+
+            let countIrregular = 0;
+            let countInactive = 0;
+
+            allPersonIds.forEach(pId => {
+                const pReports = reportsData.filter(r => r.personId === pId);
+                if (pReports.length === 0) return;
+
+                const latest = pReports[pReports.length - 1];
+                const name = latest.name || 'Без имени';
+                const group = latest.group;
+
+                const submittedCount = last6Months.filter(period => 
+                    pReports.some(r => r.year === period.year && r.month === period.month)
+                ).length;
+
+                if (submittedCount === 0) {
+                    countInactive++;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center py-1 border-b border-rose-100';
+                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-rose-600 font-mono font-semibold">0/6 мес.</span>`;
+                    inactiveList.appendChild(item);
+                } else if (submittedCount < 6) {
+                    countIrregular++;
+                    const missedCount = 6 - submittedCount;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
+                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
+                    irregularList.appendChild(item);
+                }
+            });
+
+            document.getElementById('count-irregular').innerText = countIrregular;
+            document.getElementById('count-inactive').innerText = countInactive;
+
+            if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600 italic">Все возвещатели сдавали отчеты регулярно за этот период!</div>';
+            if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600 italic">За указанный 6-месячный период нет неактивных.</div>';
+        }
 
         window.openPublisherCard = function(personId) {
             const personReports = reportsData.filter(r => r.personId === personId || (r.name && r.personId === personId));
@@ -1446,7 +1715,11 @@
             const tbody = document.getElementById('card-history-tbody');
             tbody.innerHTML = '';
 
-            personReports.sort((a, b) => b.month.localeCompare(a.month)).forEach(r => {
+            personReports.sort((a, b) => {
+                const keyA = `${a.year}-${a.month}`;
+                const keyB = `${b.year}-${b.month}`;
+                return keyB.localeCompare(keyA);
+            }).forEach(r => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50";
 
@@ -1473,112 +1746,6 @@
             itemToDeleteId = id;
             document.getElementById('delete-modal').classList.remove('hidden');
         };
-
-        function renderGroupActivityAnalysis() {
-            const irregularList = document.getElementById('user-list-irregular');
-            const inactiveList = document.getElementById('user-list-inactive');
-            
-            irregularList.innerHTML = '';
-            inactiveList.innerHTML = '';
-
-            const last6Months = [];
-            const currentDate = new Date();
-            for (let i = 0; i < 6; i++) {
-                const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                last6Months.push(m);
-            }
-
-            const groupReports = reportsData.filter(r => r.group === currentUser.group);
-            const publishersInGroup = [...new Set(groupReports.map(item => item.personId))];
-
-            let countIrregular = 0;
-            let countInactive = 0;
-
-            publishersInGroup.forEach(pId => {
-                const pReports = groupReports.filter(r => r.personId === pId && r.year === currentYear.toString());
-                if (pReports.length === 0) return;
-
-                const name = pReports[pReports.length - 1].name || 'Имя не указано';
-                const submittedMonths = pReports.map(r => r.month);
-                const submittedLast6Count = last6Months.filter(m => submittedMonths.includes(m)).length;
-
-                if (submittedLast6Count === 0) {
-                    countInactive++;
-                    const item = document.createElement('div');
-                    item.className = 'flex justify-between items-center py-1 border-b border-rose-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-rose-600 font-mono font-semibold">0/6 мес.</span>`;
-                    inactiveList.appendChild(item);
-                } else if (submittedLast6Count < 6) {
-                    countIrregular++;
-                    const missedCount = 6 - submittedLast6Count;
-                    const item = document.createElement('div');
-                    item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
-                    irregularList.appendChild(item);
-                }
-            });
-
-            document.getElementById('user-count-irregular').innerText = countIrregular;
-            document.getElementById('user-count-inactive').innerText = countInactive;
-
-            if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600 italic">Все возвещатели группы сдавали отчеты регулярно!</div>';
-            if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600 italic">За последние 6 месяцев в группе нет неактивных.</div>';
-        }
-
-        function analyzeSixMonthsActivity() {
-            const irregularList = document.getElementById('list-irregular');
-            const inactiveList = document.getElementById('list-inactive');
-            
-            irregularList.innerHTML = '';
-            inactiveList.innerHTML = '';
-
-            const last6Months = [];
-            const currentDate = new Date();
-            for (let i = 0; i < 6; i++) {
-                const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                last6Months.push(m);
-            }
-
-            const allPersonIds = [...new Set(reportsData.map(item => item.personId).filter(id => id))];
-
-            let countIrregular = 0;
-            let countInactive = 0;
-
-            allPersonIds.forEach(pId => {
-                const pReports = reportsData.filter(r => r.personId === pId && r.year === currentYear.toString());
-                if (pReports.length === 0) return;
-
-                const latest = pReports[pReports.length - 1];
-                const name = latest.name || 'Без имени';
-                const group = latest.group;
-
-                const submittedMonths = pReports.map(r => r.month);
-                const submittedLast6Count = last6Months.filter(m => submittedMonths.includes(m)).length;
-
-                if (submittedLast6Count === 0) {
-                    countInactive++;
-                    const item = document.createElement('div');
-                    item.className = 'flex justify-between items-center py-1 border-b border-rose-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-rose-600 font-mono font-semibold">0/6 мес.</span>`;
-                    inactiveList.appendChild(item);
-                } else if (submittedLast6Count < 6) {
-                    countIrregular++;
-                    const missedCount = 6 - submittedLast6Count;
-                    const item = document.createElement('div');
-                    item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
-                    irregularList.appendChild(item);
-                }
-            });
-
-            document.getElementById('count-irregular').innerText = countIrregular;
-            document.getElementById('count-inactive').innerText = countInactive;
-
-            if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600 italic">Все возвещатели сдавали отчеты регулярно!</div>';
-            if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600 italic">За последние 6 месяцев нет неактивных.</div>';
-        }
 
         window.onload = async () => {
             await initCloud();
