@@ -20,9 +20,189 @@
         <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-30">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <button id="manual-save-user-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить
+                    <i class="fa-solid fa-clipboard-list text-2xl text-indigo-200"></i>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-wide leading-tight">Система Отчетов</h1>
+                        <p class="text-[10px] text-indigo-200 uppercase tracking-widest font-medium">Сводный учет возвещателей</p>
+                    </div>
+                </div>
+
+                <!-- Cloud Status Indicator & Navigation -->
+                <div class="flex items-center space-x-3">
+                    <button id="cloud-config-btn" class="flex items-center space-x-1.5 bg-indigo-800/80 hover:bg-indigo-800 px-3 py-1.5 rounded-lg text-xs transition border border-indigo-500/30">
+                        <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="cloud-status-text" class="hidden sm:inline text-indigo-100 font-medium">Автономно</span>
+                        <i class="fa-solid fa-gear text-indigo-300 ml-1 text-[11px]"></i>
                     </button>
+
+                    <div id="user-info" class="hidden items-center space-x-3">
+                        <!-- SuperAdmin Dedicated Account Management Button -->
+                        <button id="open-users-modal-btn" onclick="openSuperAdminModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium">
+                            <i class="fa-solid fa-users-gear mr-1.5"></i> <span class="hidden sm:inline">Аккаунты</span>
+                        </button>
+                        <span id="user-badge" class="px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
+                        <span id="user-display" class="font-medium text-sm hidden md:inline"></span>
+                        <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 flex items-center">
+                            <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Выйти
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Cloud Settings Modal -->
+        <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
+                <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
+                    <h3 class="font-bold text-base flex items-center">
+                        <i class="fa-solid fa-cloud text-indigo-200 mr-2"></i> Настройка Облачного Сервера (Firebase)
+                    </h3>
+                    <button id="close-cloud-modal" class="text-indigo-200 hover:text-white text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        По умолчанию система использует локальное хранилище браузера. Укажите конфигурацию <strong>Firebase</strong> для синхронизации в реальном времени. Можно вставлять весь JS-код с `const firebaseConfig = ...`.
+                    </p>
+                    
+                    <div id="firebase-requirements-info" class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[11px] text-amber-800 space-y-1">
+                        <div class="font-bold flex items-center"><i class="fa-solid fa-circle-info mr-1.5"></i> Внимание! В консоли Firebase необходимо включить:</div>
+                        <div>1. <strong>Authentication:</strong> Вкладка <i>Sign-in method</i> &rarr; активируйте <b>Анонимный (Anonymous)</b> вход.</div>
+                        <div>2. <strong>Firestore Database:</strong> Создайте базу данных и проверьте вкладку <i>Rules (Правила)</i>.</div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Конфигурация Firebase (JS или JSON)</label>
+                        <textarea id="firebase-json-input" rows="7" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='const firebaseConfig = {
+  apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
+  authDomain: "tablitsa-40cf4.firebaseapp.com",
+  projectId: "tablitsa-40cf4",
+  ...
+};'></textarea>
+                    </div>
+                    <div id="cloud-modal-msg" class="text-xs p-2.5 rounded-lg hidden"></div>
+                    <div class="flex space-x-2 pt-2">
+                        <button id="save-firebase-config" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-xs transition">
+                            Сохранить и Подключить
+                        </button>
+                        <button id="reset-firebase-config" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition">
+                            Сбросить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth View (Login & Register Tabs) -->
+        <main id="login-view" class="flex-grow flex items-center justify-center p-4">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
+                <!-- Auth Tabs Switcher -->
+                <div class="flex border-b border-slate-200 mb-6 text-sm font-medium">
+                    <button id="tab-login-btn" class="flex-1 py-2 text-center tab-active focus:outline-none">
+                        <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Вход
+                    </button>
+                    <button id="tab-register-btn" class="flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-user-plus mr-1.5"></i> Регистрация
+                    </button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="login-form" class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-bold text-slate-800">Авторизация</h2>
+                        <p class="text-slate-500 text-xs mt-1">Введите ваш Email и пароль</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email / Логин</label>
+                        <input type="email" id="login-email" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="user@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Пароль</label>
+                        <input type="password" id="login-password" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="••••••••">
+                    </div>
+                    <div id="login-error" class="text-xs text-rose-600 hidden font-medium"></div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition duration-200 text-sm mt-2">
+                        Войти в систему
+                    </button>
+
+                    <!-- Demo Accounts Quick Click Hint -->
+                    <div class="mt-4 pt-3 border-t border-slate-100">
+                        <p class="text-[11px] font-semibold text-slate-500 mb-2 text-center">Тестовые аккаунты (нажмите для автозаполнения):</p>
+                        <div class="flex flex-col space-y-1.5 text-xs">
+                            <button type="button" onclick="quickFill('superadmin@system.com', 'admin')" class="flex justify-between items-center px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 rounded-lg transition border border-purple-200">
+                                <span class="font-medium">superadmin@system.com</span>
+                                <span class="text-[10px] bg-purple-200 px-1.5 py-0.5 rounded font-bold">Главный Админ</span>
+                            </button>
+                            <button type="button" onclick="quickFill('admin@system.com', '123')" class="flex justify-between items-center px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 rounded-lg transition border border-indigo-200">
+                                <span class="font-medium">admin@system.com</span>
+                                <span class="text-[10px] bg-indigo-200 px-1.5 py-0.5 rounded font-bold">Администратор</span>
+                            </button>
+                            <button type="button" onclick="quickFill('user1@test.com', '123')" class="flex justify-between items-center px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg transition border border-slate-200">
+                                <span class="font-medium">user1@test.com</span>
+                                <span class="text-[10px] bg-slate-300 px-1.5 py-0.5 rounded font-bold">Пользователь</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="register-form" class="space-y-4 hidden">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-bold text-slate-800">Создать аккаунт</h2>
+                        <p class="text-slate-500 text-xs mt-1">Новый аккаунт автоматически регистрируется как Пользователь</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email</label>
+                        <input type="email" id="reg-email" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="user@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Пароль</label>
+                        <input type="password" id="reg-password" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Минимум 4 символа">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Номер группы</label>
+                        <input type="number" id="reg-group" required min="1" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Например: 1">
+                    </div>
+                    <div id="reg-error" class="text-xs text-rose-600 hidden font-medium"></div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition duration-200 text-sm mt-2">
+                        Зарегистрироваться
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <!-- User Dashboard View -->
+        <main id="user-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+            <!-- Filter Bar -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц отчета</label>
+                        <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="01">Январь</option>
+                            <option value="02">Февраль</option>
+                            <option value="03">Март</option>
+                            <option value="04">Апрель</option>
+                            <option value="05">Май</option>
+                            <option value="06">Июнь</option>
+                            <option value="07">Июль</option>
+                            <option value="08">Август</option>
+                            <option value="09">Сентябрь</option>
+                            <option value="10">Октябрь</option>
+                            <option value="11">Ноябрь</option>
+                            <option value="12">Декабрь</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Год отчета</label>
+                        <select id="user-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
                     <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-plus mr-2"></i> Добавить строку
                     </button>
@@ -33,9 +213,123 @@
             <!-- Analysis Selector Header for User -->
             <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center space-x-2">
-                    <button id="manual-save-admin-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Сохранить
-                    </button>
+                    <i class="fa-solid fa-chart-line text-indigo-600 text-base"></i>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm">Анализ служения группы</h3>
+                        <p class="text-[11px] text-slate-500">Оценка активности за 6 месяцев до выбранной даты</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-xs">
+                    <span class="text-slate-500 font-medium">Период анализа:</span>
+                    <span id="user-analysis-period-badge" class="bg-indigo-100 text-indigo-800 font-bold px-2.5 py-1 rounded-lg border border-indigo-200"></span>
+                </div>
+            </div>
+
+            <!-- Group-scoped Analytics (for Group Overseers / Users) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Group Irregular -->
+                <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-amber-900 text-sm flex items-center">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i>
+                            Нерегулярные нашей группы (Пропустили ≥ 1 отчет)
+                        </h3>
+                        <span id="user-count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+                    </div>
+                    <div id="user-list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Group Inactive -->
+                <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-rose-900 text-sm flex items-center">
+                            <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
+                            Неактивные нашей группы (0 отчетов за 6 мес.)
+                        </h3>
+                        <span id="user-count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+                    </div>
+                    <div id="user-list-inactive" class="text-xs text-rose-800 space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <!-- Report Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h2 class="font-bold text-slate-800 text-base">Мои отчеты за выбранный период</h2>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold border border-indigo-200">Группа №<span id="user-group-display"></span></span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
+                                <th class="p-3 w-10 text-center">№</th>
+                                <th class="p-3 min-w-[180px]">Имя сокр.</th>
+                                <th class="p-3 w-32">Часы / Участие</th>
+                                <th class="p-3 w-48">Статус</th>
+                                <th class="p-3 w-28">Изучения</th>
+                                <th class="p-3 min-w-[150px]">Примечания</th>
+                                <th class="p-3 w-24">Доб. пож.</th>
+                                <th class="p-3 w-28 text-center">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body" class="divide-y divide-slate-100">
+                            <!-- Rows generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Admin Dashboard View -->
+        <main id="admin-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+            <!-- Admin Top Controls -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex flex-wrap items-center gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц / Год</label>
+                        <div class="flex space-x-2">
+                            <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
+                                <option value="all">Все месяцы</option>
+                                <option value="01">Январь</option>
+                                <option value="02">Февраль</option>
+                                <option value="03">Март</option>
+                                <option value="04">Апрель</option>
+                                <option value="05">Май</option>
+                                <option value="06">Июнь</option>
+                                <option value="07">Июль</option>
+                                <option value="08">Август</option>
+                                <option value="09">Сентябрь</option>
+                                <option value="10">Октябрь</option>
+                                <option value="11">Ноябрь</option>
+                                <option value="12">Декабрь</option>
+                            </select>
+                            <select id="admin-year" class="border border-slate-300 bg-white text-slate-800 font-bold rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">Все года</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Фильтр группы</label>
+                        <select id="admin-group-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="all">Все группы</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Фильтр статуса</label>
+                        <select id="admin-status-filter" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="all">Все статусы</option>
+                            <option value="Возвещатель">Возвещатель</option>
+                            <option value="Некрещеный возвещатель">Некрещеный возвещатель</option>
+                            <option value="ПП">ПП (Постоянный пионер)</option>
+                            <option value="ОП">ОП (Вспомогательный пионер)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2">
                     <button id="admin-add-entry" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-user-plus mr-2"></i> Внести запись
                     </button>
@@ -348,9 +642,10 @@
 
         // Default mock reports data with publisher IDs (personId)
         const initialMockData = [
-            { id: '1', personId: 'p1', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Иванов И.И.', hours: '', participated: true, status: 'Возвещатель', studies: '1', notes: 'Участвовал', dp: '0' },
-            { id: '2', personId: 'p2', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Петрова А.С.', hours: '50', participated: true, status: 'ПП', studies: '4', notes: 'Отличный месяц', dp: '2' },
-            { id: '3', personId: 'p3', email: 'user2@test.com', group: '2', month: '09', year: currentYear.toString(), name: 'Сидоров В.К.', hours: '', participated: true, status: 'Возвещатель', studies: '2', notes: 'Примечание', dp: '0' }
+            { id: '1', personId: 'p1', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Иванов И.', hours: '', participated: true, status: 'Возвещатель', studies: '1', notes: 'Участвовал', dp: '0' },
+            { id: '2', personId: 'p2', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Петрова А.', hours: '50', participated: true, status: 'ПП', studies: '4', notes: 'Отличный месяц', dp: '2' },
+            { id: '3', personId: 'p3', email: 'user2@test.com', group: '2', month: '09', year: currentYear.toString(), name: 'Сидоров В.', hours: '30', participated: true, status: 'ОП', studies: '2', notes: '', dp: '0' },
+            { id: '4', personId: 'p4', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Кузнецов С.', hours: '', participated: true, status: 'Некрещеный возвещатель', studies: '0', notes: '', dp: '0' }
         ];
 
         async function initCloud() {
@@ -520,9 +815,11 @@
         // Helper to dynamically build year options
         function getAvailableYears() {
             const yearsSet = new Set();
+            // Standard range: recent 4 years to next year
             for (let y = currentYear - 3; y <= currentYear + 1; y++) {
                 yearsSet.add(y.toString());
             }
+            // Add any year present in reportsData
             reportsData.forEach(r => {
                 if (r.year) yearsSet.add(r.year.toString());
             });
@@ -671,35 +968,34 @@
                         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
                         setDoc(docRef, entry, { merge: true }).catch(console.error);
                     });
-        function showSaveNotification(customMsg = null) {
+                }
+            }
+        }
+
+        function refreshCurrentView() {
+            if (!currentUser) return;
+            if (currentUser.role === 'admin' || currentUser.role === 'superadmin') {
+                if (currentUser.role === 'superadmin') renderSuperAdminUsers();
+                populateAdminGroupFilter();
+                renderAdminDashboard();
+            } else {
+                renderUserDashboard();
+            }
+        }
+
+        function showSaveNotification() {
             const status = document.getElementById('save-status');
             if (status) {
-                status.innerText = customMsg || 'Сохранение...';
-                status.classList.add('text-amber-500', 'font-semibold');
+                status.innerText = 'Сохранение...';
+                status.classList.add('text-amber-500');
                 setTimeout(() => {
                     status.innerText = 'Все изменения сохранены';
-                    status.classList.remove('text-amber-500', 'font-semibold');
-                }, 1500);
+                    status.classList.remove('text-amber-500');
+                }, 600);
             }
         }
 
         function setupEventListeners() {
-            // Manual Save Buttons Handlers
-            const triggerManualSave = () => {
-                if (document.activeElement && typeof document.activeElement.blur === 'function') {
-                    document.activeElement.blur();
-                }
-                saveToStorage();
-                refreshCurrentView();
-                showSaveNotification('Данные и анализ обновлены!');
-            };
-
-            const userSaveBtn = document.getElementById('manual-save-user-btn');
-            if (userSaveBtn) userSaveBtn.addEventListener('click', triggerManualSave);
-
-            const adminSaveBtn = document.getElementById('manual-save-admin-btn');
-            if (adminSaveBtn) adminSaveBtn.addEventListener('click', triggerManualSave);
-
             // Auth Tab Switcher
             const loginTab = document.getElementById('tab-login-btn');
             const regTab = document.getElementById('tab-register-btn');
@@ -864,7 +1160,7 @@
 
             document.getElementById('admin-add-entry').addEventListener('click', () => {
                 const selectedMonth = document.getElementById('admin-month').value;
-                const monthVal = selectedMonth === 'all' ? String(new Date().getMonth() + 1).padStart(2, '0') : selectedMonth;
+                const monthVal = selectedMonth === 'all' ? '01' : selectedMonth;
                 const selectedYear = document.getElementById('admin-year').value;
                 const yearVal = selectedYear === 'all' ? currentYear.toString() : selectedYear;
                 const groupFilter = document.getElementById('admin-group-filter').value;
@@ -1133,12 +1429,9 @@
             let totalDP = 0;
 
             filtered.forEach(item => {
-                // Strictly calculate hours ONLY for Pioneers (ПП + ОП)
-                if (item.status === 'ПП' || item.status === 'ОП') {
-                    totalHours += parseFloat(item.hours) || 0;
-                }
-                totalStudies += parseInt(item.studies, 10) || 0;
-                totalDP += parseInt(item.dp, 10) || 0;
+                totalHours += parseFloat(item.hours) || 0;
+                totalStudies += parseInt(item.studies) || 0;
+                totalDP += parseInt(item.dp) || 0;
             });
 
             document.getElementById('stat-total').innerText = filtered.length;
@@ -1250,12 +1543,6 @@
             const entry = reportsData.find(item => item.id === id);
             if (entry) {
                 entry[key] = value;
-
-                // Clear hours when status changes to simple publisher
-                if (key === 'status' && (value === 'Возвещатель' || value === 'Некрещеный возвещатель')) {
-                    entry.hours = '';
-                }
-
                 saveToStorage(entry);
                 if (key === 'group') populateAdminGroupFilter();
                 if (key === 'year') populateYearSelectors();
@@ -1278,19 +1565,8 @@
         function calculate6MonthsWindow(targetYear, targetMonth) {
             const monthsList = [];
             let y = parseInt(targetYear, 10) || currentYear;
-            let m;
-
-            if (!targetMonth || targetMonth === 'all') {
-                if (y === currentYear) {
-                    m = new Date().getMonth() + 1;
-                } else {
-                    m = 12;
-                }
-            } else {
-                m = parseInt(targetMonth, 10);
-            }
-
-            if (isNaN(m) || m < 1 || m > 12) m = 12;
+            let m = parseInt(targetMonth, 10);
+            if (isNaN(m) || m < 1 || m > 12) m = 12; // default to December if 'all' or invalid
 
             for (let i = 0; i < 6; i++) {
                 const monthStr = String(m).padStart(2, '0');
@@ -1323,19 +1599,19 @@
                 badge.innerText = `${startPeriod.month}.${startPeriod.year} — ${endPeriod.month}.${endPeriod.year}`;
             }
 
-            const groupReports = reportsData.filter(r => r.group === currentUser.group && r.name && r.name.trim() !== '');
-            const validPersonIds = [...new Set(groupReports.map(item => item.personId).filter(id => id))];
+            const groupReports = reportsData.filter(r => r.group === currentUser.group);
+            const publishersInGroup = [...new Set(groupReports.map(item => item.personId).filter(id => id))];
 
             let countIrregular = 0;
             let countInactive = 0;
 
-            validPersonIds.forEach(pId => {
+            publishersInGroup.forEach(pId => {
                 const pReports = groupReports.filter(r => r.personId === pId);
                 if (pReports.length === 0) return;
 
-                const latest = pReports[pReports.length - 1];
-                const name = latest.name.trim();
+                const name = pReports[pReports.length - 1].name || 'Имя не указано';
 
+                // Count how many of the 6 target months have a report
                 const submittedCount = last6Months.filter(period => 
                     pReports.some(r => r.year === period.year && r.month === period.month)
                 ).length;
@@ -1351,7 +1627,7 @@
                     const missedCount = 6 - submittedCount;
                     const item = document.createElement('div');
                     item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес. (${submittedCount}/6)</span>`;
+                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
                     irregularList.appendChild(item);
                 }
             });
@@ -1375,23 +1651,17 @@
 
             const last6Months = calculate6MonthsWindow(selectedAnalysisYear, selectedMonth);
 
-            // Filter to publishers who actually have a name entered
-            const validPersonIds = [...new Set(
-                reportsData
-                    .filter(r => r.name && r.name.trim() !== '')
-                    .map(r => r.personId)
-                    .filter(id => id)
-            )];
+            const allPersonIds = [...new Set(reportsData.map(item => item.personId).filter(id => id))];
 
             let countIrregular = 0;
             let countInactive = 0;
 
-            validPersonIds.forEach(pId => {
-                const pReports = reportsData.filter(r => r.personId === pId && r.name && r.name.trim() !== '');
+            allPersonIds.forEach(pId => {
+                const pReports = reportsData.filter(r => r.personId === pId);
                 if (pReports.length === 0) return;
 
                 const latest = pReports[pReports.length - 1];
-                const name = latest.name.trim();
+                const name = latest.name || 'Без имени';
                 const group = latest.group;
 
                 const submittedCount = last6Months.filter(period => 
@@ -1409,7 +1679,7 @@
                     const missedCount = 6 - submittedCount;
                     const item = document.createElement('div');
                     item.className = 'flex justify-between items-center py-1 border-b border-amber-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес. (${submittedCount}/6)</span>`;
+                    item.innerHTML = `<span>• <strong>${name}</strong> (Гр. ${group})</span> <span class="text-amber-700 font-mono">Пропущено: ${missedCount} мес.</span>`;
                     irregularList.appendChild(item);
                 }
             });
@@ -1435,10 +1705,8 @@
             let totalHours = 0;
             let totalStudies = 0;
             personReports.forEach(r => {
-                if (r.status === 'ПП' || r.status === 'ОП') {
-                    totalHours += parseFloat(r.hours) || 0;
-                }
-                totalStudies += parseInt(r.studies, 10) || 0;
+                totalHours += parseFloat(r.hours) || 0;
+                totalStudies += parseInt(r.studies) || 0;
             });
 
             document.getElementById('card-total-hours').innerText = `${totalHours} ч.`;
