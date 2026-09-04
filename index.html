@@ -1041,33 +1041,50 @@
         async function initCloud() {
             try {
                 let config = null;
-                if (typeof __firebase_config !== 'undefined') {
-                    config = JSON.parse(__firebase_config);
+                // Safely parse or assign Firebase configuration
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
                 } else {
                     const savedConfigStr = localStorage.getItem('custom_firebase_config');
-                    config = savedConfigStr ? JSON.parse(savedConfigStr) : null;
+                    config = savedConfigStr ? JSON.parse(savedConfigStr) : DEFAULT_FIREBASE_CONFIG;
                 }
 
-                if (!config) {
+                if (!config || !config.apiKey) {
                     fallbackToLocal();
                     return;
                 }
+
+                updateCloudUIStatus('connecting', 'Подключение к облаку...');
 
                 const app = initializeApp(config);
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                // Authenticate with custom token if available, fallback to anonymous auth
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (authErr) {
+                    console.warn("Custom token auth failed, falling back to anonymous auth:", authErr);
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (anonErr) {
+                        console.error("Anonymous auth failed:", anonErr);
+                    }
                 }
 
-                isCloudConnected = true;
-                updateCloudUIStatus('connected', 'Облако подключено');
-                subscribeToCloudCollections();
+                if (auth.currentUser) {
+                    isCloudConnected = true;
+                    updateCloudUIStatus('connected', 'Облако подключено');
+                    subscribeToCloudCollections();
+                } else {
+                    fallbackToLocal();
+                }
             } catch (err) {
-                console.warn("Cloud init skipped or failed, using local mode:", err);
+                console.warn("Cloud init failed, falling back to local storage:", err);
                 fallbackToLocal();
             }
         }
