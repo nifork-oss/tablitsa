@@ -3,64 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учет Отчетов Возвещателей</title>
+    <title>Учет Отчетов Возвещателей — Облачная система</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .glass-modal { backdrop-filter: blur(4px); }
+    </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
     <div id="app" class="flex flex-col min-h-screen">
         <!-- Header / Navbar -->
-        <header class="bg-indigo-700 text-white shadow-md">
+        <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-30">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <i class="fa-solid fa-clipboard-list text-2xl text-indigo-200"></i>
-                    <h1 class="text-xl font-bold tracking-wide">Система Отчетов</h1>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-wide leading-tight">Система Отчетов</h1>
+                        <p class="text-[10px] text-indigo-200 uppercase tracking-widest font-medium">Сводная система</p>
+                    </div>
                 </div>
-                <div id="user-info" class="hidden items-center space-x-4">
-                    <span id="cloud-status" class="px-2.5 py-1 bg-emerald-500/20 text-emerald-200 rounded-full text-xs font-medium border border-emerald-400/30 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Облако подключено
-                    </span>
-                    <span id="user-badge" class="px-3 py-1 bg-indigo-800 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
-                    <span id="user-display" class="font-medium text-sm"></span>
-                    <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200">
-                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Выйти
+
+                <!-- Cloud Status Indicator & Navigation -->
+                <div class="flex items-center space-x-3">
+                    <button id="cloud-config-btn" class="flex items-center space-x-1.5 bg-indigo-800/80 hover:bg-indigo-800 px-3 py-1.5 rounded-lg text-xs transition border border-indigo-500/30">
+                        <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="cloud-status-text" class="hidden sm:inline text-indigo-100 font-medium">Автономно</span>
+                        <i class="fa-solid fa-gear text-indigo-300 ml-1 text-[11px]"></i>
                     </button>
+
+                    <div id="user-info" class="hidden items-center space-x-3">
+                        <span id="user-badge" class="px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
+                        <span id="user-display" class="font-medium text-sm hidden md:inline"></span>
+                        <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 flex items-center">
+                            <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Выйти
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
 
+        <!-- Cloud Settings Modal -->
+        <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
+                <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
+                    <h3 class="font-bold text-base flex items-center">
+                        <i class="fa-solid fa-cloud text-indigo-200 mr-2"></i> Настройка Облачного Сервера (Firebase)
+                    </h3>
+                    <button id="close-cloud-modal" class="text-indigo-200 hover:text-white text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        По умолчанию система использует локальное хранилище браузера. Если вы хотите синхронизировать отчеты между несколькими устройствами и пользователями в реальном времени, укажите конфигурацию вашего **Firebase** проекта:
+                    </p>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">JSON Конфигурация Firebase</label>
+                        <textarea id="firebase-json-input" rows="5" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "projectId": "your-app",
+  "storageBucket": "your-app.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123456789:web:abcdef"
+}'></textarea>
+                    </div>
+                    <div id="cloud-modal-msg" class="text-xs p-2.5 rounded-lg hidden"></div>
+                    <div class="flex space-x-2 pt-2">
+                        <button id="save-firebase-config" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-xs transition">
+                            Сохранить и Подключить
+                        </button>
+                        <button id="reset-firebase-config" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition">
+                            Сбросить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Login View -->
         <main id="login-view" class="flex-grow flex items-center justify-center p-4">
-            <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-slate-200">
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
                 <div class="text-center mb-6">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-2">
-                        <i class="fa-solid fa-user-lock text-xl"></i>
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-100 text-indigo-600 mb-3 shadow-inner">
+                        <i class="fa-solid fa-user-lock text-2xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">Вход в систему</h2>
-                    <p class="text-slate-500 text-sm mt-1">Введите ваши учетные данные</p>
+                    <h2 class="text-2xl font-bold text-slate-800">Вход в кабинет</h2>
+                    <p class="text-slate-500 text-xs mt-1">Введите вашу почту и номер группы</p>
                 </div>
 
                 <form id="login-form" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email / Логин</label>
-                        <input type="email" id="email" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="user@example.com">
+                        <input type="email" id="email" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="user@example.com">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Номер группы</label>
-                        <input type="number" id="group-number" required min="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Например: 1">
+                        <input type="number" id="group-number" required min="1" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Например: 1">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Роль в системе</label>
-                        <select id="role-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
+                        <select id="role-select" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
                             <option value="user">Возвещатель / Пользователь</option>
                             <option value="admin">Администратор (Сводная база)</option>
                         </select>
                     </div>
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg shadow transition duration-200 text-sm mt-2">
-                        Войти в кабинет
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md transition duration-200 text-sm mt-2">
+                        Войти в систему
                     </button>
                 </form>
             </div>
@@ -72,7 +124,7 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц</label>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц отчета</label>
                         <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
                             <option value="01">Январь</option>
                             <option value="02">Февраль</option>
@@ -94,35 +146,37 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center space-x-2">
-                    <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center">
+                <div class="flex items-center space-x-3">
+                    <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-plus mr-2"></i> Добавить строку
                     </button>
-                    <span id="save-status" class="text-xs text-slate-400 italic">Синхронизировано с облаком</span>
+                    <span id="save-status" class="text-xs text-slate-400 italic">Все изменения сохранены</span>
                 </div>
             </div>
 
             <!-- Report Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex justify-between items-center">
-                    <h2 class="font-bold text-slate-800 text-lg">Мои отчеты за выбранный период</h2>
-                    <span class="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-medium">Группа №<span id="user-group-display"></span></span>
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h2 class="font-bold text-slate-800 text-base">Мои отчеты за выбранный период</h2>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold border border-indigo-200">Группа №<span id="user-group-display"></span></span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200">
+                            <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-12 text-center">№</th>
-                                <th class="p-3">ФИО / Имя</th>
-                                <th class="p-3 w-28">Часы / Участие</th>
+                                <th class="p-3 min-w-[180px]">ФИО / Возвещатель</th>
+                                <th class="p-3 w-32">Часы / Участие</th>
                                 <th class="p-3 w-40">Статус</th>
-                                <th class="p-3 w-24">Изучения</th>
-                                <th class="p-3">Примечания</th>
+                                <th class="p-3 w-28">Изучения</th>
+                                <th class="p-3 min-w-[150px]">Примечания</th>
                                 <th class="p-3 w-24">ДП</th>
-                                <th class="p-3 w-16 text-center">Действие</th>
+                                <th class="p-3 w-16 text-center">Удалить</th>
                             </tr>
                         </thead>
-                        <tbody id="user-table-body" class="divide-y divide-slate-100"></tbody>
+                        <tbody id="user-table-body" class="divide-y divide-slate-100">
+                            <!-- Rows generated dynamically -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -132,9 +186,9 @@
         <main id="admin-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
             <!-- Admin Top Controls -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4">
                     <div>
-                        <label class="block text-xs text-slate-500 font-semibold mb-1">Период (Месяц/Год)</label>
+                        <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц / Год</label>
                         <div class="flex space-x-2">
                             <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="all">Все месяцы</option>
@@ -174,14 +228,14 @@
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <button id="admin-add-entry" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center">
+                    <button id="admin-add-entry" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-user-plus mr-2"></i> Внести запись
                     </button>
                 </div>
             </div>
 
             <!-- Analytics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div class="text-xs font-semibold text-slate-400 uppercase">Всего отчетов</div>
                     <div id="stat-total" class="text-2xl font-bold text-slate-800 mt-1">0</div>
@@ -200,204 +254,421 @@
                 </div>
             </div>
 
-            <!-- Special Analysis Section -->
+            <!-- Special Analysis Section (Missing / Inactive Reports) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-amber-50 rounded-xl border border-amber-200 p-4">
+                <!-- Missing 1+ Month in Last 6 Months -->
+                <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-amber-900 text-sm flex items-center">
                             <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i>
                             Нерегулярные (Пропустили ≥ 1 отчет за 6 мес.)
                         </h3>
-                        <span id="count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                        <span id="count-irregular" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
-                    <div id="list-irregular" class="text-xs text-amber-800 space-y-1 max-h-40 overflow-y-auto"></div>
+                    <div id="list-irregular" class="text-xs text-amber-800 space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
 
-                <div class="bg-rose-50 rounded-xl border border-rose-200 p-4">
+                <!-- Missing ALL 6 Months -->
+                <div class="bg-rose-50/80 rounded-xl border border-rose-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-rose-900 text-sm flex items-center">
                             <i class="fa-solid fa-user-slash text-rose-600 mr-2"></i>
                             Неактивные (0 отчетов за последние 6 месяцев)
                         </h3>
-                        <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                        <span id="count-inactive" class="bg-rose-200 text-rose-900 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
                     </div>
-                    <div id="list-inactive" class="text-xs text-rose-800 space-y-1 max-h-40 overflow-y-auto"></div>
+                    <div id="list-inactive" class="text-xs text-rose-800 space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
             </div>
 
             <!-- Consolidated Database Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex justify-between items-center">
-                    <h2 class="font-bold text-slate-800 text-lg">Сводная база данных отчетов (Облако)</h2>
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h2 class="font-bold text-slate-800 text-base">Сводная база данных отчетов (Все группы)</h2>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200">
+                            <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-10 text-center">№</th>
-                                <th class="p-3">Группа</th>
-                                <th class="p-3">Период</th>
-                                <th class="p-3">ФИО</th>
-                                <th class="p-3">Часы / Участие</th>
-                                <th class="p-3">Статус</th>
-                                <th class="p-3">Изучения</th>
+                                <th class="p-3 w-16">Группа</th>
+                                <th class="p-3 w-24">Период</th>
+                                <th class="p-3">ФИО / Имя</th>
+                                <th class="p-3 w-28">Часы</th>
+                                <th class="p-3 w-32">Статус</th>
+                                <th class="p-3 w-20">Изучения</th>
                                 <th class="p-3">Примечания</th>
-                                <th class="p-3">ДП</th>
-                                <th class="p-3 w-20 text-center">Действия</th>
+                                <th class="p-3 w-20">ДП</th>
+                                <th class="p-3 w-16 text-center">Удалить</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-table-body" class="divide-y divide-slate-100"></tbody>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-100">
+                            <!-- Consolidated rows dynamically filled -->
+                        </tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Firebase SDK Modular -->
+    <!-- Custom Delete Modal Dialog -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 glass-modal p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 border border-slate-200 text-center">
+            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full inline-flex items-center justify-center mb-3">
+                <i class="fa-solid fa-trash-can text-xl"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-1">Удалить запись?</h3>
+            <p class="text-xs text-slate-500 mb-5">Это действие нельзя будет отменить.</p>
+            <div class="flex space-x-3">
+                <button id="cancel-delete-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-semibold">Отмена</button>
+                <button id="confirm-delete-btn" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2 rounded-lg text-xs font-semibold">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic Script -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // КЛЮЧИ ПОДКЛЮЧЕНИЯ
-        const firebaseConfig = {
-            apiKey: "AIzaSyDq2sxRZY-3mlo7aWvUDsQckrffSbk7Ixg",
-            authDomain: "tablitsa-40cf4.firebaseapp.com",
-            databaseURL: "https://tablitsa-40cf4-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "tablitsa-40cf4",
-            storageBucket: "tablitsa-40cf4.firebasestorage.app",
-            messagingSenderId: "785699516187",
-            appId: "1:785699516187:web:727bf55a5df125fc43edbe",
-            measurementId: "G-SRZ42R8TNM"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const reportsRef = collection(db, "reports");
-
+        // Application State
         const currentYear = new Date().getFullYear();
         let currentUser = null;
         let reportsData = [];
+        let db = null;
+        let auth = null;
+        let isCloudConnected = false;
+        let itemToDeleteId = null;
 
-        // Живая синхронизация с Firestore
-        onSnapshot(reportsRef, (snapshot) => {
-            reportsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            if (currentUser) {
-                populateAdminGroupFilter();
-                if (currentUser.role === 'admin') {
-                    renderAdminDashboard();
-                } else {
-                    renderUserDashboard();
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tablitsa-app';
+
+        async function initCloud() {
+            let firebaseConfig = null;
+
+            // 1. Check custom saved user config from modal
+            const customConfigStr = localStorage.getItem('custom_firebase_config');
+            if (customConfigStr) {
+                try {
+                    firebaseConfig = JSON.parse(customConfigStr);
+                } catch (e) {
+                    console.error('Invalid custom Firebase config:', e);
                 }
             }
-        });
 
-        // Инициализация
-        document.getElementById('user-year').value = currentYear;
-        document.getElementById('admin-year').value = currentYear;
-        const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
-        document.getElementById('user-month').value = currentMonth;
+            // 2. Check environment config fallback
+            if (!firebaseConfig && typeof __firebase_config !== 'undefined') {
+                try {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                } catch (e) {
+                    console.error('Environment Firebase config error:', e);
+                }
+            }
 
-        function showSaveStatus(text = 'Сохранено в облако') {
-            const status = document.getElementById('save-status');
-            if (status) {
-                status.innerText = text;
-                status.classList.add('text-emerald-600');
-                setTimeout(() => {
-                    status.innerText = 'Синхронизировано с облаком';
-                    status.classList.remove('text-emerald-600');
-                }, 1000);
+            if (firebaseConfig && firebaseConfig.apiKey) {
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    isCloudConnected = true;
+                    updateCloudUIStatus('connected', 'Облако подключено');
+                    subscribeToReports();
+                } catch (err) {
+                    console.warn('Firebase initialization failed:', err);
+                    updateCloudUIStatus('error', 'Ошибка облака');
+                }
+            } else {
+                updateCloudUIStatus('offline', 'Автономный режим');
             }
         }
 
-        // Авторизация
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value.trim();
-            const group = document.getElementById('group-number').value.trim();
-            const role = document.getElementById('role-select').value;
+        function subscribeToReports() {
+            if (!db) return;
+            const reportsRef = collection(db, 'artifacts', appId, 'public', 'data', 'reports');
 
-            currentUser = { email, group, role };
+            onSnapshot(reportsRef, (snapshot) => {
+                const cloudItems = [];
+                snapshot.forEach(docSnap => {
+                    cloudItems.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                reportsData = cloudItems;
+                localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                refreshCurrentView();
+            }, (error) => {
+                console.error('Firestore listener error:', error);
+                updateCloudUIStatus('error', 'Ошибка подписки');
+            });
+        }
+
+        function updateCloudUIStatus(status, text) {
+            const dot = document.getElementById('cloud-status-dot');
+            const statusText = document.getElementById('cloud-status-text');
+
+            if (status === 'connected') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+                statusText.innerText = text || "Облако активна";
+            } else if (status === 'error') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse";
+                statusText.innerText = text || "Ошибка связи";
+            } else {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400";
+                statusText.innerText = text || "Автономно";
+            }
+        }
+
+        // Default mock data
+        const initialMockData = [
+            { id: '1', email: 'user1@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Иванов И.И.', hours: '15', status: 'Возвещатель', studies: '1', notes: 'Участвовал', dp: '0' },
+            { id: '2', email: 'user2@test.com', group: '1', month: '09', year: currentYear.toString(), name: 'Петрова А.С.', hours: '50', status: 'ПП', studies: '4', notes: 'Отличный месяц', dp: '2' },
+            { id: '3', email: 'user3@test.com', group: '2', month: '09', year: currentYear.toString(), name: 'Сидоров В.К.', hours: '30', status: 'ОП', studies: '2', notes: '', dp: '0' }
+        ];
+
+        function initApp() {
+            document.getElementById('user-year').value = currentYear;
+            document.getElementById('admin-year').value = currentYear;
+
+            const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+            document.getElementById('user-month').value = currentMonth;
+
+            const savedData = localStorage.getItem('reports_db');
+            if (savedData) {
+                reportsData = JSON.parse(savedData);
+            } else {
+                reportsData = [...initialMockData];
+                saveToStorage();
+            }
+
+            setupEventListeners();
+
+            // Restore saved session if user was previously logged in
+            const savedSession = localStorage.getItem('current_user_session');
+            if (savedSession) {
+                try {
+                    currentUser = JSON.parse(savedSession);
+                    applyUserSession();
+                } catch (e) {
+                    console.error('Error parsing session data:', e);
+                }
+            }
+        }
+
+        function applyUserSession() {
+            if (!currentUser) return;
 
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('user-info').classList.add('flex');
-            document.getElementById('user-display').innerText = `${email} (Гр. ${group})`;
-            document.getElementById('user-badge').innerText = role === 'admin' ? 'Администратор' : 'Пользователь';
+            document.getElementById('user-display').innerText = `${currentUser.email} (Гр. ${currentUser.group})`;
+            document.getElementById('user-badge').innerText = currentUser.role === 'admin' ? 'Администратор' : 'Пользователь';
 
-            if (role === 'admin') {
+            if (currentUser.role === 'admin') {
                 document.getElementById('admin-dashboard').classList.remove('hidden');
                 populateAdminGroupFilter();
                 renderAdminDashboard();
             } else {
                 document.getElementById('user-dashboard').classList.remove('hidden');
-                document.getElementById('user-group-display').innerText = group;
+                document.getElementById('user-group-display').innerText = currentUser.group;
                 renderUserDashboard();
             }
-        });
+        }
 
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            currentUser = null;
-            document.getElementById('user-info').classList.add('hidden');
-            document.getElementById('user-dashboard').classList.add('hidden');
-            document.getElementById('admin-dashboard').classList.add('hidden');
-            document.getElementById('login-view').classList.remove('hidden');
-        });
+        function saveToStorage(entryToSync = null) {
+            localStorage.setItem('reports_db', JSON.stringify(reportsData));
+            showSaveNotification();
 
-        document.getElementById('user-month').addEventListener('change', renderUserDashboard);
+            if (isCloudConnected && db) {
+                if (entryToSync) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entryToSync.id);
+                    setDoc(docRef, entryToSync, { merge: true }).catch(console.error);
+                } else {
+                    reportsData.forEach(entry => {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reports', entry.id);
+                        setDoc(docRef, entry, { merge: true }).catch(console.error);
+                    });
+                }
+            }
+        }
 
-        // Добавление строки возвещателем
-        document.getElementById('add-row-btn').addEventListener('click', async () => {
-            const month = document.getElementById('user-month').value;
-            const docId = Date.now().toString();
-            const newEntry = {
-                email: currentUser.email,
-                group: currentUser.group,
-                month: month,
-                year: currentYear.toString(),
-                name: '',
-                hours: '',
-                status: 'Возвещатель',
-                studies: '0',
-                notes: '',
-                dp: '0'
-            };
-            await setDoc(doc(db, "reports", docId), newEntry);
-            showSaveStatus();
-        });
+        function refreshCurrentView() {
+            if (!currentUser) return;
+            if (currentUser.role === 'admin') {
+                populateAdminGroupFilter();
+                renderAdminDashboard();
+            } else {
+                renderUserDashboard();
+            }
+        }
 
-        document.getElementById('admin-month').addEventListener('change', renderAdminDashboard);
-        document.getElementById('admin-group-filter').addEventListener('change', renderAdminDashboard);
-        document.getElementById('admin-status-filter').addEventListener('change', renderAdminDashboard);
+        function showSaveNotification() {
+            const status = document.getElementById('save-status');
+            if (status) {
+                status.innerText = 'Сохранение...';
+                status.classList.add('text-amber-500');
+                setTimeout(() => {
+                    status.innerText = 'Все изменения сохранены';
+                    status.classList.remove('text-amber-500');
+                }, 600);
+            }
+        }
 
-        // Добавление записи админом
-        document.getElementById('admin-add-entry').addEventListener('click', async () => {
-            const selectedMonth = document.getElementById('admin-month').value;
-            const monthVal = selectedMonth === 'all' ? '01' : selectedMonth;
-            const groupFilter = document.getElementById('admin-group-filter').value;
-            const groupVal = groupFilter === 'all' ? '1' : groupFilter;
-            const docId = Date.now().toString();
+        function setupEventListeners() {
+            // Cloud Modal Toggle
+            document.getElementById('cloud-config-btn').addEventListener('click', () => {
+                document.getElementById('cloud-modal').classList.remove('hidden');
+                const saved = localStorage.getItem('custom_firebase_config');
+                if (saved) document.getElementById('firebase-json-input').value = saved;
+            });
 
-            const newEntry = {
-                email: 'admin_created@system.com',
-                group: groupVal,
-                month: monthVal,
-                year: currentYear.toString(),
-                name: 'Новый возвещатель',
-                hours: '0',
-                status: 'Возвещатель',
-                studies: '0',
-                notes: '',
-                dp: '0'
-            };
-            await setDoc(doc(db, "reports", docId), newEntry);
-            showSaveStatus();
-        });
+            document.getElementById('close-cloud-modal').addEventListener('click', () => {
+                document.getElementById('cloud-modal').classList.add('hidden');
+            });
+
+            document.getElementById('save-firebase-config').addEventListener('click', async () => {
+                const val = document.getElementById('firebase-json-input').value.trim();
+                const msg = document.getElementById('cloud-modal-msg');
+                try {
+                    const parsed = JSON.parse(val);
+                    localStorage.setItem('custom_firebase_config', JSON.stringify(parsed));
+                    msg.className = "text-xs p-2.5 rounded-lg bg-emerald-100 text-emerald-800 block";
+                    msg.innerText = "Конфигурация сохранена! Переподключение...";
+                    await initCloud();
+                    setTimeout(() => {
+                        document.getElementById('cloud-modal').classList.add('hidden');
+                        msg.classList.add('hidden');
+                    }, 1000);
+                } catch (e) {
+                    msg.className = "text-xs p-2.5 rounded-lg bg-rose-100 text-rose-800 block";
+                    msg.innerText = "Ошибка в формате JSON. Проверьте правильность скобок и кавычек.";
+                }
+            });
+
+            document.getElementById('reset-firebase-config').addEventListener('click', () => {
+                localStorage.removeItem('custom_firebase_config');
+                document.getElementById('firebase-json-input').value = '';
+                location.reload();
+            });
+
+            // Login Form Submission
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                const group = document.getElementById('group-number').value.trim();
+                const role = document.getElementById('role-select').value;
+
+                currentUser = { email, group, role };
+                localStorage.setItem('current_user_session', JSON.stringify(currentUser));
+                
+                applyUserSession();
+            });
+
+            // Logout Handler
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                currentUser = null;
+                localStorage.removeItem('current_user_session');
+                
+                document.getElementById('user-info').classList.add('hidden');
+                document.getElementById('user-dashboard').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
+                document.getElementById('login-view').classList.remove('hidden');
+            });
+
+            document.getElementById('user-month').addEventListener('change', renderUserDashboard);
+
+            document.getElementById('add-row-btn').addEventListener('click', () => {
+                const month = document.getElementById('user-month').value;
+                const year = currentYear.toString();
+
+                const newEntry = {
+                    id: Date.now().toString(),
+                    email: currentUser.email,
+                    group: currentUser.group,
+                    month: month,
+                    year: year,
+                    name: '',
+                    hours: '',
+                    status: 'Возвещатель',
+                    studies: '0',
+                    notes: '',
+                    dp: '0'
+                };
+
+                reportsData.push(newEntry);
+                saveToStorage(newEntry);
+                renderUserDashboard();
+            });
+
+            document.getElementById('admin-month').addEventListener('change', renderAdminDashboard);
+            document.getElementById('admin-group-filter').addEventListener('change', renderAdminDashboard);
+            document.getElementById('admin-status-filter').addEventListener('change', renderAdminDashboard);
+
+            document.getElementById('admin-add-entry').addEventListener('click', () => {
+                const selectedMonth = document.getElementById('admin-month').value;
+                const monthVal = selectedMonth === 'all' ? '01' : selectedMonth;
+                const groupFilter = document.getElementById('admin-group-filter').value;
+                const groupVal = groupFilter === 'all' ? '1' : groupFilter;
+
+                const newEntry = {
+                    id: Date.now().toString(),
+                    email: 'admin_created@system.com',
+                    group: groupVal,
+                    month: monthVal,
+                    year: currentYear.toString(),
+                    name: 'Новый возвещатель',
+                    hours: '0',
+                    status: 'Возвещатель',
+                    studies: '0',
+                    notes: '',
+                    dp: '0'
+                };
+
+                reportsData.push(newEntry);
+                saveToStorage(newEntry);
+                populateAdminGroupFilter();
+                renderAdminDashboard();
+            });
+
+            // Delete Modal Handlers
+            document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+                itemToDeleteId = null;
+                document.getElementById('delete-modal').classList.add('hidden');
+            });
+
+            document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+                if (itemToDeleteId) {
+                    const entryToDelete = reportsData.find(item => item.id === itemToDeleteId);
+                    reportsData = reportsData.filter(item => item.id !== itemToDeleteId);
+                    
+                    localStorage.setItem('reports_db', JSON.stringify(reportsData));
+                    showSaveNotification();
+
+                    if (isCloudConnected && db && entryToDelete) {
+                        deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reports', itemToDeleteId)).catch(console.error);
+                    }
+
+                    populateAdminGroupFilter();
+                    refreshCurrentView();
+                }
+                itemToDeleteId = null;
+                document.getElementById('delete-modal').classList.add('hidden');
+            });
+        }
 
         function renderUserDashboard() {
             const tbody = document.getElementById('user-table-body');
             tbody.innerHTML = '';
+
             const selectedMonth = document.getElementById('user-month').value;
             const selectedYear = currentYear.toString();
 
@@ -409,28 +680,60 @@
             );
 
             if (userEntries.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Записей за этот месяц не найдено. Нажмите "Добавить строку".</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-8 text-slate-400 text-xs">
+                            Записей за выбранный месяц не найдено. Нажмите "Добавить строку" для ввода отчета.
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 
             userEntries.forEach((entry, index) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition duration-150";
+
                 tr.innerHTML = `
-                    <td class="p-3 text-center text-slate-400 font-mono">${index + 1}</td>
-                    <td class="p-2"><input type="text" value="${entry.name || ''}" placeholder="ФИО" onchange="window.updateReportData('${entry.id}', 'name', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
-                    <td class="p-2"><input type="text" value="${entry.hours || ''}" placeholder="Часы" onchange="window.updateReportData('${entry.id}', 'hours', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
+                    <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
                     <td class="p-2">
-                        <select onchange="window.updateReportData('${entry.id}', 'status', this.value)" class="w-full px-2 py-1 border rounded text-sm bg-white">
+                        <input type="text" value="${entry.name}" placeholder="ФИО возвещателя" 
+                            onchange="updateReportData('${entry.id}', 'name', this.value)"
+                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                    </td>
+                    <td class="p-2">
+                        <input type="text" value="${entry.hours}" placeholder="Часы / Да" 
+                            onchange="updateReportData('${entry.id}', 'hours', this.value)"
+                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                    </td>
+                    <td class="p-2">
+                        <select onchange="updateReportData('${entry.id}', 'status', this.value)"
+                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm bg-white focus:border-indigo-500 focus:outline-none">
                             <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                             <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
                             <option value="ОП" ${entry.status === 'ОП' ? 'selected' : ''}>ОП</option>
                         </select>
                     </td>
-                    <td class="p-2"><input type="number" value="${entry.studies || '0'}" min="0" onchange="window.updateReportData('${entry.id}', 'studies', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
-                    <td class="p-2"><input type="text" value="${entry.notes || ''}" placeholder="Примечание" onchange="window.updateReportData('${entry.id}', 'notes', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
-                    <td class="p-2"><input type="number" value="${entry.dp || '0'}" min="0" onchange="window.updateReportData('${entry.id}', 'dp', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
-                    <td class="p-2 text-center"><button onclick="window.deleteReportRow('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td class="p-2">
+                        <input type="number" value="${entry.studies}" min="0" 
+                            onchange="updateReportData('${entry.id}', 'studies', this.value)"
+                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                    </td>
+                    <td class="p-2">
+                        <input type="text" value="${entry.notes}" placeholder="Примечание" 
+                            onchange="updateReportData('${entry.id}', 'notes', this.value)"
+                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                    </td>
+                    <td class="p-2">
+                        <input type="number" value="${entry.dp}" min="0" 
+                            onchange="updateReportData('${entry.id}', 'dp', this.value)"
+                            class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                    </td>
+                    <td class="p-2 text-center">
+                        <button onclick="requestDelete('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -451,7 +754,10 @@
                 return matchMonth && matchGroup && matchStatus;
             });
 
-            let totalHours = 0, totalStudies = 0, totalDP = 0;
+            let totalHours = 0;
+            let totalStudies = 0;
+            let totalDP = 0;
+
             filtered.forEach(item => {
                 totalHours += parseFloat(item.hours) || 0;
                 totalStudies += parseInt(item.studies) || 0;
@@ -464,70 +770,101 @@
             document.getElementById('stat-dp').innerText = totalDP;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">Нет данных.</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="text-center py-8 text-slate-400 text-xs">
+                            Нет данных, соответствующих выбранным фильтрам.
+                        </td>
+                    </tr>
+                `;
             } else {
                 filtered.forEach((entry, index) => {
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition duration-150";
+
                     tr.innerHTML = `
                         <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
-                        <td class="p-2"><input type="number" value="${entry.group}" onchange="window.updateReportData('${entry.id}', 'group', this.value)" class="w-12 px-1 py-1 border rounded text-xs text-center"></td>
-                        <td class="p-2 text-xs font-semibold text-slate-600">${entry.month}/${entry.year}</td>
-                        <td class="p-2"><input type="text" value="${entry.name || ''}" onchange="window.updateReportData('${entry.id}', 'name', this.value)" class="w-full px-2 py-1 border rounded text-sm font-medium"></td>
-                        <td class="p-2"><input type="text" value="${entry.hours || ''}" onchange="window.updateReportData('${entry.id}', 'hours', this.value)" class="w-20 px-2 py-1 border rounded text-sm"></td>
                         <td class="p-2">
-                            <select onchange="window.updateReportData('${entry.id}', 'status', this.value)" class="px-2 py-1 border rounded text-xs bg-white">
+                            <input type="number" value="${entry.group}" onchange="updateReportData('${entry.id}', 'group', this.value)"
+                                class="w-12 px-1 py-1 border border-slate-200 rounded text-xs text-center font-bold">
+                        </td>
+                        <td class="p-2 text-xs font-semibold text-slate-600">
+                            ${entry.month}/${entry.year}
+                        </td>
+                        <td class="p-2">
+                            <input type="text" value="${entry.name}" onchange="updateReportData('${entry.id}', 'name', this.value)"
+                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm font-medium text-slate-800">
+                        </td>
+                        <td class="p-2">
+                            <input type="text" value="${entry.hours}" onchange="updateReportData('${entry.id}', 'hours', this.value)"
+                                class="w-20 px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2">
+                            <select onchange="updateReportData('${entry.id}', 'status', this.value)"
+                                class="px-2 py-1 border border-slate-200 rounded text-xs bg-white">
                                 <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                                 <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
                                 <option value="ОП" ${entry.status === 'ОП' ? 'selected' : ''}>ОП</option>
                             </select>
                         </td>
-                        <td class="p-2"><input type="number" value="${entry.studies || '0'}" onchange="window.updateReportData('${entry.id}', 'studies', this.value)" class="w-16 px-2 py-1 border rounded text-sm"></td>
-                        <td class="p-2"><input type="text" value="${entry.notes || ''}" onchange="window.updateReportData('${entry.id}', 'notes', this.value)" class="w-full px-2 py-1 border rounded text-sm"></td>
-                        <td class="p-2"><input type="number" value="${entry.dp || '0'}" onchange="window.updateReportData('${entry.id}', 'dp', this.value)" class="w-16 px-2 py-1 border rounded text-sm"></td>
-                        <td class="p-2 text-center"><button onclick="window.deleteReportRow('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
+                        <td class="p-2">
+                            <input type="number" value="${entry.studies}" onchange="updateReportData('${entry.id}', 'studies', this.value)"
+                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2">
+                            <input type="text" value="${entry.notes}" onchange="updateReportData('${entry.id}', 'notes', this.value)"
+                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2">
+                            <input type="number" value="${entry.dp}" onchange="updateReportData('${entry.id}', 'dp', this.value)"
+                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                        </td>
+                        <td class="p-2 text-center">
+                            <button onclick="requestDelete('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
+
             analyzeSixMonthsActivity();
         }
 
         function populateAdminGroupFilter() {
             const groupSelect = document.getElementById('admin-group-filter');
             const groups = [...new Set(reportsData.map(item => item.group))].sort();
+
             groupSelect.innerHTML = '<option value="all">Все группы</option>';
             groups.forEach(g => {
-                if (g) {
-                    const option = document.createElement('option');
-                    option.value = g;
-                    option.innerText = `Группа №${g}`;
-                    groupSelect.appendChild(option);
-                }
+                const option = document.createElement('option');
+                option.value = g;
+                option.innerText = `Группа №${g}`;
+                groupSelect.appendChild(option);
             });
         }
 
-        // Работа с БД напрямую
-        window.updateReportData = async function(id, key, value) {
+        // Global functions for inline input handlers
+        window.updateReportData = function(id, key, value) {
             const entry = reportsData.find(item => item.id === id);
             if (entry) {
                 entry[key] = value;
-                const { id: docId, ...dataToSave } = entry;
-                await setDoc(doc(db, "reports", id), dataToSave, { merge: true });
-                showSaveStatus();
+                saveToStorage(entry);
+                if (key === 'group') populateAdminGroupFilter();
+                refreshCurrentView();
             }
         };
 
-        window.deleteReportRow = async function(id) {
-            if (confirm('Удалить эту запись из облака?')) {
-                await deleteDoc(doc(db, "reports", id));
-                showSaveStatus('Запись удалена');
-            }
+        window.requestDelete = function(id) {
+            itemToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
         };
 
         function analyzeSixMonthsActivity() {
             const irregularList = document.getElementById('list-irregular');
             const inactiveList = document.getElementById('list-inactive');
+            
             irregularList.innerHTML = '';
             inactiveList.innerHTML = '';
 
@@ -535,22 +872,26 @@
             const currentDate = new Date();
             for (let i = 0; i < 6; i++) {
                 const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                last6Months.push(String(d.getMonth() + 1).padStart(2, '0'));
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                last6Months.push(m);
             }
 
             const allPublishers = [...new Set(reportsData.map(item => item.name).filter(n => n && n.trim() !== ''))];
-            let countIrregular = 0, countInactive = 0;
+
+            let countIrregular = 0;
+            let countInactive = 0;
 
             allPublishers.forEach(name => {
                 const publisherReports = reportsData.filter(r => r.name === name && r.year === currentYear.toString());
                 const submittedMonths = publisherReports.map(r => r.month);
+
                 const submittedLast6Count = last6Months.filter(m => submittedMonths.includes(m)).length;
 
                 if (submittedLast6Count === 0) {
                     countInactive++;
                     const item = document.createElement('div');
                     item.className = 'flex justify-between items-center py-1 border-b border-rose-100';
-                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-rose-500 font-mono">0/6 мес.</span>`;
+                    item.innerHTML = `<span>• <strong>${name}</strong></span> <span class="text-rose-600 font-mono font-semibold">0/6 мес.</span>`;
                     inactiveList.appendChild(item);
                 } else if (submittedLast6Count < 6) {
                     countIrregular++;
@@ -564,9 +905,15 @@
 
             document.getElementById('count-irregular').innerText = countIrregular;
             document.getElementById('count-inactive').innerText = countInactive;
-            if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600">Все возвещатели сдавали отчеты регулярно!</div>';
-            if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600">За последние 6 месяцев нет полностью неактивных.</div>';
+
+            if (countIrregular === 0) irregularList.innerHTML = '<div class="text-emerald-600 italic">Все возвещатели сдавали отчеты регулярно!</div>';
+            if (countInactive === 0) inactiveList.innerHTML = '<div class="text-emerald-600 italic">За последние 6 месяцев нет неактивных.</div>';
         }
+
+        window.onload = async () => {
+            await initCloud();
+            initApp();
+        };
     </script>
 </body>
 </html>
