@@ -256,7 +256,6 @@
                         <thead>
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-10 text-center">№</th>
-                                <th class="p-3 w-44">Месяц / Год</th>
                                 <th class="p-3 min-w-[180px]">Имя сокр.</th>
                                 <th class="p-3 w-32">Часы / Участие</th>
                                 <th class="p-3 w-44">Статус</th>
@@ -397,7 +396,7 @@
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
                                 <th class="p-3 w-10 text-center">№</th>
                                 <th class="p-3 w-16">Группа</th>
-                                <th class="p-3 w-44">Месяц / Год</th>
+                                <th class="p-3 w-32">Месяц</th>
                                 <th class="p-3">Имя сокр.</th>
                                 <th class="p-3 w-28">Часы / Участие</th>
                                 <th class="p-3 w-40">Статус</th>
@@ -565,16 +564,8 @@
                     input.value = window.monthNames[orig] || orig;
                 }
             } else {
-                const foundKey = Object.keys(window.monthNames).find(
-                    k => window.monthNames[k].toLowerCase() === val.toLowerCase()
-                );
-                if (foundKey) {
-                    input.setAttribute('data-original-val', foundKey);
-                    input.value = window.monthNames[foundKey];
-                } else {
-                    let orig = input.getAttribute('data-original-val');
-                    input.value = window.monthNames[orig] || orig;
-                }
+                let orig = input.getAttribute('data-original-val');
+                input.value = window.monthNames[orig] || orig;
             }
             window.markRowDirty(input.getAttribute('data-row-id-ref'));
         };
@@ -845,7 +836,6 @@
 
         function refreshCurrentView() {
             if (!currentUser) return;
-            populateYearSelectors();
             if (currentUser.role === 'superadmin' || currentUser.role === 'admin') {
                 renderAdminDashboard();
             } else {
@@ -1130,7 +1120,6 @@
         };
 
         window.markRowDirty = function(id) {
-            if (!id) return;
             const saveBtn = document.getElementById(`save-btn-${id}`);
             if (saveBtn) {
                 saveBtn.classList.remove('hidden');
@@ -1146,7 +1135,6 @@
             if (event.key === 'Enter') {
                 event.preventDefault();
                 window.saveRow(id);
-                showSaveNotification('Запись сохранена!');
             }
         };
 
@@ -1156,7 +1144,6 @@
             
             if (entry && tr) {
                 const monthInput = tr.querySelector('.input-month');
-                const yearInput = tr.querySelector('.input-year');
                 const nameInput = tr.querySelector('.input-name');
                 const groupInput = tr.querySelector('.input-group');
                 const statusSelect = tr.querySelector('.input-status');
@@ -1174,23 +1161,8 @@
                             monthInput.setAttribute('data-original-val', val);
                             monthInput.value = window.monthNames[val] || val;
                         }
-                    } else {
-                        const foundKey = Object.keys(window.monthNames).find(
-                            k => window.monthNames[k].toLowerCase() === val.toLowerCase()
-                        );
-                        if (foundKey) {
-                            monthInput.setAttribute('data-original-val', foundKey);
-                            monthInput.value = window.monthNames[foundKey];
-                        }
                     }
                     entry.month = monthInput.getAttribute('data-original-val') || entry.month;
-                }
-
-                if (yearInput) {
-                    let yVal = yearInput.value.trim();
-                    if (/^\d{4}$/.test(yVal)) {
-                        entry.year = yVal;
-                    }
                 }
 
                 if (nameInput) {
@@ -1227,7 +1199,6 @@
                     saveBtn.classList.remove('inline-flex', 'items-center', 'justify-center', 'animate-pulse');
                 }
                 saveToStorage(entry);
-                populateYearSelectors();
             }
         };
 
@@ -1387,7 +1358,7 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="9" class="text-center py-8 text-slate-400 text-xs">
+                        <td colspan="8" class="text-center py-8 text-slate-400 text-xs">
                             У вашей группы нет отчетов за выбранный месяц. Нажмите «Добавить строку».
                         </td>
                     </tr>
@@ -1422,23 +1393,6 @@
 
                     tr.innerHTML = `
                         <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
-                        <td class="p-2">
-                            <div class="flex items-center space-x-1">
-                                <input type="text" value="${window.monthNames[entry.month] || entry.month}" 
-                                    data-original-val="${entry.month}"
-                                    data-row-id-ref="${entry.id}"
-                                    onfocus="window.focusMonthInput(this)"
-                                    onblur="window.formatMonthDisplay(this)"
-                                    oninput="markRowDirty('${entry.id}')"
-                                    onkeydown="handleRowKeyDown(event, '${entry.id}')"
-                                    class="input-month w-20 px-1.5 py-1 border border-slate-200 rounded text-xs text-center font-bold text-slate-800 focus:border-indigo-500 focus:outline-none">
-                                <span class="text-slate-400 font-bold text-xs">/</span>
-                                <input type="number" value="${entry.year || currentYear}" 
-                                    oninput="markRowDirty('${entry.id}')"
-                                    onkeydown="handleRowKeyDown(event, '${entry.id}')"
-                                    class="input-year w-16 px-1.5 py-1 border border-slate-200 rounded text-xs text-center font-bold text-slate-800 focus:border-indigo-500 focus:outline-none">
-                            </div>
-                        </td>
                         <td class="p-2">
                             <input type="text" value="${entry.name || ''}" placeholder="Имя сокр." 
                                 oninput="markRowDirty('${entry.id}')"
@@ -1576,14 +1530,9 @@
                                     data-row-id-ref="${entry.id}"
                                     onfocus="window.focusMonthInput(this)"
                                     onblur="window.formatMonthDisplay(this)"
-                                    oninput="markRowDirty('${entry.id}')"
                                     onkeydown="handleRowKeyDown(event, '${entry.id}')"
-                                    class="input-month w-20 px-1.5 py-1 border border-slate-200 rounded text-xs text-center font-bold text-slate-800 focus:border-indigo-500 focus:outline-none">
-                                <span class="text-slate-400 font-bold text-xs">/</span>
-                                <input type="number" value="${entry.year || currentYear}" 
-                                    oninput="markRowDirty('${entry.id}')"
-                                    onkeydown="handleRowKeyDown(event, '${entry.id}')"
-                                    class="input-year w-16 px-1.5 py-1 border border-slate-200 rounded text-xs text-center font-bold text-slate-800 focus:border-indigo-500 focus:outline-none">
+                                    class="input-month w-24 px-2 py-1 border border-slate-200 rounded text-xs text-center font-bold text-slate-800 focus:border-indigo-500 focus:outline-none">
+                                <span class="text-[10px] text-slate-400 font-medium">/${entry.year}</span>
                             </div>
                         </td>
                         <td class="p-2">
