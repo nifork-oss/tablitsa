@@ -1325,6 +1325,84 @@
             document.getElementById('transfer-modal').classList.remove('hidden');
         };
 
+        window.markRowDirty = function(id) {
+            const saveBtn = document.getElementById(`save-btn-${id}`);
+            if (saveBtn) {
+                saveBtn.classList.remove('hidden');
+                saveBtn.classList.add('inline-flex', 'items-center', 'justify-center', 'animate-pulse');
+            }
+            const tr = document.querySelector(`tr[data-row-id="${id}"]`);
+            if (tr) {
+                tr.classList.add('bg-amber-50/40');
+            }
+        };
+
+        window.handleRowKeyDown = function(event, id) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                window.saveRow(id);
+            }
+        };
+
+        window.saveRow = function(id) {
+            const tr = document.querySelector(`tr[data-row-id="${id}"]`);
+            const entry = reportsData.find(item => item.id === id);
+            
+            if (entry && tr) {
+                const nameInput = tr.querySelector('.input-name');
+                const groupInput = tr.querySelector('.input-group');
+                const statusSelect = tr.querySelector('.input-status');
+                const hoursInput = tr.querySelector('.input-hours');
+                const partCheckbox = tr.querySelector('.input-participated');
+                const studiesInput = tr.querySelector('.input-studies');
+                const notesInput = tr.querySelector('.input-notes');
+                const dpInput = tr.querySelector('.input-dp');
+
+                if (nameInput) {
+                    const newName = nameInput.value.trim();
+                    if (newName !== entry.name) {
+                        reportsData.forEach(r => {
+                            if (r.personId === entry.personId) {
+                                r.name = newName;
+                            }
+                        });
+                    }
+                    entry.name = newName;
+                }
+
+                if (groupInput) entry.group = groupInput.value.trim();
+                if (statusSelect) {
+                    const oldStatus = entry.status;
+                    entry.status = statusSelect.value;
+                    if ((entry.status === 'Возвещатель' || entry.status === 'Некрещеный возвещатель') && oldStatus !== entry.status) {
+                        entry.hours = '';
+                    }
+                }
+
+                if (hoursInput) entry.hours = hoursInput.value.trim();
+                if (partCheckbox) entry.participated = partCheckbox.checked;
+                if (studiesInput) entry.studies = studiesInput.value.trim();
+                if (notesInput) entry.notes = notesInput.value.trim();
+                if (dpInput) entry.dp = dpInput.value.trim();
+
+                if (tr) tr.classList.remove('bg-amber-50/40');
+                const saveBtn = document.getElementById(`save-btn-${id}`);
+                if (saveBtn) {
+                    saveBtn.classList.add('hidden');
+                    saveBtn.classList.remove('inline-flex', 'items-center', 'justify-center', 'animate-pulse');
+                }
+
+                if (document.activeElement && tr.contains(document.activeElement)) {
+                    document.activeElement.blur();
+                }
+
+                saveToStorage(entry);
+                populateAdminGroupFilter();
+                refreshCurrentView();
+                showSaveNotification('Запись сохранена!');
+            }
+        };
+
         function renderUserDashboard() {
             const tbody = document.getElementById('user-table-body');
             tbody.innerHTML = '';
@@ -1350,6 +1428,7 @@
                 userEntries.forEach((entry, index) => {
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition duration-150";
+                    tr.setAttribute('data-row-id', entry.id);
 
                     const isSimplePublisher = entry.status === 'Возвещатель' || entry.status === 'Некрещеный возвещатель';
                     
@@ -1358,8 +1437,8 @@
                         hoursInputHtml = `
                             <label class="inline-flex items-center space-x-2 cursor-pointer bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-200">
                                 <input type="checkbox" ${entry.participated ? 'checked' : ''} 
-                                    onchange="updateReportData('${entry.id}', 'participated', this.checked)"
-                                    class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                                    onchange="markRowDirty('${entry.id}')"
+                                    class="input-participated w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
                                 <span class="text-xs font-semibold ${entry.participated ? 'text-emerald-700' : 'text-slate-500'}">
                                     ${entry.participated ? 'Участвовал' : 'Нет'}
                                 </span>
@@ -1368,8 +1447,9 @@
                     } else {
                         hoursInputHtml = `
                             <input type="number" value="${entry.hours || ''}" placeholder="Часы" 
-                                onchange="updateReportData('${entry.id}', 'hours', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none font-medium">
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-hours w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none font-medium">
                         `;
                     }
 
@@ -1377,15 +1457,16 @@
                         <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
                         <td class="p-2">
                             <input type="text" value="${entry.name || ''}" placeholder="Имя сокр." 
-                                onchange="updatePublisherName('${entry.id}', '${entry.personId}', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none font-medium text-slate-800">
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-name w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none font-medium text-slate-800">
                         </td>
                         <td class="p-2">
                             ${hoursInputHtml}
                         </td>
                         <td class="p-2">
-                            <select onchange="updateReportData('${entry.id}', 'status', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-xs bg-white focus:border-indigo-500 focus:outline-none">
+                            <select onchange="markRowDirty('${entry.id}')"
+                                class="input-status w-full px-2 py-1 border border-slate-200 rounded text-xs bg-white focus:border-indigo-500 focus:outline-none">
                                 <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                                 <option value="Некрещеный возвещатель" ${entry.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный возвещатель</option>
                                 <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
@@ -1394,20 +1475,26 @@
                         </td>
                         <td class="p-2">
                             <input type="number" value="${entry.studies || ''}" min="0" placeholder="0"
-                                onchange="updateReportData('${entry.id}', 'studies', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-studies w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
                         </td>
                         <td class="p-2">
                             <input type="text" value="${entry.notes || ''}" placeholder="Примечание" 
-                                onchange="updateReportData('${entry.id}', 'notes', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-notes w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
                         </td>
                         <td class="p-2">
                             <input type="number" value="${entry.dp || ''}" min="0" placeholder="0"
-                                onchange="updateReportData('${entry.id}', 'dp', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-dp w-full px-2 py-1 border border-slate-200 rounded text-sm focus:border-indigo-500 focus:outline-none">
                         </td>
                         <td class="p-2 text-center space-x-1">
+                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}')" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
                             <button onclick="openPublisherCard('${entry.personId}')" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50" title="Карточка возвещателя">
                                 <i class="fa-solid fa-id-card"></i>
                             </button>
@@ -1445,7 +1532,6 @@
             let totalDP = 0;
 
             filtered.forEach(item => {
-                // Calculate hours ONLY for Pioneers (ПП + ОП)
                 if (item.status === 'ПП' || item.status === 'ОП') {
                     totalHours += parseFloat(item.hours) || 0;
                 }
@@ -1470,6 +1556,7 @@
                 filtered.forEach((entry, index) => {
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition duration-150";
+                    tr.setAttribute('data-row-id', entry.id);
 
                     const isSimplePublisher = entry.status === 'Возвещатель' || entry.status === 'Некрещеный возвещатель';
 
@@ -1478,8 +1565,8 @@
                         hoursInputHtml = `
                             <label class="inline-flex items-center space-x-1.5 cursor-pointer bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded border border-slate-200">
                                 <input type="checkbox" ${entry.participated ? 'checked' : ''} 
-                                    onchange="updateReportData('${entry.id}', 'participated', this.checked)"
-                                    class="w-3.5 h-3.5 text-indigo-600 rounded">
+                                    onchange="markRowDirty('${entry.id}')"
+                                    class="input-participated w-3.5 h-3.5 text-indigo-600 rounded">
                                 <span class="text-xs font-medium ${entry.participated ? 'text-emerald-700' : 'text-slate-500'}">
                                     ${entry.participated ? 'Да' : 'Нет'}
                                 </span>
@@ -1487,30 +1574,36 @@
                         `;
                     } else {
                         hoursInputHtml = `
-                            <input type="number" value="${entry.hours || ''}" placeholder="Часы" onchange="updateReportData('${entry.id}', 'hours', this.value)"
-                                class="w-20 px-2 py-1 border border-slate-200 rounded text-sm font-medium">
+                            <input type="number" value="${entry.hours || ''}" placeholder="Часы" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-hours w-20 px-2 py-1 border border-slate-200 rounded text-sm font-medium">
                         `;
                     }
 
                     tr.innerHTML = `
                         <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
                         <td class="p-2">
-                            <input type="number" value="${entry.group}" onchange="updateReportData('${entry.id}', 'group', this.value)"
-                                class="w-12 px-1 py-1 border border-slate-200 rounded text-xs text-center font-bold">
+                            <input type="number" value="${entry.group}" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-group w-12 px-1 py-1 border border-slate-200 rounded text-xs text-center font-bold">
                         </td>
                         <td class="p-2 text-xs font-semibold text-slate-600">
                             ${entry.month}/${entry.year}
                         </td>
                         <td class="p-2">
-                            <input type="text" value="${entry.name || ''}" placeholder="Имя сокр." onchange="updatePublisherName('${entry.id}', '${entry.personId}', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm font-medium text-slate-800">
+                            <input type="text" value="${entry.name || ''}" placeholder="Имя сокр." 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-name w-full px-2 py-1 border border-slate-200 rounded text-sm font-medium text-slate-800">
                         </td>
                         <td class="p-2">
                             ${hoursInputHtml}
                         </td>
                         <td class="p-2">
-                            <select onchange="updateReportData('${entry.id}', 'status', this.value)"
-                                class="px-2 py-1 border border-slate-200 rounded text-xs bg-white">
+                            <select onchange="markRowDirty('${entry.id}')"
+                                class="input-status px-2 py-1 border border-slate-200 rounded text-xs bg-white">
                                 <option value="Возвещатель" ${entry.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                                 <option value="Некрещеный возвещатель" ${entry.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный возвещатель</option>
                                 <option value="ПП" ${entry.status === 'ПП' ? 'selected' : ''}>ПП</option>
@@ -1518,18 +1611,27 @@
                             </select>
                         </td>
                         <td class="p-2">
-                            <input type="number" value="${entry.studies || ''}" placeholder="0" onchange="updateReportData('${entry.id}', 'studies', this.value)"
-                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                            <input type="number" value="${entry.studies || ''}" placeholder="0" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-studies w-16 px-2 py-1 border border-slate-200 rounded text-sm">
                         </td>
                         <td class="p-2">
-                            <input type="text" value="${entry.notes || ''}" placeholder="Примечание" onchange="updateReportData('${entry.id}', 'notes', this.value)"
-                                class="w-full px-2 py-1 border border-slate-200 rounded text-sm">
+                            <input type="text" value="${entry.notes || ''}" placeholder="Примечание" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-notes w-full px-2 py-1 border border-slate-200 rounded text-sm">
                         </td>
                         <td class="p-2">
-                            <input type="number" value="${entry.dp || ''}" placeholder="0" onchange="updateReportData('${entry.id}', 'dp', this.value)"
-                                class="w-16 px-2 py-1 border border-slate-200 rounded text-sm">
+                            <input type="number" value="${entry.dp || ''}" placeholder="0" 
+                                oninput="markRowDirty('${entry.id}')"
+                                onkeydown="handleRowKeyDown(event, '${entry.id}')"
+                                class="input-dp w-16 px-2 py-1 border border-slate-200 rounded text-sm">
                         </td>
                         <td class="p-2 text-center space-x-1">
+                            <button id="save-btn-${entry.id}" onclick="saveRow('${entry.id}')" class="hidden text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-100 bg-emerald-50 font-bold border border-emerald-200" title="Сохранить изменения (Enter)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
                             <button onclick="openPublisherCard('${entry.personId}')" class="text-indigo-600 hover:text-indigo-800 p-1.5 rounded hover:bg-indigo-50" title="Карточка возвещателя">
                                 <i class="fa-solid fa-id-card"></i>
                             </button>
