@@ -255,8 +255,9 @@
                     <table class="w-full text-left text-sm border-collapse">
                         <thead>
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
+                                <th class="p-3 w-10 text-center">№</th>
                                 <th class="p-3 w-44">Месяц / Год</th>
-                                <th class="p-3 min-w-[180px]">Имя сокр. / Номер группы</th>
+                                <th class="p-3 min-w-[180px]">Имя сокр.</th>
                                 <th class="p-3 w-32">Часы / Участие</th>
                                 <th class="p-3 w-44">Статус</th>
                                 <th class="p-3 w-28">Изучения</th>
@@ -394,8 +395,10 @@
                     <table class="w-full text-left text-sm border-collapse">
                         <thead>
                             <tr class="bg-slate-100/70 text-slate-600 text-xs uppercase border-b border-slate-200">
+                                <th class="p-3 w-10 text-center">№</th>
+                                <th class="p-3 w-16">Группа</th>
                                 <th class="p-3 w-44">Месяц / Год</th>
-                                <th class="p-3">Имя сокр. / Номер группы</th>
+                                <th class="p-3">Имя сокр.</th>
                                 <th class="p-3 w-28">Часы / Участие</th>
                                 <th class="p-3 w-40">Статус</th>
                                 <th class="p-3 w-20">Изучения</th>
@@ -1138,30 +1141,6 @@
             }
         };
 
-        window.handleStatusChange = function(selectEl, id) {
-            window.markRowDirty(id);
-            const tr = document.querySelector(`tr[data-row-id="${id}"]`);
-            if (!tr) return;
-            const participationContainer = tr.querySelector('.participation-container');
-            if (!participationContainer) return;
-
-            const val = selectEl.value;
-            if (val === 'ПП' || val === 'ОП') {
-                participationContainer.innerHTML = `
-                    <input type="number" min="0" value="0" oninput="markRowDirty('${id}')" onkeydown="handleRowKeyDown(event, '${id}')"
-                        class="input-hours w-14 text-center bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1 py-1 text-xs font-bold text-indigo-600 outline-none transition" title="Часы">
-                    <span class="text-[10px] text-slate-500">ч.</span>
-                `;
-            } else {
-                participationContainer.innerHTML = `
-                    <label class="inline-flex items-center text-[10px] text-slate-500 cursor-pointer">
-                        <input type="checkbox" onchange="markRowDirty('${id}')" class="input-participated text-indigo-600 rounded focus:ring-0 mr-1">
-                        Уч.
-                    </label>
-                `;
-            }
-        };
-
         window.handleRowKeyDown = function(event, id) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -1216,15 +1195,8 @@
                 if (nameInput) entry.name = nameInput.value.trim();
                 if (groupInput) entry.group = groupInput.value.trim();
                 if (statusSelect) entry.status = statusSelect.value;
-                
-                if (entry.status === 'ПП' || entry.status === 'ОП') {
-                    if (hoursInput) entry.hours = hoursInput.value.trim();
-                    entry.participated = false;
-                } else {
-                    if (partCheckbox) entry.participated = partCheckbox.checked;
-                    entry.hours = '';
-                }
-
+                if (hoursInput) entry.hours = hoursInput.value.trim();
+                if (partCheckbox) entry.participated = partCheckbox.checked;
                 if (studiesInput) entry.studies = studiesInput.value.trim();
                 if (notesInput) entry.notes = notesInput.value.trim();
                 if (dpInput) entry.dp = dpInput.value.trim();
@@ -1308,10 +1280,10 @@
 
             tbody.innerHTML = '';
             if (userReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">Записи за этот месяц не найдены. Нажмите "Добавить строку", чтобы создать новый отчет.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400">Записи за этот месяц не найдены. Нажмите "Добавить строку", чтобы создать новый отчет.</td></tr>`;
             } else {
-                userReports.forEach((item) => {
-                    tbody.appendChild(createRowElement(item));
+                userReports.forEach((item, index) => {
+                    tbody.appendChild(createRowElement(item, index + 1, false));
                 });
             }
 
@@ -1350,10 +1322,10 @@
 
             tbody.innerHTML = '';
             if (filteredReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">Записи по заданным фильтрам не найдены.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-400">Записи по заданным фильтрам не найдены.</td></tr>`;
             } else {
-                filteredReports.forEach((item) => {
-                    tbody.appendChild(createRowElement(item));
+                filteredReports.forEach((item, index) => {
+                    tbody.appendChild(createRowElement(item, index + 1, true));
                 });
             }
 
@@ -1361,55 +1333,46 @@
             runServiceAnalysis(selectedGroup, analysisYear, selectedMonth === 'all' ? '12' : selectedMonth, 'admin');
         }
 
-        function createRowElement(item) {
+        function createRowElement(item, index, isAdmin) {
             const tr = document.createElement('tr');
             tr.setAttribute('data-row-id', item.id);
             tr.className = "hover:bg-slate-50/80 transition-colors border-b border-slate-100";
 
             const monthDisplay = window.monthNames[item.month] || item.month;
-            const isPioneer = item.status === 'ПП' || item.status === 'ОП';
 
-            let participationHTML = isPioneer ? `
-                <div class="participation-container flex items-center space-x-1.5">
-                    <input type="number" min="0" value="${item.hours || '0'}" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
-                        class="input-hours w-14 text-center bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1 py-1 text-xs font-bold text-indigo-600 outline-none transition" title="Часы">
-                    <span class="text-[10px] text-slate-500">ч.</span>
-                </div>
-            ` : `
-                <div class="participation-container flex items-center space-x-1.5">
-                    <label class="inline-flex items-center text-[10px] text-slate-500 cursor-pointer">
-                        <input type="checkbox" ${item.participated ? 'checked' : ''} onchange="markRowDirty('${item.id}')" class="input-participated text-indigo-600 rounded focus:ring-0 mr-1">
-                        Уч.
-                    </label>
-                </div>
-            `;
+            let groupTd = isAdmin ? `<td class="p-2"><input type="text" value="${item.group || '1'}" oninput="markRowDirty('${item.id}')" class="input-group w-12 text-center bg-slate-50 border border-slate-200 rounded px-1 py-1 text-xs"></td>` : '';
 
             tr.innerHTML = `
+                <td class="p-2 text-center text-slate-400 font-mono text-xs">${index}</td>
+                ${groupTd}
                 <td class="p-2">
                     <div class="flex items-center space-x-1">
                         <input type="text" value="${monthDisplay}" data-original-val="${item.month}" data-row-id-ref="${item.id}"
                             onfocus="focusMonthInput(this)" onblur="formatMonthDisplay(this)" onkeydown="handleRowKeyDown(event, '${item.id}')"
                             class="input-month w-24 bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1.5 py-1 text-xs font-semibold text-slate-700 outline-none transition">
-                        <input type="number" value="${item.year}" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
-                            class="input-year w-16 bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1.5 py-1 text-xs text-slate-500 outline-none transition">
+                        <input type="text" value="${item.year}" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
+                            class="input-year w-14 bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1.5 py-1 text-xs text-slate-500 outline-none transition">
                     </div>
                 </td>
                 <td class="p-2">
-                    <div class="space-y-0.5">
+                    <button type="button" onclick="openPublisherCard('${item.personId}', '${item.name.replace(/'/g, "\\'")}')" class="text-left font-semibold text-indigo-700 hover:underline hover:text-indigo-900 block truncate max-w-[170px]" title="Открыть карточку">
                         <input type="text" value="${item.name}" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
-                            class="input-name w-full bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1.5 py-1 text-xs text-slate-800 font-medium outline-none transition" title="Имя сокр.">
-                        <div class="flex items-center space-x-1 px-1.5 text-[10px] text-slate-400">
-                            <span>Группа №</span>
-                            <input type="number" min="1" value="${item.group || '1'}" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
-                                class="input-group w-10 text-center bg-transparent hover:bg-white focus:bg-white border border-slate-200 focus:border-indigo-500 rounded px-1 py-0.5 text-[10px] font-semibold text-slate-600 outline-none transition" title="Номер группы">
-                        </div>
+                            onclick="event.stopPropagation()"
+                            class="input-name w-full bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1.5 py-1 text-xs text-slate-800 font-medium outline-none transition">
+                    </button>
+                </td>
+                <td class="p-2">
+                    <div class="flex items-center space-x-1.5">
+                        <input type="text" value="${item.hours || ''}" placeholder="0" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
+                            class="input-hours w-12 text-center bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1 py-1 text-xs font-bold text-indigo-600 outline-none transition">
+                        <label class="inline-flex items-center text-[10px] text-slate-500 cursor-pointer">
+                            <input type="checkbox" ${item.participated ? 'checked' : ''} onchange="markRowDirty('${item.id}')" class="input-participated text-indigo-600 rounded focus:ring-0 mr-1">
+                            Уч.
+                        </label>
                     </div>
                 </td>
                 <td class="p-2">
-                    ${participationHTML}
-                </td>
-                <td class="p-2">
-                    <select onchange="handleStatusChange(this, '${item.id}')" class="input-status text-xs border border-slate-200 rounded px-1.5 py-1 bg-white focus:ring-1 focus:ring-indigo-500">
+                    <select onchange="markRowDirty('${item.id}')" class="input-status text-xs border border-slate-200 rounded px-1.5 py-1 bg-white focus:ring-1 focus:ring-indigo-500">
                         <option value="Возвещатель" ${item.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
                         <option value="Некрещеный возвещатель" ${item.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный возв.</option>
                         <option value="ПП" ${item.status === 'ПП' ? 'selected' : ''}>ПП (Пионер)</option>
@@ -1417,16 +1380,16 @@
                     </select>
                 </td>
                 <td class="p-2 text-center">
-                    <input type="number" min="0" value="${item.studies || '0'}" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
-                        class="input-studies w-14 text-center bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1 py-1 text-xs font-bold text-emerald-600 outline-none transition">
+                    <input type="number" value="${item.studies || '0'}" min="0" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
+                        class="input-studies w-12 text-center bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1 py-1 text-xs font-bold text-emerald-600 outline-none transition">
                 </td>
                 <td class="p-2">
                     <input type="text" value="${item.notes || ''}" placeholder="Заметка..." oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
                         class="input-notes w-full bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1.5 py-1 text-xs text-slate-600 outline-none transition">
                 </td>
                 <td class="p-2">
-                    <input type="number" min="0" value="${item.dp || '0'}" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
-                        class="input-dp w-16 text-center bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1.5 py-1 text-xs font-medium text-amber-600 outline-none transition">
+                    <input type="number" value="${item.dp || '0'}" min="0" oninput="markRowDirty('${item.id}')" onkeydown="handleRowKeyDown(event, '${item.id}')"
+                        class="input-dp w-16 text-center bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-indigo-500 rounded px-1 py-1 text-xs font-medium text-amber-600 outline-none transition">
                 </td>
                 <td class="p-2 text-center whitespace-nowrap">
                     <button id="save-btn-${item.id}" onclick="saveRow('${item.id}'); showSaveNotification();" title="Сохранить" class="hidden text-emerald-600 hover:text-emerald-800 p-1 mr-1">
