@@ -79,6 +79,18 @@
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+
+        /* PDF printable optimization styling */
+        .pdf-print-area {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .pdf-print-area input, .pdf-print-area select {
+            border: none !important;
+            background: transparent !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
@@ -236,7 +248,9 @@
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц по умолчанию</label>
                         <select id="user-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
-                            <option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option><option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option><option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
+                            <option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
+                            <option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option>
+                            <option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option>
                         </select>
                     </div>
                     <div>
@@ -245,8 +259,11 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Загрузить тест-данные
+                    <button onclick="restoreDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Восстановить тест-данные
+                    </button>
+                    <button onclick="clearDemoData()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                        <i class="fa-solid fa-eraser mr-1.5"></i> Очистить тест-данные
                     </button>
                     <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-user-plus mr-2"></i> Добавить (+ возвещатель)
@@ -317,7 +334,10 @@
                     <div>
                         <label class="block text-xs text-slate-500 font-semibold mb-1">Месяц фильтра</label>
                         <select id="admin-month" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
-                            <option value="all">Все месяца</option><option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option><option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option><option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
+                            <option value="all">Все месяца</option>
+                            <option value="09">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
+                            <option value="01">Январь</option><option value="02">Февраль</option><option value="03">Март</option><option value="04">Апрель</option>
+                            <option value="05">Май</option><option value="06">Июнь</option><option value="07">Июль</option><option value="08">Август</option>
                         </select>
                     </div>
                     <div>
@@ -341,14 +361,17 @@
                         </select>
                     </div>
                 </div>
-                <div>
-                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
-                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Сбросить тест-данные
+                <div class="flex items-center space-x-2">
+                    <button onclick="restoreDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Восстановить тест-данные
+                    </button>
+                    <button onclick="clearDemoData()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
+                        <i class="fa-solid fa-eraser mr-1.5"></i> Очистить тест-данные
                     </button>
                 </div>
             </div>
 
-            <!-- Global Analytics & Dual-Slider Timeline Range Selector (Excel Slicer style) -->
+            <!-- Global Analytics & Dual-Slider Timeline Range Selector (Service Year: Sep -> Aug) -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div class="flex items-center space-x-3">
@@ -356,8 +379,8 @@
                             <i class="fa-solid fa-sliders"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-slate-800 text-base">Шкала времени (Анализ Excel)</h3>
-                            <p class="text-xs text-slate-500">Передвигайте два ползунка по единой шкале или кликайте на месяц</p>
+                            <h3 class="font-bold text-slate-800 text-base">Шкала времени Служебного Года (Сентябрь — Август)</h3>
+                            <p class="text-xs text-slate-500">Передвигайте ползунки по служебному году или кликайте на месяц</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2 text-xs">
@@ -366,10 +389,10 @@
                     </div>
                 </div>
 
-                <!-- Single Bar Dual-Slider Component -->
+                <!-- Single Bar Dual-Slider Component (Service Year order) -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                     <div class="flex justify-between items-center text-xs font-bold text-indigo-900">
-                        <span id="timeline-range-label" class="bg-indigo-100 px-3 py-1 rounded-lg text-indigo-800">Период: Январь — Декабрь</span>
+                        <span id="timeline-range-label" class="bg-indigo-100 px-3 py-1 rounded-lg text-indigo-800">Период: Сентябрь — Август</span>
                         <span class="text-slate-500 font-normal">Выбрано месяцев: <strong id="timeline-count-label" class="text-indigo-700">12</strong></span>
                     </div>
 
@@ -381,20 +404,20 @@
                             <input type="range" id="slider-start-month" min="1" max="12" value="1" step="1">
                             <input type="range" id="slider-end-month" min="1" max="12" value="12" step="1">
                         </div>
-                        <!-- Month Labels for Quick Click -->
+                        <!-- Month Labels in Service Year Sequence (Sep -> Aug) -->
                         <div id="month-buttons-bar" class="grid grid-cols-12 text-center text-[11px] font-semibold text-slate-500 mt-1 select-none">
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(1)">Янв</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(2)">Фев</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(3)">Мар</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(4)">Апр</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(5)">Май</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(6)">Июн</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(7)">Июл</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(8)">Авг</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(9)">Сен</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(10)">Окт</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(11)">Ноя</span>
-                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(12)">Дек</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(1)">Сен</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(2)">Окт</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(3)">Ноя</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(4)">Дек</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(5)">Янв</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(6)">Фев</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(7)">Мар</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(8)">Апр</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(9)">Май</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(10)">Июн</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(11)">Июл</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(12)">Авг</span>
                         </div>
                     </div>
                 </div>
@@ -457,70 +480,120 @@
         </main>
     </div>
 
-    <!-- Publisher Card Modal -->
-    <div id="publisher-card-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
+    <!-- Publisher Card Modal (Standard S-21 Publisher Record Card Form) -->
+    <div id="publisher-card-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-2 sm:p-4">
+        <div id="publisher-card-dialog" class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="bg-indigo-700 text-white p-4 flex justify-between items-center shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-indigo-500/50 flex items-center justify-center text-lg font-bold border border-indigo-300">
                         <i class="fa-solid fa-address-card"></i>
                     </div>
                     <div>
-                        <h3 id="card-publisher-name" class="font-bold text-lg leading-snug">Карточка возвещателя</h3>
+                        <h3 id="card-publisher-name" class="font-bold text-lg leading-snug">Учетная карточка возвещателя</h3>
                         <p class="text-xs text-indigo-200">ID: <span id="card-publisher-id" class="font-mono"></span></p>
                     </div>
                 </div>
                 <button id="close-publisher-card" class="text-indigo-200 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <!-- Printable Card Area (Formatted as Clean PDF Table with Service Year Totals) -->
-            <div id="printable-card-content" class="p-6 overflow-y-auto space-y-6 bg-white text-slate-800">
-                <div class="border-b pb-3 flex justify-between items-end">
-                    <div>
-                        <h2 id="pdf-header-name" class="text-xl font-bold text-slate-900">Учетная карточка возвещателя</h2>
-                        <p class="text-xs text-slate-500">Группа №<span id="card-publisher-group">-</span></p>
+            <!-- Printable Card Container -->
+            <div id="printable-card-wrapper" class="overflow-y-auto p-4 sm:p-6 bg-slate-100">
+                <div id="printable-card-content" class="pdf-print-area p-6 bg-white border border-slate-300 shadow-sm rounded-lg space-y-4 text-slate-800">
+                    
+                    <!-- Header S-21 Form -->
+                    <div class="border-b-2 border-slate-800 pb-3 flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Форма S-21</span>
+                            <h2 class="text-xl font-bold uppercase tracking-tight text-slate-900">Учетная карточка возвещателя собрания</h2>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold border border-slate-800 px-2.5 py-1 rounded">
+                                Служебный год: <span id="card-service-year-title">2025–2026</span>
+                            </span>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg border border-indigo-100">
-                            Служебный год (Сентябрь — Август)
-                        </span>
-                    </div>
-                </div>
 
-                <!-- Structured PDF Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border border-slate-300 border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px] border-b border-slate-300">
-                                <th class="p-2.5 border-r border-slate-300 w-24">Месяц</th>
-                                <th class="p-2.5 border-r border-slate-300 w-16 text-center">Год</th>
-                                <th class="p-2.5 border-r border-slate-300 w-28">Статус</th>
-                                <th class="p-2.5 border-r border-slate-300 text-center w-20">Участие</th>
-                                <th class="p-2.5 border-r border-slate-300 text-right w-20">Часы</th>
-                                <th class="p-2.5 border-r border-slate-300 text-center w-20">Изучения</th>
-                                <th class="p-2.5">Примечания</th>
-                            </tr>
-                        </thead>
-                        <tbody id="card-history-tbody" class="divide-y divide-slate-200"></tbody>
-                        <!-- Table Footer with Service Year Totals -->
-                        <tfoot>
-                            <tr class="bg-indigo-50/80 font-bold text-indigo-950 border-t-2 border-indigo-200">
-                                <td colspan="4" class="p-2.5 text-right border-r border-slate-300 uppercase text-[11px]">
-                                    Итого часов за служебный период:
-                                </td>
-                                <td id="pdf-total-service-hours" class="p-2.5 text-right border-r border-slate-300 text-sm text-indigo-700">0 ч.</td>
-                                <td colspan="2" class="p-2.5 text-xs text-slate-500 font-normal">
-                                    Подбито за сентябрь — август
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <!-- Personal Metadata Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-xs border border-slate-300 p-3 rounded-md bg-slate-50/50">
+                        <div class="flex items-center space-x-2 border-b border-slate-200 pb-1">
+                            <span class="font-bold w-28 text-slate-700">ФИО:</span>
+                            <input type="text" id="meta-fullname" class="font-semibold text-slate-900 w-full focus:bg-white px-1" placeholder="Иванов Иван Иванович">
+                        </div>
+                        <div class="flex items-center space-x-2 border-b border-slate-200 pb-1">
+                            <span class="font-bold w-28 text-slate-700">Группа №:</span>
+                            <span id="card-publisher-group" class="font-bold text-indigo-700">1</span>
+                        </div>
+
+                        <div class="flex items-center space-x-2 border-b border-slate-200 pb-1">
+                            <span class="font-bold w-28 text-slate-700">Дата рождения:</span>
+                            <input type="text" id="meta-dob" class="text-slate-800 w-full focus:bg-white px-1" placeholder="ДД.ММ.ГГГГ">
+                        </div>
+                        <div class="flex items-center space-x-2 border-b border-slate-200 pb-1">
+                            <span class="font-bold w-28 text-slate-700">Дата крещения:</span>
+                            <input type="text" id="meta-bap" class="text-slate-800 w-full focus:bg-white px-1" placeholder="ДД.ММ.ГГГГ">
+                        </div>
+
+                        <div class="flex items-center space-x-2 border-b border-slate-200 pb-1">
+                            <span class="font-bold w-28 text-slate-700">Пол / Надежда:</span>
+                            <select id="meta-gender-hope" class="w-full text-xs focus:bg-white px-1">
+                                <option value="Муж / Другие овцы">Мужчина / Другие овцы</option>
+                                <option value="Жен / Другие овцы">Женщина / Другие овцы</option>
+                                <option value="Муж / Помазанник">Мужчина / Помазанник</option>
+                                <option value="Жен / Помазанник">Женщина / Помазанник</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2 border-b border-slate-200 pb-1">
+                            <span class="font-bold w-28 text-slate-700">Контакты:</span>
+                            <input type="text" id="meta-phone" class="text-slate-800 w-full focus:bg-white px-1" placeholder="+7 (900) 000-00-00">
+                        </div>
+                    </div>
+
+                    <!-- Structured PDF Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-800 border-collapse">
+                            <thead>
+                                <tr class="bg-slate-200 text-slate-900 uppercase font-bold text-[10px] border-b border-slate-800">
+                                    <th class="p-2 border-r border-slate-800 w-24">Месяц</th>
+                                    <th class="p-2 border-r border-slate-800 w-14 text-center">Год</th>
+                                    <th class="p-2 border-r border-slate-800 w-28">Статус</th>
+                                    <th class="p-2 border-r border-slate-800 text-center w-20">Участие</th>
+                                    <th class="p-2 border-r border-slate-800 text-right w-20">Часы</th>
+                                    <th class="p-2 border-r border-slate-800 text-center w-20">Изучения</th>
+                                    <th class="p-2">Примечания</th>
+                                </tr>
+                            </thead>
+                            <tbody id="card-history-tbody" class="divide-y divide-slate-400"></tbody>
+                            <!-- Table Footer with Service Year Totals -->
+                            <tfoot>
+                                <tr class="bg-slate-100 font-bold text-slate-900 border-t-2 border-slate-800">
+                                    <td colspan="4" class="p-2 text-right border-r border-slate-800 uppercase text-[10px]">
+                                        Итого за служебный период:
+                                    </td>
+                                    <td id="pdf-total-service-hours" class="p-2 text-right border-r border-slate-800 text-xs font-black text-slate-900">0 ч.</td>
+                                    <td id="pdf-total-service-studies" class="p-2 text-center border-r border-slate-800 text-xs font-black text-slate-900">0</td>
+                                    <td class="p-2 text-[10px] text-slate-600 font-normal">
+                                        Подбито за сентябрь — август
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="flex justify-between items-center text-[10px] text-slate-500 pt-2">
+                        <span>Карточка сгенерирована автоматически в облачной системе</span>
+                        <span>Подпись секретаря: ____________________</span>
+                    </div>
+
                 </div>
             </div>
 
-            <div class="bg-slate-50 border-t border-slate-100 p-4 flex justify-end space-x-3">
-                <button onclick="exportCardToPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs px-4 py-2 rounded-xl transition flex items-center shadow-sm">
-                    <i class="fa-solid fa-file-pdf mr-2"></i> Печать в PDF (Таблица)
+            <!-- Footer Modal Action Bar -->
+            <div class="bg-slate-50 border-t border-slate-200 p-4 flex justify-between items-center shrink-0">
+                <span class="text-xs text-slate-500">
+                    <i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i> Нажмите "Печать в PDF", чтобы сформировать документ A4.
+                </span>
+                <button onclick="exportCardToPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs px-5 py-2.5 rounded-xl transition flex items-center shadow-sm">
+                    <i class="fa-solid fa-file-pdf mr-2"></i> Печать в PDF (Таблица S-21)
                 </button>
             </div>
         </div>
@@ -550,12 +623,15 @@
         let reportsData = [];
         let isCloudConnected = false;
         let itemToDeleteId = null;
-        let selectedTimelineMonths = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+
+        // Service Year Month Mapping (Order: Sep -> Aug)
+        const serviceMonthsOrder = ['09', '10', '11', '12', '01', '02', '03', '04', '05', '06', '07', '08'];
+        let selectedTimelineMonths = [...serviceMonthsOrder];
 
         const monthNamesMap = {
+            '09': 'Сентябрь', '10': 'Октябрь', '11': 'Ноябрь', '12': 'Декабрь',
             '01': 'Январь', '02': 'Февраль', '03': 'Март', '04': 'Апрель',
-            '05': 'Май', '06': 'Июнь', '07': 'Июль', '08': 'Август',
-            '09': 'Сентябрь', '10': 'Октябрь', '11': 'Ноябрь', '12': 'Декабрь'
+            '05': 'Май', '06': 'Июнь', '07': 'Июль', '08': 'Август'
         };
 
         let jsonbinConfig = {
@@ -563,13 +639,78 @@
             apiKey: localStorage.getItem('jsonbin_key') || '$2a$10$V5zoj8HIhi0GtDS/ZY5EXe0m1yUvWzV8enXWJjCCaeREOkxKbEvyC'
         };
 
-        const initialMockData = [
-            { id: "m1", personId: "p1", name: "Иванов Иван", groupNum: "1", group: "1", month: "01", year: String(currentYear), status: "Возвещатель", participated: true, hours: "", studies: "1", notes: "В служении регулярно", donation: "500" },
-            { id: "m2", personId: "p1", name: "Иванов Иван", groupNum: "1", group: "1", month: "09", year: String(currentYear - 1), status: "Возвещатель", participated: true, hours: "10", studies: "1", notes: "", donation: "0" },
-            { id: "m3", personId: "p2", name: "Петрова Анна", groupNum: "2", group: "1", month: "01", year: String(currentYear), status: "ПП", participated: true, hours: "52", studies: "2", notes: "Пионер", donation: "1000" },
-            { id: "m4", personId: "p3", name: "Сидоров Алексей", groupNum: "3", group: "2", month: "01", year: String(currentYear), status: "Возвещатель", participated: false, hours: "", studies: "0", notes: "Болел", donation: "0" },
-            { id: "m5", personId: "p4", name: "Смирнова Елена", groupNum: "1", group: "3", month: "01", year: String(currentYear), status: "ОП", participated: true, hours: "130", studies: "3", notes: "Спец пионер", donation: "2000" }
-        ];
+        // Generator for 12 Months x 3 Groups x 5 Publishers = 180 Mock Reports marked with isDemo: true
+        function generateFull12MonthDemoData() {
+            const data = [];
+            const publishersGroupMap = {
+                "1": [
+                    { id: "pers_g1_1", name: "Иванов Иван", status: "Возвещатель" },
+                    { id: "pers_g1_2", name: "Петрова Анна", status: "ПП" },
+                    { id: "pers_g1_3", name: "Сергеев Сергей", status: "Возвещатель" },
+                    { id: "pers_g1_4", name: "Васильева Ольга", status: "Некрещеный возвещатель" },
+                    { id: "pers_g1_5", name: "Кузнецов Дмитрий", status: "ОП" }
+                ],
+                "2": [
+                    { id: "pers_g2_1", name: "Сидоров Алексей", status: "Возвещатель" },
+                    { id: "pers_g2_2", name: "Морозова Елена", status: "Возвещатель" },
+                    { id: "pers_g2_3", name: "Николаев Павел", status: "ПП" },
+                    { id: "pers_g2_4", name: "Федорова Ирина", status: "Возвещатель" },
+                    { id: "pers_g2_5", name: "Михайлов Андрей", status: "Возвещатель" }
+                ],
+                "3": [
+                    { id: "pers_g3_1", name: "Смирнова Екатерина", status: "ОП" },
+                    { id: "pers_g3_2", name: "Попов Артем", status: "Возвещатель" },
+                    { id: "pers_g3_3", name: "Волкова Мария", status: "ПП" },
+                    { id: "pers_g3_4", name: "Алексеев Роман", status: "Возвещатель" },
+                    { id: "pers_g3_5", name: "Лебедева Наталья", status: "Некрещеный возвещатель" }
+                ]
+            };
+
+            serviceMonthsOrder.forEach((mCode, mIdx) => {
+                // Determine calendar year: Sep-Dec is currentYear-1, Jan-Aug is currentYear
+                const repYear = ['09', '10', '11', '12'].includes(mCode) ? String(currentYear - 1) : String(currentYear);
+
+                Object.keys(publishersGroupMap).forEach(gNum => {
+                    publishersGroupMap[gNum].forEach((pub, pIdx) => {
+                        let participated = true;
+                        let hours = "";
+                        let studies = "1";
+
+                        // Create realistic variations for irregulars / inactives
+                        if (pub.name.includes("Сидоров") && (mCode === '10' || mCode === '02')) {
+                            participated = false; // Irregular
+                        }
+                        if (pub.name.includes("Васильева") && ['11', '12', '01'].includes(mCode)) {
+                            participated = false; // Irregular
+                        }
+
+                        if (pub.status === 'ПП') hours = String(50 + (mIdx % 5));
+                        if (pub.status === 'ОП') hours = String(120 + (mIdx % 10));
+
+                        data.push({
+                            id: `demo_${gNum}_${pIdx + 1}_${mCode}`,
+                            personId: pub.id,
+                            name: pub.name,
+                            groupNum: String(pIdx + 1),
+                            group: gNum,
+                            month: mCode,
+                            year: repYear,
+                            status: pub.status,
+                            participated: participated,
+                            hours: hours,
+                            studies: studies,
+                            notes: participated ? "" : "Пропуск месяца",
+                            donation: "0",
+                            isDemo: true
+                        });
+                    });
+                });
+            });
+
+            return data;
+        }
+
+        const initialMockData = generateFull12MonthDemoData();
 
         function populateYearSelectors() {
             const years = [];
@@ -592,7 +733,7 @@
             });
         }
 
-        // Single-Bar Excel Range Slider Handler
+        // Service Year Dual Range Slider Handler (Sep -> Aug)
         function updateRangeSliderUI() {
             const startSlider = document.getElementById('slider-start-month');
             const endSlider = document.getElementById('slider-end-month');
@@ -602,14 +743,12 @@
             let startVal = parseInt(startSlider.value);
             let endVal = parseInt(endSlider.value);
 
-            // Keep start and end in proper order
             if (startVal > endVal) {
                 const temp = startVal;
                 startVal = endVal;
                 endVal = temp;
             }
 
-            // Calculate percentage position for visual highlight
             const percent1 = ((startVal - 1) / 11) * 100;
             const percent2 = ((endVal - 1) / 11) * 100;
 
@@ -617,13 +756,12 @@
             rangeTrack.style.width = (percent2 - percent1) + '%';
 
             selectedTimelineMonths = [];
-            const monthKeys = Object.keys(monthNamesMap);
             for (let i = startVal; i <= endVal; i++) {
-                selectedTimelineMonths.push(monthKeys[i - 1]);
+                selectedTimelineMonths.push(serviceMonthsOrder[i - 1]);
             }
 
-            const startName = monthNamesMap[monthKeys[startVal - 1]];
-            const endName = monthNamesMap[monthKeys[endVal - 1]];
+            const startName = monthNamesMap[serviceMonthsOrder[startVal - 1]];
+            const endName = monthNamesMap[serviceMonthsOrder[endVal - 1]];
 
             if (startVal === endVal) {
                 document.getElementById('timeline-range-label').textContent = `Выбран месяц: ${startName}`;
@@ -635,7 +773,6 @@
             refreshCurrentView();
         }
 
-        // Quick select single month by clicking name
         window.selectSingleMonth = function(monthNum) {
             const startSlider = document.getElementById('slider-start-month');
             const endSlider = document.getElementById('slider-end-month');
@@ -861,9 +998,13 @@
         function renderTableRow(r, isAdmin) {
             const isPioneer = r.status === 'ПП' || r.status === 'ОП';
             return `
-                <tr id="row_${r.id}" class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
+                <tr id="row_${r.id}" class="hover:bg-slate-50 transition border-b border-slate-100 text-xs ${r.isDemo ? 'bg-slate-50/40' : ''}">
                     <td class="p-3">
                         <select onchange="updateField('${r.id}', 'month', this.value)" class="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="09" ${r.month === '09' ? 'selected' : ''}>Сентябрь</option>
+                            <option value="10" ${r.month === '10' ? 'selected' : ''}>Октябрь</option>
+                            <option value="11" ${r.month === '11' ? 'selected' : ''}>Ноябрь</option>
+                            <option value="12" ${r.month === '12' ? 'selected' : ''}>Декабрь</option>
                             <option value="01" ${r.month === '01' ? 'selected' : ''}>Январь</option>
                             <option value="02" ${r.month === '02' ? 'selected' : ''}>Февраль</option>
                             <option value="03" ${r.month === '03' ? 'selected' : ''}>Март</option>
@@ -872,10 +1013,6 @@
                             <option value="06" ${r.month === '06' ? 'selected' : ''}>Июнь</option>
                             <option value="07" ${r.month === '07' ? 'selected' : ''}>Июль</option>
                             <option value="08" ${r.month === '08' ? 'selected' : ''}>Август</option>
-                            <option value="09" ${r.month === '09' ? 'selected' : ''}>Сентябрь</option>
-                            <option value="10" ${r.month === '10' ? 'selected' : ''}>Октябрь</option>
-                            <option value="11" ${r.month === '11' ? 'selected' : ''}>Ноябрь</option>
-                            <option value="12" ${r.month === '12' ? 'selected' : ''}>Декабрь</option>
                         </select>
                     </td>
                     <td class="p-3">
@@ -915,7 +1052,7 @@
                     </td>
                     <td class="p-3 text-center space-x-1">
                         <button onclick="saveRowItem('${r.id}')" class="text-emerald-600 hover:text-emerald-800 p-1 bg-emerald-50 rounded" title="Сохранить строку"><i class="fa-solid fa-floppy-disk"></i></button>
-                        <button onclick="openPublisherCard('${r.personId}', '${r.name}')" class="text-indigo-600 hover:text-indigo-800 p-1 bg-indigo-50 rounded" title="Карточка"><i class="fa-solid fa-address-card"></i></button>
+                        <button onclick="openPublisherCard('${r.personId}', '${r.name}')" class="text-indigo-600 hover:text-indigo-800 p-1 bg-indigo-50 rounded" title="Карточка S-21"><i class="fa-solid fa-address-card"></i></button>
                         <button onclick="confirmDelete('${r.id}')" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded" title="Удалить"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>
@@ -1042,7 +1179,7 @@
         }
 
         window.addNewRow = function() {
-            const defMonth = document.getElementById('user-month')?.value || '01';
+            const defMonth = document.getElementById('user-month')?.value || '09';
             const defYear = document.getElementById('user-year')?.value || String(currentYear);
             const defGroup = currentUser && currentUser.role === 'user' ? (currentUser.group || '1') : '1';
 
@@ -1062,7 +1199,8 @@
                 hours: '',
                 studies: '0',
                 notes: '',
-                donation: '0'
+                donation: '0',
+                isDemo: false
             });
 
             saveReportsToStorage();
@@ -1075,11 +1213,22 @@
             showToast('Все изменения успешно сохранены', 'success');
         };
 
-        window.reloadDemoData = function() {
-            reportsData = JSON.parse(JSON.stringify(initialMockData));
+        // Clear Demo Data (preserves custom user-added rows)
+        window.clearDemoData = function() {
+            reportsData = reportsData.filter(r => !r.isDemo);
             saveReportsToStorage();
             refreshCurrentView();
-            showToast('Тестовые данные успешно загружены', 'success');
+            showToast('Тестовые данные успешно удалены', 'info');
+        };
+
+        // Restore Demo Data (180 items for 3 groups x 5 pub x 12 months)
+        window.restoreDemoData = function() {
+            const nonDemo = reportsData.filter(r => !r.isDemo);
+            const fullDemo = generateFull12MonthDemoData();
+            reportsData = [...fullDemo, ...nonDemo];
+            saveReportsToStorage();
+            refreshCurrentView();
+            showToast('Тестовые данные на 12 месяцев успешно восстановлены', 'success');
         };
 
         window.confirmDelete = function(id) {
@@ -1087,73 +1236,99 @@
             document.getElementById('delete-modal').classList.remove('hidden');
         };
 
-        // Open Publisher Card and Render Clean PDF-ready Table with Service Year Totals (Sep - Aug)
         window.openPublisherCard = function(personId, name) {
             const modal = document.getElementById('publisher-card-modal');
-            document.getElementById('card-publisher-name').textContent = name || 'Возвещатель';
+            document.getElementById('meta-fullname').value = name || 'Возвещатель';
             document.getElementById('card-publisher-id').textContent = personId;
 
             const personReports = reportsData.filter(r => r.personId === personId);
 
-            const groupVal = personReports.length > 0 ? personReports[0].group : '-';
+            const groupVal = personReports.length > 0 ? personReports[0].group : '1';
             document.getElementById('card-publisher-group').textContent = groupVal;
+
+            const startYear = currentYear - 1;
+            document.getElementById('card-service-year-title').textContent = `${startYear}–${currentYear}`;
 
             const tbody = document.getElementById('card-history-tbody');
             tbody.innerHTML = '';
 
             let totalServiceHours = 0;
+            let totalServiceStudies = 0;
 
             if (personReports.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400">Нет истории отчетов</td></tr>`;
             } else {
-                // Filter and Calculate hours for Service Year (September to August)
-                // Service year filter: Month >= '09' of Year X OR Month <= '08' of Year X+1
-                personReports.sort((a, b) => `${a.year}${a.month}`.localeCompare(`${b.year}${b.month}`)).forEach(r => {
-                    const monthNum = parseInt(r.month, 10);
+                personReports.sort((a, b) => {
+                    const aIdx = serviceMonthsOrder.indexOf(a.month);
+                    const bIdx = serviceMonthsOrder.indexOf(b.month);
+                    return (`${a.year}_${aIdx < 10 ? '0' + aIdx : aIdx}`).localeCompare(`${b.year}_${bIdx < 10 ? '0' + bIdx : bIdx}`);
+                }).forEach(r => {
                     const hoursVal = parseFloat(r.hours) || 0;
-                    
-                    // Sum hours for Service Period
+                    const studiesVal = parseInt(r.studies) || 0;
+
                     totalServiceHours += hoursVal;
+                    totalServiceStudies += studiesVal;
 
                     const participationText = (r.status === 'ПП' || r.status === 'ОП') ? 'Пионер' : (r.participated ? 'Да' : 'Нет');
                     const monthName = monthNamesMap[r.month] || r.month;
 
                     tbody.insertAdjacentHTML('beforeend', `
-                        <tr class="hover:bg-slate-50 border-b border-slate-200 text-xs">
-                            <td class="p-2.5 font-semibold border-r border-slate-200">${monthName}</td>
-                            <td class="p-2.5 text-center border-r border-slate-200">${r.year}</td>
-                            <td class="p-2.5 border-r border-slate-200">${r.status}</td>
-                            <td class="p-2.5 text-center border-r border-slate-200">${participationText}</td>
-                            <td class="p-2.5 text-right font-bold border-r border-slate-200">${hoursVal ? hoursVal + ' ч.' : '-'}</td>
-                            <td class="p-2.5 text-center border-r border-slate-200">${r.studies || 0}</td>
-                            <td class="p-2.5 text-slate-600">${r.notes || '-'}</td>
+                        <tr class="hover:bg-slate-50 border-b border-slate-300 text-xs">
+                            <td class="p-2 font-semibold border-r border-slate-300">${monthName}</td>
+                            <td class="p-2 text-center border-r border-slate-300">${r.year}</td>
+                            <td class="p-2 border-r border-slate-300">${r.status}</td>
+                            <td class="p-2 text-center border-r border-slate-300">${participationText}</td>
+                            <td class="p-2 text-right font-bold border-r border-slate-300">${hoursVal ? hoursVal + ' ч.' : '-'}</td>
+                            <td class="p-2 text-center border-r border-slate-300">${studiesVal}</td>
+                            <td class="p-2 text-slate-700">${r.notes || '-'}</td>
                         </tr>
                     `);
                 });
             }
 
             document.getElementById('pdf-total-service-hours').textContent = totalServiceHours + ' ч.';
+            document.getElementById('pdf-total-service-studies').textContent = totalServiceStudies;
             modal.classList.remove('hidden');
         };
 
+        // Export Entire Printable Area to PDF without Cutting off Elements
         window.exportCardToPDF = function() {
             const element = document.getElementById('printable-card-content');
-            const name = document.getElementById('card-publisher-name').textContent || 'Card';
+            const wrapper = document.getElementById('printable-card-wrapper');
+            const dialog = document.getElementById('publisher-card-dialog');
+            const pubName = document.getElementById('meta-fullname').value || 'Возвещатель';
+
+            // Temporarily disable height limits & scrolling to ensure html2canvas captures full document
+            const originalMaxHeight = dialog.style.maxHeight;
+            const originalOverflow = wrapper.style.overflow;
+
+            dialog.style.maxHeight = 'none';
+            wrapper.style.overflow = 'visible';
+
             const opt = {
-                margin:       10,
-                filename:     `Отчет_${name.replace(/\s+/g, '_')}_Таблица.pdf`,
+                margin:       [10, 10, 10, 10],
+                filename:     `Карточка_S21_${pubName.replace(/\s+/g, '_')}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
-            html2pdf().from(element).set(opt).save();
-            showToast('Таблица отчета с итогами успешно сохранена в PDF', 'success');
+
+            html2pdf().from(element).set(opt).save().then(() => {
+                // Restore modal layout styles after export completes
+                dialog.style.maxHeight = originalMaxHeight || '92vh';
+                wrapper.style.overflow = originalOverflow || 'auto';
+                showToast('Форма S-21 в формате PDF сформирована без обрезок!', 'success');
+            }).catch(err => {
+                dialog.style.maxHeight = originalMaxHeight || '92vh';
+                wrapper.style.overflow = originalOverflow || 'auto';
+                showToast('Ошибка при формировании PDF', 'error');
+            });
         };
 
         document.addEventListener('DOMContentLoaded', () => {
             populateYearSelectors();
 
-            // Register event listeners for dual-range sliders
             const startSlider = document.getElementById('slider-start-month');
             const endSlider = document.getElementById('slider-end-month');
             if (startSlider && endSlider) {
