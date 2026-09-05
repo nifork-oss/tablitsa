@@ -108,19 +108,19 @@
 
                 <!-- Cloud Status Indicator & Navigation -->
                 <div class="flex items-center space-x-3">
-                    <button id="cloud-config-btn" class="flex items-center space-x-1.5 bg-indigo-800/80 hover:bg-indigo-800 px-3 py-1.5 rounded-lg text-xs transition border border-indigo-500/30" title="Настройки подключения к облачной базе JSONBin">
+                    <button id="cloud-config-btn" onclick="openCloudModal()" class="flex items-center space-x-1.5 bg-indigo-800/80 hover:bg-indigo-800 px-3 py-1.5 rounded-lg text-xs transition border border-indigo-500/30" title="Настройки подключения к облачной базе JSONBin">
                         <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
                         <span id="cloud-status-text" class="hidden sm:inline text-indigo-100 font-medium">Подключение...</span>
                         <i class="fa-solid fa-gear text-indigo-300 ml-1 text-[11px]"></i>
                     </button>
 
                     <div id="user-info" class="hidden items-center space-x-3">
-                        <button id="open-users-modal-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium" title="Управление учетными записями">
+                        <button id="open-users-modal-btn" onclick="openUsersModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 items-center shadow-sm font-medium" title="Управление учетными записями">
                             <i class="fa-solid fa-users-gear mr-1.5"></i> <span class="hidden sm:inline">Аккаунты</span>
                         </button>
                         <span id="user-badge" class="px-2.5 py-1 bg-indigo-900 text-indigo-100 rounded-full text-xs font-semibold uppercase tracking-wider"></span>
                         <span id="user-display" class="font-medium text-sm hidden md:inline"></span>
-                        <button id="logout-btn" class="bg-rose-500 hover:bg-rose-600 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 flex items-center shadow-sm" title="Завершить сеанс">
+                        <button id="logout-btn" onclick="logout()" class="bg-rose-500 hover:bg-rose-600 text-white text-xs px-3 py-1.5 rounded-lg transition duration-200 flex items-center shadow-sm" title="Завершить сеанс">
                             <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Выйти
                         </button>
                     </div>
@@ -135,7 +135,7 @@
                     <h3 class="font-bold text-base flex items-center">
                         <i class="fa-solid fa-cloud text-indigo-200 mr-2"></i> Настройка Облака (JSONBin.io)
                     </h3>
-                    <button id="close-cloud-modal" class="text-indigo-200 hover:text-white text-lg" title="Закрыть окно">
+                    <button onclick="closeCloudModal()" class="text-indigo-200 hover:text-white text-lg" title="Закрыть окно">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -155,10 +155,10 @@
                     </div>
                     <div id="cloud-modal-msg" class="text-xs p-2.5 rounded-lg hidden"></div>
                     <div class="flex space-x-2 pt-2">
-                        <button id="save-firebase-config" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-xs transition shadow-sm" title="Сохранить ключи и подключиться">
+                        <button onclick="saveCloudConfig()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-xs transition shadow-sm" title="Сохранить ключи и подключиться">
                             Сохранить и Подключить
                         </button>
-                        <button id="reset-firebase-config" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition" title="Очистить ключи и перейти в локальный режим">
+                        <button onclick="resetCloudConfig()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition" title="Очистить ключи и перейти в локальный режим">
                             Сбросить
                         </button>
                     </div>
@@ -170,15 +170,15 @@
         <main id="login-view" class="flex-grow flex items-center justify-center p-4">
             <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
                 <div class="flex border-b border-slate-200 mb-6 text-sm font-medium">
-                    <button id="tab-login-btn" class="flex-1 py-2 text-center tab-active focus:outline-none">
+                    <button id="tab-login-btn" onclick="switchTab('login')" class="flex-1 py-2 text-center tab-active focus:outline-none">
                         <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Вход
                     </button>
-                    <button id="tab-register-btn" class="flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none">
+                    <button id="tab-register-btn" onclick="switchTab('register')" class="flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none">
                         <i class="fa-solid fa-user-plus mr-1.5"></i> Регистрация
                     </button>
                 </div>
 
-                <form id="login-form" class="space-y-4">
+                <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-bold text-slate-800">Авторизация</h2>
                         <p class="text-slate-500 text-xs mt-1">Введите ваш Email и пароль</p>
@@ -215,7 +215,7 @@
                     </div>
                 </form>
 
-                <form id="register-form" class="space-y-4 hidden">
+                <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="space-y-4 hidden">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-bold text-slate-800">Создать аккаунт</h2>
                         <p class="text-slate-500 text-xs mt-1">Новый аккаунт регистрируется как Пользователь</p>
@@ -242,6 +242,31 @@
 
         <!-- User Dashboard -->
         <main id="user-dashboard" class="hidden flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+            <!-- Виджет-счетчик сдачи отчетов до 6 числа текущего месяца -->
+            <div id="user-deadline-banner" class="bg-emerald-50/90 rounded-xl p-4 border border-emerald-200 shadow-sm transition flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-3.5">
+                    <div id="deadline-icon-bg" class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl shrink-0 shadow-xs">
+                        <i id="deadline-icon" class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="font-bold text-sm sm:text-base text-slate-800" id="deadline-title-text">Срок сдачи отчетов за последний месяц</h3>
+                            <span id="deadline-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-200 text-emerald-900 border border-emerald-300">В процессе</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-0.5 leading-relaxed" id="deadline-description-text">
+                            Необходимо отправить все отчеты до 6 числа текущего месяца включительно.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 self-end md:self-auto bg-white/90 backdrop-blur px-4 py-2 rounded-xl border border-slate-200 shadow-xs">
+                    <div class="text-right sm:text-center px-1">
+                        <span class="block text-[10px] uppercase tracking-wider text-slate-400 font-extrabold" id="deadline-metric-label">Осталось времени</span>
+                        <span class="text-2xl font-black leading-none" id="deadline-metric-value">...</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Панель выбора отчетного периода и переключения месяца -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center justify-between">
                 <div class="flex flex-wrap items-center gap-3">
@@ -444,6 +469,62 @@
                 </div>
             </div>
 
+            <!-- БЛОК КОНТРОЛЯ НОРМЫ 600 ЧАСОВ ДЛЯ ОБЩИХ ПИОНЕРОВ (ОП) -->
+            <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-md border border-slate-800 space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-3 border-b border-slate-800 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold border border-amber-500/30 text-lg">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-slate-100 flex items-center gap-2">
+                                <span>Контроль нормы Общих Пионеров (ОП — 600 часов)</span>
+                                <span class="bg-amber-500/20 text-amber-300 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded border border-amber-500/30">Админ-контроль</span>
+                            </h3>
+                            <p class="text-xs text-slate-400">Мониторинг выполнения годовой нормы часов ОП по служебным годам</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Карточка 1: Не успевают за текущий год -->
+                    <div onclick="openOPCurrentLagModal()" class="bg-slate-800/80 hover:bg-slate-800 cursor-pointer rounded-xl border border-amber-500/30 p-4 transition shadow-sm group">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">Текущий служебный год</span>
+                                <h4 class="font-bold text-sm text-slate-100 flex items-center mt-1">
+                                    <i class="fa-solid fa-triangle-exclamation text-amber-400 mr-2"></i> Не успевают с нормой
+                                </h4>
+                                <p class="text-xs text-slate-400">Средний график < 50 ч./мес.</p>
+                            </div>
+                            <span id="count-op-current-lag" class="text-3xl font-black text-amber-400">0</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-amber-300 pt-2 border-t border-slate-700/60 font-medium">
+                            <span>Нажмите для подробного списка</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 2: Отставание за прошлый год (> 20 часов) -->
+                    <div onclick="openOPPrevDeficitModal()" class="bg-slate-800/80 hover:bg-slate-800 cursor-pointer rounded-xl border border-rose-500/30 p-4 transition shadow-sm group">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Предыдущий служебный год</span>
+                                <h4 class="font-bold text-sm text-slate-100 flex items-center mt-1">
+                                    <i class="fa-solid fa-circle-xmark text-rose-400 mr-2"></i> Не справились (> 20 ч. отставания)
+                                </h4>
+                                <p class="text-xs text-slate-400">Итого за год меньше 580 часов</p>
+                            </div>
+                            <span id="count-op-prev-deficit" class="text-3xl font-black text-rose-400">0</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-rose-300 pt-2 border-t border-slate-700/60 font-medium">
+                            <span>Нажмите для подробного списка</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Панель Фильтрации, Поиска и Шкала Времени -->
             <div class="space-y-4">
                 <!-- Панель Фильтрации и Поиска -->
@@ -504,8 +585,8 @@
                             <div class="range-slider-container">
                                 <div class="range-slider-track"></div>
                                 <div id="slider-highlight-range" class="range-slider-range"></div>
-                                <input type="range" id="slider-start-month" min="1" max="12" value="1" step="1" title="Начальный месяц периода">
-                                <input type="range" id="slider-end-month" min="1" max="12" value="12" step="1" title="Конечный месяц периода">
+                                <input type="range" id="slider-start-month" min="1" max="12" value="1" step="1" oninput="updateRangeSliderUI()" title="Начальный месяц периода">
+                                <input type="range" id="slider-end-month" min="1" max="12" value="12" step="1" oninput="updateRangeSliderUI()" title="Конечный месяц периода">
                             </div>
                             <!-- Month Labels -->
                             <div id="month-buttons-bar" class="grid grid-cols-12 text-center text-[11px] font-semibold text-slate-500 mt-1 select-none">
@@ -656,6 +737,79 @@
         </main>
     </div>
 
+    <!-- Modal 1: ОП — Отстают в текущем служебном году -->
+    <div id="op-current-lag-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="bg-amber-600 text-white p-4 flex justify-between items-center shrink-0">
+                <h3 class="font-bold text-base flex items-center">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-100 mr-2"></i> Общие Пионеры: Не успевают с нормой (Текущий год)
+                </h3>
+                <button onclick="closeOPCurrentLagModal()" class="text-amber-100 hover:text-white text-lg" title="Закрыть окно">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 bg-amber-50 border-b border-amber-200 text-xs text-amber-900 leading-relaxed">
+                Расчет производится из нормы <strong>50 часов в месяц</strong> на каждый сданный или прошедший месяц служебного года.
+            </div>
+            <div class="overflow-y-auto p-4 flex-grow">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 uppercase border-b border-slate-200 font-semibold">
+                            <th class="p-2.5">ФИО ОП</th>
+                            <th class="p-2.5 text-center">Группа</th>
+                            <th class="p-2.5 text-center">Сдано месяцев</th>
+                            <th class="p-2.5 text-center">Факт. часы</th>
+                            <th class="p-2.5 text-center">Норма графика</th>
+                            <th class="p-2.5 text-center">Отставание</th>
+                        </tr>
+                    </thead>
+                    <tbody id="op-current-lag-tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div class="bg-slate-50 border-t border-slate-200 p-3 text-right shrink-0">
+                <button onclick="closeOPCurrentLagModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition">
+                    Закрыть
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: ОП — Отставание > 20 часов за прошлый служебный год -->
+    <div id="op-prev-deficit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="bg-rose-600 text-white p-4 flex justify-between items-center shrink-0">
+                <h3 class="font-bold text-base flex items-center">
+                    <i class="fa-solid fa-circle-xmark text-rose-100 mr-2"></i> ОП: Не справились с нормой за прошлый год (> 20 ч.)
+                </h3>
+                <button onclick="closeOPPrevDeficitModal()" class="text-rose-100 hover:text-white text-lg" title="Закрыть окно">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 bg-rose-50 border-b border-rose-200 text-xs text-rose-900 leading-relaxed">
+                Список Общих Пионеров, у которых итоговая сумма за весь предыдущий служебный год составила <strong>менее 580 часов</strong> (отставание от годовой нормы 600 часов превышает 20 часов).
+            </div>
+            <div class="overflow-y-auto p-4 flex-grow">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 uppercase border-b border-slate-200 font-semibold">
+                            <th class="p-2.5">ФИО ОП</th>
+                            <th class="p-2.5 text-center">Группа</th>
+                            <th class="p-2.5 text-center">Набрано за год</th>
+                            <th class="p-2.5 text-center">Годовая норма</th>
+                            <th class="p-2.5 text-center">Дефицит часов</th>
+                        </tr>
+                    </thead>
+                    <tbody id="op-prev-deficit-tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div class="bg-slate-50 border-t border-slate-200 p-3 text-right shrink-0">
+                <button onclick="closeOPPrevDeficitModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition">
+                    Закрыть
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- User History Modal (История отчетов группы) -->
     <div id="user-history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
@@ -776,7 +930,7 @@
                         <p class="text-xs text-indigo-200">ID: <span id="card-publisher-id" class="font-mono"></span></p>
                     </div>
                 </div>
-                <button id="close-publisher-card" class="text-indigo-200 hover:text-white text-xl p-1" title="Закрыть карточку"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closePublisherCardModal()" class="text-indigo-200 hover:text-white text-xl p-1" title="Закрыть карточку"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div id="printable-card-wrapper" class="overflow-y-auto p-4 sm:p-6 bg-slate-100">
@@ -882,7 +1036,7 @@
                 <h3 class="font-bold text-base flex items-center">
                     <i class="fa-solid fa-users-gear text-purple-200 mr-2"></i> Управление пользователями
                 </h3>
-                <button id="close-users-modal" class="text-purple-200 hover:text-white text-lg" title="Закрыть окно">
+                <button onclick="closeUsersModal()" class="text-purple-200 hover:text-white text-lg" title="Закрыть окно">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -903,7 +1057,7 @@
                 </table>
             </div>
             <div class="bg-slate-50 border-t border-slate-200 p-3 text-right shrink-0">
-                <button id="close-users-modal-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition" title="Закрыть модальное окно">
+                <button onclick="closeUsersModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-xs transition" title="Закрыть модальное окно">
                     Закрыть
                 </button>
             </div>
@@ -922,8 +1076,8 @@
             <h3 class="font-bold text-slate-800 text-base mb-1">Удалить запись?</h3>
             <p class="text-xs text-slate-500 mb-5">Это действие нельзя будет отменить.</p>
             <div class="flex space-x-3">
-                <button id="cancel-delete-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-semibold" title="Отменить удаление">Отмена</button>
-                <button id="confirm-delete-btn" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2 rounded-lg text-xs font-semibold" title="Подтвердить удаление записи">Удалить</button>
+                <button onclick="closeDeleteModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-semibold" title="Отменить удаление">Отмена</button>
+                <button onclick="confirmDeleteRow()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2 rounded-lg text-xs font-semibold" title="Подтвердить удаление записи">Удалить</button>
             </div>
         </div>
     </div>
@@ -934,6 +1088,7 @@
         let reportsData = [];
         let isCloudConnected = false;
         let itemToDeleteId = null;
+        let activeCardPublisher = null;
 
         const serviceMonthsOrder = ['09', '10', '11', '12', '01', '02', '03', '04', '05', '06', '07', '08'];
         let selectedTimelineMonths = [...serviceMonthsOrder];
@@ -949,10 +1104,89 @@
             apiKey: localStorage.getItem('jsonbin_key') || '$2a$10$V5zoj8HIhi0GtDS/ZY5EXe0m1yUvWzV8enXWJjCCaeREOkxKbEvyC'
         };
 
-        // Вспомогательная функция: Вычисление предыдущего месяца от текущей даты по умолчанию
+        function getDaysWord(num) {
+            const abs = Math.abs(num) % 100;
+            const n = abs % 10;
+            if (abs > 10 && abs < 20) return 'дней';
+            if (n > 1 && n < 5) return 'дня';
+            if (n === 1) return 'день';
+            return 'дней';
+        }
+
+        function updateDeadlineCountdown() {
+            const now = new Date();
+            const currentDay = now.getDate();
+            const currentMonthIdx = now.getMonth();
+            const currentYearNum = now.getFullYear();
+
+            let prevMonthIdx = currentMonthIdx - 1;
+            let prevMonthYear = currentYearNum;
+            if (prevMonthIdx < 0) {
+                prevMonthIdx = 11;
+                prevMonthYear -= 1;
+            }
+
+            const prevMonthCode = String(prevMonthIdx + 1).padStart(2, '0');
+            const prevMonthName = monthNamesMap[prevMonthCode] || 'прошлый месяц';
+            const currentMonthName = monthNamesMap[String(currentMonthIdx + 1).padStart(2, '0')] || 'текущем месяце';
+
+            const deadlineDay = 6;
+
+            const banner = document.getElementById('user-deadline-banner');
+            const iconBg = document.getElementById('deadline-icon-bg');
+            const icon = document.getElementById('deadline-icon');
+            const titleText = document.getElementById('deadline-title-text');
+            const badge = document.getElementById('deadline-status-badge');
+            const descText = document.getElementById('deadline-description-text');
+            const metricLabel = document.getElementById('deadline-metric-label');
+            const metricValue = document.getElementById('deadline-metric-value');
+
+            if (!banner || !badge || !metricValue) return;
+
+            if (currentDay <= deadlineDay) {
+                const daysLeft = deadlineDay - currentDay;
+
+                if (daysLeft === 0) {
+                    banner.className = "bg-amber-50/90 rounded-xl p-4 border border-amber-300 shadow-sm transition flex flex-col md:flex-row items-start md:items-center justify-between gap-4";
+                    iconBg.className = "w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl shrink-0 shadow-xs";
+                    icon.className = "fa-solid fa-hourglass-half animate-spin";
+                    titleText.textContent = `Срок сдачи отчетов за ${prevMonthName}`;
+                    badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-200 text-amber-900 border border-amber-300";
+                    badge.textContent = "Сегодня крайний день!";
+                    descText.textContent = `Сегодня 6-е число (${currentMonthName}) — последний день подачи всех отчетов за ${prevMonthName} ${prevMonthYear} г.`;
+                    metricLabel.textContent = "Срок истекает";
+                    metricValue.textContent = "Сегодня";
+                    metricValue.className = "text-2xl font-black leading-none text-amber-700";
+                } else {
+                    banner.className = "bg-emerald-50/90 rounded-xl p-4 border border-emerald-200 shadow-sm transition flex flex-col md:flex-row items-start md:items-center justify-between gap-4";
+                    iconBg.className = "w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl shrink-0 shadow-xs";
+                    icon.className = "fa-solid fa-calendar-check text-emerald-600";
+                    titleText.textContent = `Срок сдачи отчетов за ${prevMonthName}`;
+                    badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-200 text-emerald-900 border border-emerald-300";
+                    badge.textContent = "Срок до 6-го числа";
+                    descText.textContent = `Отправьте все сформированные отчеты за ${prevMonthName} ${prevMonthYear} г. до 6 ${currentMonthName} включительно.`;
+                    metricLabel.textContent = "Осталось времени";
+                    metricValue.textContent = `${daysLeft} ${getDaysWord(daysLeft)}`;
+                    metricValue.className = "text-2xl font-black leading-none text-emerald-700";
+                }
+            } else {
+                const daysOverdue = currentDay - deadlineDay;
+                banner.className = "bg-rose-50/90 rounded-xl p-4 border border-rose-300 shadow-sm transition flex flex-col md:flex-row items-start md:items-center justify-between gap-4";
+                iconBg.className = "w-11 h-11 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-2xl shrink-0 shadow-xs";
+                icon.className = "fa-solid fa-triangle-exclamation text-rose-600 animate-pulse";
+                titleText.textContent = `Срок сдачи отчетов за ${prevMonthName}`;
+                badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-rose-200 text-rose-900 border border-rose-300";
+                badge.textContent = "Просрочено";
+                descText.textContent = `Срок сдачи отчетов за ${prevMonthName} ${prevMonthYear} г. (до 6-го числа) истек. Пожалуйста, срочно отправьте оставшиеся данные!`;
+                metricLabel.textContent = "Дней просрочки";
+                metricValue.textContent = `${daysOverdue} ${getDaysWord(daysOverdue)}`;
+                metricValue.className = "text-2xl font-black leading-none text-rose-700";
+            }
+        }
+
         function getDefaultPreviousMonthObj() {
             const now = new Date();
-            let m = now.getMonth(); // 0 - 11 (0 - Январь, 8 - Сентябрь)
+            let m = now.getMonth();
             let y = now.getFullYear();
             if (m === 0) {
                 m = 12;
@@ -992,17 +1226,17 @@
                     { id: "pers_g1_2", name: "Петрова Анна", status: "ПП" },
                     { id: "pers_g1_3", name: "Сергеев Сергей", status: "Возвещатель" },
                     { id: "pers_g1_4", name: "Васильева Ольга", status: "Некрещеный возвещатель" },
-                    { id: "pers_g1_5", name: "Кузнецов Дмитрий", status: "ОП" }
+                    { id: "pers_g1_5", name: "Кузнецов Дмитрий", status: "ОП" } // ОП с отставанием
                 ],
                 "2": [
                     { id: "pers_g2_1", name: "Сидоров Алексей", status: "Возвещатель" },
                     { id: "pers_g2_2", name: "Морозова Елена", status: "Возвещатель" },
                     { id: "pers_g2_3", name: "Николаев Павел", status: "ПП" },
                     { id: "pers_g2_4", name: "Федорова Ирина", status: "Возвещатель" },
-                    { id: "pers_g2_5", name: "Михайлов Андрей", status: "Возвещатель" }
+                    { id: "pers_g2_5", name: "Михайлов Андрей", status: "ОП" } // ОП нормальный
                 ],
                 "3": [
-                    { id: "pers_g3_1", name: "Смирнова Екатерина", status: "ОП" },
+                    { id: "pers_g3_1", name: "Смирнова Екатерина", status: "ОП" }, // ОП с отставанием в прошлом году
                     { id: "pers_g3_2", name: "Попов Артем", status: "Возвещатель" },
                     { id: "pers_g3_3", name: "Волкова Мария", status: "ПП" },
                     { id: "pers_g3_4", name: "Алексеев Роман", status: "Возвещатель" },
@@ -1010,40 +1244,56 @@
                 ]
             };
 
-            serviceMonthsOrder.forEach((mCode, mIdx) => {
-                const repYear = ['09', '10', '11', '12'].includes(mCode) ? String(selectedYear - 1) : String(selectedYear);
+            // Демо за текущий служебный год и прошлый служебный год
+            [selectedYear - 1, selectedYear].forEach(syYear => {
+                serviceMonthsOrder.forEach((mCode, mIdx) => {
+                    const repYear = ['09', '10', '11', '12'].includes(mCode) ? String(syYear - 1) : String(syYear);
 
-                Object.keys(publishersGroupMap).forEach(gNum => {
-                    publishersGroupMap[gNum].forEach((pub, pIdx) => {
-                        let participated = true;
-                        let hours = "";
-                        let studies = "1";
+                    Object.keys(publishersGroupMap).forEach(gNum => {
+                        publishersGroupMap[gNum].forEach((pub, pIdx) => {
+                            let participated = true;
+                            let hours = "";
+                            let studies = "1";
 
-                        if (pub.name.includes("Сидоров") && (mCode === '10' || mCode === '02')) {
-                            participated = false;
-                        }
-                        if (pub.name.includes("Васильева") && ['11', '12', '01'].includes(mCode)) {
-                            participated = false;
-                        }
+                            if (pub.name.includes("Сидоров") && (mCode === '10' || mCode === '02')) {
+                                participated = false;
+                            }
+                            if (pub.name.includes("Васильева") && ['11', '12', '01'].includes(mCode)) {
+                                participated = false;
+                            }
 
-                        if (pub.status === 'ПП') hours = String(50 + (mIdx % 5));
-                        if (pub.status === 'ОП') hours = String(120 + (mIdx % 10));
+                            if (pub.status === 'ПП') hours = String(50 + (mIdx % 5));
+                            
+                            // Симуляция часов ОП для теста:
+                            if (pub.status === 'ОП') {
+                                if (pub.name.includes("Кузнецов")) {
+                                    // Кузнецов отстает в текущем году (30 ч/мес вместо 50)
+                                    hours = syYear === selectedYear ? "32" : "550"; // 550 в прошлом году (<580, отставание >20ч)
+                                } else if (pub.name.includes("Смирнова")) {
+                                    // Смирнова: успевает в текущем году, но в прошлом была 530 часов (отставание > 20ч)
+                                    hours = syYear === selectedYear ? "52" : "530";
+                                } else {
+                                    // Нормальный ОП
+                                    hours = String(52 + (mIdx % 6));
+                                }
+                            }
 
-                        data.push({
-                            id: `demo_${gNum}_${pIdx + 1}_${mCode}_${repYear}`,
-                            personId: pub.id,
-                            name: pub.name,
-                            groupNum: String(pIdx + 1),
-                            group: gNum,
-                            month: mCode,
-                            year: repYear,
-                            status: pub.status,
-                            participated: participated,
-                            hours: hours,
-                            studies: studies,
-                            notes: participated ? "" : "Пропуск месяца",
-                            donation: "0",
-                            isDemo: true
+                            data.push({
+                                id: `demo_${gNum}_${pIdx + 1}_${mCode}_${repYear}`,
+                                personId: pub.id,
+                                name: pub.name,
+                                groupNum: String(pIdx + 1),
+                                group: gNum,
+                                month: mCode,
+                                year: repYear,
+                                status: pub.status,
+                                participated: participated,
+                                hours: hours,
+                                studies: studies,
+                                notes: participated ? "" : "Пропуск месяца",
+                                donation: "0",
+                                isDemo: true
+                            });
                         });
                     });
                 });
@@ -1204,7 +1454,7 @@
                 document.getElementById('user-dashboard').classList.remove('hidden');
                 document.getElementById('admin-dashboard').classList.add('hidden');
 
-                // Инициализация рабочего месяца пользователя по умолчанию (Предыдущий календарный месяц)
+                updateDeadlineCountdown();
                 resetUserToDefaultPreviousMonth(false);
             }
 
@@ -1254,6 +1504,76 @@
             document.getElementById('login-password').value = pass;
             loginWithCredentials(email, pass);
         };
+
+        function switchTab(tab) {
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+
+            if (tab === 'login') {
+                loginBtn.className = "flex-1 py-2 text-center tab-active focus:outline-none";
+                regBtn.className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+            } else {
+                regBtn.className = "flex-1 py-2 text-center tab-active focus:outline-none";
+                loginBtn.className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
+                regForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            loginWithCredentials(email, pass);
+        }
+
+        function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-password').value.trim();
+            const group = document.getElementById('reg-group').value.trim();
+            const errEl = document.getElementById('reg-error');
+
+            if (!email || !pass || !group) {
+                errEl.textContent = "Заполните все поля.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            let savedUsers = [];
+            try {
+                const localUsers = localStorage.getItem('users_db');
+                savedUsers = localUsers ? JSON.parse(localUsers) : initialUsers;
+            } catch(err) { savedUsers = initialUsers; }
+
+            if (savedUsers.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+                errEl.textContent = "Пользователь с таким Email уже существует.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const newUser = { email, password: pass, group, role: 'user' };
+            savedUsers.push(newUser);
+            localStorage.setItem('users_db', JSON.stringify(savedUsers));
+
+            currentUser = newUser;
+            errEl.classList.add('hidden');
+            enterDashboard();
+            showToast("Регистрация успешна!", 'success');
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('user-info').classList.add('hidden');
+            document.getElementById('user-dashboard').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+            showToast("Вы вышли из системы", 'info');
+        }
 
         function updateCloudUIStatus(status, text) {
             const dot = document.getElementById('cloud-status-dot');
@@ -1325,6 +1645,165 @@
             updateCloudUIStatus('offline', 'Автономно');
             reportsData = JSON.parse(localStorage.getItem('reports_db') || JSON.stringify(initialMockData));
             refreshCurrentView();
+        }
+
+        /* -------------------------------------------------------------
+           ФУНКЦИИ РАСЧЕТА НОРМЫ 600 ЧАСОВ ДЛЯ ОБЩИХ ПИОНЕРОВ (ОП)
+        ------------------------------------------------------------- */
+
+        // 1. Расчет для Текущего Служебного Года (не успевают с нормой 50 ч/мес)
+        function calculateOPCurrentYearLag() {
+            const selectedYear = parseInt(document.getElementById('analysis-year-admin')?.value || currentYear);
+            const opMap = {};
+
+            // Отбираем все отчёты с ОП за выбранный служебный год
+            reportsData.forEach(r => {
+                const expectedYear = ['09', '10', '11', '12'].includes(r.month) ? String(selectedYear - 1) : String(selectedYear);
+                if (String(r.year) !== expectedYear) return;
+                if (r.status !== 'ОП') return;
+
+                const key = r.personId || (r.name ? r.name.trim().toLowerCase() : null);
+                if (!key) return;
+
+                if (!opMap[key]) {
+                    opMap[key] = {
+                        name: r.name || 'Без имени',
+                        group: r.group || '1',
+                        monthsCount: 0,
+                        totalHours: 0,
+                        reports: []
+                    };
+                }
+
+                const hours = parseFloat(r.hours) || 0;
+                opMap[key].monthsCount += 1;
+                opMap[key].totalHours += hours;
+                opMap[key].reports.push(r);
+            });
+
+            const laggedOPList = [];
+
+            Object.values(opMap).forEach(op => {
+                // Из расчета 50 часов в месяц
+                const expectedHours = op.monthsCount * 50;
+                if (op.totalHours < expectedHours) {
+                    laggedOPList.push({
+                        name: op.name,
+                        group: op.group,
+                        monthsCount: op.monthsCount,
+                        totalHours: op.totalHours,
+                        expectedHours: expectedHours,
+                        deficit: expectedHours - op.totalHours
+                    });
+                }
+            });
+
+            return laggedOPList;
+        }
+
+        // 2. Расчет за Предыдущий Служебный Год (отставание > 20 часов, т.е. меньше 580 часов за год)
+        function calculateOPPreviousYearDeficit() {
+            const selectedYear = parseInt(document.getElementById('analysis-year-admin')?.value || currentYear);
+            const prevServiceYear = selectedYear - 1;
+            const opMap = {};
+
+            reportsData.forEach(r => {
+                const expectedYear = ['09', '10', '11', '12'].includes(r.month) ? String(prevServiceYear - 1) : String(prevServiceYear);
+                if (String(r.year) !== expectedYear) return;
+                if (r.status !== 'ОП') return;
+
+                const key = r.personId || (r.name ? r.name.trim().toLowerCase() : null);
+                if (!key) return;
+
+                if (!opMap[key]) {
+                    opMap[key] = {
+                        name: r.name || 'Без имени',
+                        group: r.group || '1',
+                        totalHours: 0
+                    };
+                }
+
+                opMap[key].totalHours += parseFloat(r.hours) || 0;
+            });
+
+            const deficitOPList = [];
+
+            Object.values(opMap).forEach(op => {
+                const targetYearNorm = 600;
+                // Не справились с нормой более 20 часов => totalHours < 580 часов
+                if (op.totalHours < 580) {
+                    deficitOPList.push({
+                        name: op.name,
+                        group: op.group,
+                        totalHours: op.totalHours,
+                        targetNorm: targetYearNorm,
+                        deficit: targetYearNorm - op.totalHours
+                    });
+                }
+            });
+
+            return deficitOPList;
+        }
+
+        // Модальное окно: Текущие ОП с отставанием
+        function openOPCurrentLagModal() {
+            const list = calculateOPCurrentYearLag();
+            const modal = document.getElementById('op-current-lag-modal');
+            const tbody = document.getElementById('op-current-lag-tbody');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Все Общие Пионеры выполняют норму текущего года!</td></tr>`;
+            } else {
+                list.forEach(item => {
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr class="hover:bg-amber-50/50 border-b border-slate-100">
+                            <td class="p-2.5 font-bold text-slate-800">${item.name}</td>
+                            <td class="p-2.5 text-center font-bold text-slate-600">Гр. ${item.group}</td>
+                            <td class="p-2.5 text-center text-slate-700">${item.monthsCount} мес.</td>
+                            <td class="p-2.5 text-center font-black text-amber-700">${item.totalHours} ч.</td>
+                            <td class="p-2.5 text-center text-slate-500 font-medium">${item.expectedHours} ч.</td>
+                            <td class="p-2.5 text-center font-black text-rose-600">-${item.deficit} ч.</td>
+                        </tr>
+                    `);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeOPCurrentLagModal() {
+            document.getElementById('op-current-lag-modal').classList.add('hidden');
+        }
+
+        // Модальное окно: ОП с отставанием > 20 ч за прошлый год
+        function openOPPrevDeficitModal() {
+            const list = calculateOPPreviousYearDeficit();
+            const modal = document.getElementById('op-prev-deficit-modal');
+            const tbody = document.getElementById('op-prev-deficit-tbody');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> За прошлый служебный год нет ОП с отставанием более 20 часов!</td></tr>`;
+            } else {
+                list.forEach(item => {
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr class="hover:bg-rose-50/50 border-b border-slate-100">
+                            <td class="p-2.5 font-bold text-slate-800">${item.name}</td>
+                            <td class="p-2.5 text-center font-bold text-slate-600">Гр. ${item.group}</td>
+                            <td class="p-2.5 text-center font-black text-slate-800">${item.totalHours} ч.</td>
+                            <td class="p-2.5 text-center text-slate-500 font-medium">${item.targetNorm} ч.</td>
+                            <td class="p-2.5 text-center font-black text-rose-600">-${item.deficit} ч.</td>
+                        </tr>
+                    `);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeOPPrevDeficitModal() {
+            document.getElementById('op-prev-deficit-modal').classList.add('hidden');
         }
 
         function calculateAnalyticsForSelectedPeriod(groupFilter, targetServiceYear) {
@@ -1517,9 +1996,12 @@
             }
         }
 
-        function renderTableRow(r, isAdmin) {
+        function renderTableRow(r, isAdmin, laggedOPSet) {
             const isPioneer = r.status === 'ПП' || r.status === 'ОП';
             const isVirtual = r.isVirtual ? 'bg-amber-50/50 border-amber-200' : (r.isDemo ? 'bg-slate-50/40' : '');
+            
+            const isLaggingOP = r.status === 'ОП' && laggedOPSet && laggedOPSet.has(r.personId || (r.name ? r.name.trim().toLowerCase() : ''));
+
             return `
                 <tr id="row_${r.id}" class="hover:bg-slate-50 transition border-b border-slate-100 text-xs ${isVirtual}">
                     <td class="p-3">
@@ -1542,7 +2024,12 @@
                         <input type="number" value="${r.year || currentYear}" min="2020" max="2035" onchange="updateField('${r.id}', 'year', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-20 px-2 py-1 text-xs border border-slate-200 rounded font-bold" title="Год отчета">
                     </td>
                     <td class="p-3">
-                        <input type="text" value="${r.name || ''}" placeholder="ФИО возвещателя" onchange="updateField('${r.id}', 'name', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 font-medium" title="ФИО возвещателя">
+                        <div class="flex items-center space-x-1.5">
+                            <input type="text" value="${r.name || ''}" placeholder="ФИО возвещателя" onchange="updateField('${r.id}', 'name', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 font-medium" title="ФИО возвещателя">
+                            <button onclick="openPublisherCard('${r.personId || r.name}')" class="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50" title="Открыть карточку S-21">
+                                <i class="fa-solid fa-address-card text-sm"></i>
+                            </button>
+                        </div>
                     </td>
                     <td class="p-3 text-center">
                         <input type="text" value="${r.groupNum || '1'}" placeholder="№" onchange="updateField('${r.id}', 'groupNum', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-16 px-2 py-1 text-xs font-bold text-center border border-slate-200 rounded" title="Порядковый номер в группе">
@@ -1551,99 +2038,124 @@
                         <input type="number" min="1" value="${r.group || '1'}" onchange="updateField('${r.id}', 'group', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-16 px-2 py-1 text-xs font-bold text-center border border-slate-200 rounded" title="Номер группы">
                     </td>
                     <td class="p-3">
-                        <select onchange="onStatusChange(this, '${r.id}')" class="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:ring-2 focus:ring-indigo-500 bg-white" title="Статус служения">
-                            <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
-                            <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный</option>
-                            <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>ПП</option>
-                            <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>ОП</option>
-                        </select>
+                        <div class="flex flex-col space-y-1">
+                            <select onchange="updateField('${r.id}', 'status', this.value)" class="w-full px-2 py-1 text-xs border border-slate-200 rounded font-semibold bg-white" title="Статус возвещателя">
+                                <option value="Возвещатель" ${r.status === 'Возвещатель' ? 'selected' : ''}>Возвещатель</option>
+                                <option value="ПП" ${r.status === 'ПП' ? 'selected' : ''}>Подсобный пионер (ПП)</option>
+                                <option value="ОП" ${r.status === 'ОП' ? 'selected' : ''}>Общий пионер (ОП)</option>
+                                <option value="Некрещеный возвещатель" ${r.status === 'Некрещеный возвещатель' ? 'selected' : ''}>Некрещеный</option>
+                            </select>
+                            ${isLaggingOP ? `<span class="inline-flex items-center text-[9px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded" title="Отстает от нормы 50 ч/мес"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Отстает от нормы</span>` : ''}
+                        </div>
                     </td>
                     <td class="p-3">
-                        ${isPioneer 
-                            ? `<div class="flex items-center space-x-1"><input type="number" min="0" value="${r.hours || ''}" placeholder="Часы" onchange="updateField('${r.id}', 'hours', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-full px-2 py-1 text-xs border border-slate-200 rounded" title="Количество часов пионера"><span class="text-[10px] text-slate-500">ч.</span></div>`
-                            : `<label class="flex items-center space-x-1.5 cursor-pointer" title="Отметка об участии в служении"><input type="checkbox" ${r.participated ? 'checked' : ''} onchange="updateField('${r.id}', 'participated', this.checked)" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-xs text-slate-700">Участвовал</span></label>`
-                        }
+                        ${isPioneer ? `
+                            <div class="flex items-center space-x-1">
+                                <input type="number" min="0" step="0.5" value="${r.hours || ''}" placeholder="Часы" onchange="updateField('${r.id}', 'hours', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-20 px-2 py-1 text-xs border border-indigo-300 rounded font-bold text-indigo-900 bg-indigo-50/50" title="Часы служения">
+                                <span class="text-[11px] text-slate-500 font-medium">ч.</span>
+                            </div>
+                        ` : `
+                            <label class="inline-flex items-center space-x-1.5 cursor-pointer select-none">
+                                <input type="checkbox" ${r.participated ? 'checked' : ''} onchange="updateField('${r.id}', 'participated', this.checked)" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                <span class="${r.participated ? 'text-emerald-700 font-bold' : 'text-slate-400'}">${r.participated ? 'Участвовал' : 'Нет отчета'}</span>
+                            </label>
+                        `}
                     </td>
                     <td class="p-3">
-                        <input type="number" min="0" value="${r.studies || ''}" placeholder="0" onchange="updateField('${r.id}', 'studies', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-16 px-2 py-1 text-xs border border-slate-200 rounded" title="Количество изучений Библии">
+                        <input type="number" min="0" value="${r.studies || '0'}" onchange="updateField('${r.id}', 'studies', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-16 px-2 py-1 text-xs font-bold border border-slate-200 rounded" title="Изучения Библии">
                     </td>
                     <td class="p-3">
-                        <input type="text" value="${r.notes || ''}" placeholder="${r.isVirtual ? 'Запись не найдена (создана)' : 'Примечания...'}" onchange="updateField('${r.id}', 'notes', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-full px-2 py-1 text-xs border border-slate-200 rounded" title="Примечания к отчету">
+                        <input type="text" value="${r.notes || ''}" placeholder="Примечания..." onchange="updateField('${r.id}', 'notes', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-full px-2 py-1 text-xs border border-slate-200 rounded" title="Примечания">
                     </td>
                     <td class="p-3">
-                        <input type="number" min="0" value="${r.donation || ''}" placeholder="0" onchange="updateField('${r.id}', 'donation', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-20 px-2 py-1 text-xs border border-slate-200 rounded" title="Добровольные пожертвования">
+                        <input type="text" value="${r.donation || '0'}" onchange="updateField('${r.id}', 'donation', this.value)" onkeydown="handleEnterKey(event, '${r.id}')" class="w-16 px-2 py-1 text-xs border border-slate-200 rounded" title="Добровольные пожертвования">
                     </td>
-                    <td class="p-3 text-center space-x-1">
-                        <button onclick="saveRowItem('${r.id}')" class="text-emerald-600 hover:text-emerald-800 p-1 bg-emerald-50 rounded" title="Сохранить строку"><i class="fa-solid fa-floppy-disk"></i></button>
-                        <button onclick="openPublisherCard('${r.personId || ''}', '${(r.name || '').replace(/'/g, "\\'")}')" class="text-indigo-600 hover:text-indigo-800 p-1 bg-indigo-50 rounded" title="Карточка S-21"><i class="fa-solid fa-address-card"></i></button>
-                        <button onclick="confirmDelete('${r.id}')" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded" title="Удалить"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center space-x-1">
+                            <button onclick="saveRowItem('${r.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white p-1.5 rounded transition shadow-xs" title="Сохранить эту строку">
+                                <i class="fa-solid fa-floppy-disk text-xs"></i>
+                            </button>
+                            <button onclick="promptDeleteRow('${r.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 p-1.5 rounded transition" title="Удалить запись">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
         }
 
-        window.updateField = function(id, field, value) {
-            let item = reportsData.find(r => r.id === id);
-            if (!item) {
-                const targetM = document.getElementById('user-month')?.value || '09';
-                const targetY = document.getElementById('user-year')?.value || String(currentYear);
-
-                item = {
-                    id: id,
-                    personId: 'pers_' + Math.random().toString(36).substr(2, 6),
-                    name: 'Новый возвещатель',
-                    groupNum: '1',
-                    group: currentUser?.group || '1',
-                    month: targetM,
-                    year: targetY,
-                    status: 'Возвещатель',
-                    participated: false,
-                    hours: '',
-                    studies: '0',
-                    notes: '',
-                    donation: '0',
-                    isDemo: false
-                };
-                reportsData.push(item);
+        function updateField(id, field, value) {
+            const item = reportsData.find(r => r.id === id);
+            if (item) {
+                item[field] = value;
+                if (item.isVirtual) delete item.isVirtual;
             }
-            item[field] = value;
-            if (item.isVirtual) delete item.isVirtual;
-        };
+        }
 
-        window.saveRowItem = function(id) {
+        function saveRowItem(id) {
             saveReportsToStorage();
-            const rowEl = document.getElementById(`row_${id}`);
-            if (rowEl) {
-                rowEl.classList.add('row-saved');
-                setTimeout(() => rowEl.classList.remove('row-saved'), 1000);
+            const tr = document.getElementById(`row_${id}`);
+            if (tr) {
+                tr.classList.add('row-saved');
+                setTimeout(() => tr.classList.remove('row-saved'), 1000);
             }
-            showToast('Строка успешно сохранена', 'success');
-        };
-
-        window.saveAllModifiedRows = function() {
-            saveReportsToStorage();
-            showToast('Все изменения таблицы сохранены!', 'success');
-        };
-
-        window.onStatusChange = function(selectEl, id) {
-            const val = selectEl.value;
-            let item = reportsData.find(r => r.id === id);
-            if (!item) {
-                window.updateField(id, 'status', val);
-                item = reportsData.find(r => r.id === id);
-            } else {
-                item.status = val;
-            }
-
-            if (val === 'ПП' || val === 'ОП') {
-                item.participated = true;
-                if (!item.hours) item.hours = val === 'ПП' ? '50' : '120';
-            } else {
-                item.hours = '';
-            }
-            saveReportsToStorage();
+            showToast("Запись сохранена", 'success');
             refreshCurrentView();
-        };
+        }
+
+        function promptDeleteRow(id) {
+            itemToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            itemToDeleteId = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        function confirmDeleteRow() {
+            if (itemToDeleteId) {
+                reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
+                saveReportsToStorage();
+                showToast("Запись удалена", 'info');
+                refreshCurrentView();
+            }
+            closeDeleteModal();
+        }
+
+        function addNewRow() {
+            const isUser = currentUser && currentUser.role === 'user';
+            const userM = isUser ? document.getElementById('user-month').value : serviceMonthsOrder[0];
+            const userY = isUser ? document.getElementById('user-year').value : String(currentYear);
+            const userG = isUser ? currentUser.group : '1';
+
+            const newId = 'rep_' + Date.now();
+            const newObj = {
+                id: newId,
+                personId: 'pers_' + Date.now(),
+                name: '',
+                groupNum: '1',
+                group: userG,
+                month: userM,
+                year: userY,
+                status: 'Возвещатель',
+                participated: true,
+                hours: '',
+                studies: '0',
+                notes: '',
+                donation: '0'
+            };
+
+            reportsData.unshift(newObj);
+            refreshCurrentView();
+            showToast("Добавлена новая строка", 'info');
+        }
+
+        function saveAllModifiedRows() {
+            saveReportsToStorage();
+            showToast("Все данные успешно сохранены", 'success');
+            refreshCurrentView();
+        }
 
         function refreshCurrentView() {
             if (!currentUser) return;
@@ -1655,512 +2167,389 @@
             }
         }
 
-        // --- ЛОГИКА АВТОМАТИЧЕСКОГО ПРЕДУСТАНОВЛЕННОГО СПИСКА ГРУППЫ ПОЛЬЗОВАТЕЛЯ ---
-        function ensureGroupRecordsForTargetPeriod(groupNum, targetMonth, targetYear) {
-            // 1. Проверяем, есть ли уже записи за этот месяц и год для этой группы
-            const existingRecords = reportsData.filter(r => String(r.group) === String(groupNum) && r.month === targetMonth && String(r.year) === String(targetYear));
-
-            if (existingRecords.length > 0) {
-                return { records: existingRecords, isAlreadyEntered: true };
-            }
-
-            // 2. Если за этот месяц записей нет -> ищем ПОСЛЕДНИЙ сохраненный месяц для данной группы
-            const allGroupRecords = reportsData.filter(r => String(r.group) === String(groupNum));
-
-            let sourcePublishers = [];
-
-            if (allGroupRecords.length > 0) {
-                // Находим уникальные месяцы/года
-                const periodKeys = Array.from(new Set(allGroupRecords.map(r => `${r.year}_${r.month}`)));
-                periodKeys.sort().reverse(); // самый свежий период первым
-                const latestKey = periodKeys[0];
-
-                const latestRecords = allGroupRecords.filter(r => `${r.year}_${r.month}` === latestKey);
-
-                // Собираем список возвещателей из этого последнего месяца
-                const uniqueMap = new Map();
-                latestRecords.forEach(r => {
-                    const key = r.personId || (r.name ? r.name.trim().toLowerCase() : null);
-                    if (key && !uniqueMap.has(key)) {
-                        uniqueMap.set(key, r);
-                    }
-                });
-                sourcePublishers = Array.from(uniqueMap.values());
-            }
-
-            // Если раньше записей не было вообще, создаем начальный список по умолчанию
-            if (sourcePublishers.length === 0) {
-                sourcePublishers = [
-                    { personId: `pers_g${groupNum}_1`, name: "Иванов Иван", groupNum: "1", status: "Возвещатель" },
-                    { personId: `pers_g${groupNum}_2`, name: "Петрова Анна", groupNum: "2", status: "ПП" },
-                    { personId: `pers_g${groupNum}_3`, name: "Сергеев Сергей", groupNum: "3", status: "Возвещатель" },
-                    { personId: `pers_g${groupNum}_4`, name: "Васильева Ольга", groupNum: "4", status: "Некрещеный возвещатель" },
-                    { personId: `pers_g${groupNum}_5`, name: "Кузнецов Дмитрий", groupNum: "5", status: "ОП" }
-                ];
-            }
-
-            // 3. Автоматически предзаполняем чистый список для нового месяца
-            const newCreatedRecords = [];
-            sourcePublishers.forEach(pub => {
-                const newRec = {
-                    id: `user_rec_${groupNum}_${pub.personId || Math.random().toString(36).substr(2,5)}_${targetMonth}_${targetYear}`,
-                    personId: pub.personId || `pers_${Math.random().toString(36).substr(2, 6)}`,
-                    name: pub.name,
-                    groupNum: pub.groupNum || '1',
-                    group: String(groupNum),
-                    month: targetMonth,
-                    year: String(targetYear),
-                    status: pub.status || 'Возвещатель',
-                    participated: false,
-                    hours: pub.status === 'ПП' ? '50' : (pub.status === 'ОП' ? '120' : ''),
-                    studies: '0',
-                    notes: '',
-                    donation: '0',
-                    isDemo: false
-                };
-                reportsData.push(newRec);
-                newCreatedRecords.push(newRec);
-            });
-
-            // Сохраняем новые предустановленные строки
-            saveReportsToStorage();
-
-            return { records: newCreatedRecords, isAlreadyEntered: false };
-        }
-
-        window.onUserPeriodChange = function() {
-            refreshCurrentView();
-        };
-
-        window.setUserMonth = function(mCode) {
-            const monthSel = document.getElementById('user-month');
-            if (monthSel) {
-                monthSel.value = mCode;
-                onUserPeriodChange();
-            }
-        };
-
-        function renderUserDashboard() {
-            const tbody = document.getElementById('user-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const userGroup = currentUser.group || '1';
-            const targetMonth = document.getElementById('user-month')?.value || '09';
-            const targetYear = document.getElementById('user-year')?.value || String(currentYear);
-
-            // Обновляем активность кнопок быстрого перехода
-            document.querySelectorAll('.user-m-btn').forEach(btn => {
-                if (btn.dataset.m === targetMonth) {
-                    btn.className = "user-m-btn py-1 px-1 rounded border border-indigo-600 bg-indigo-600 text-white font-bold transition";
-                } else {
-                    btn.className = "user-m-btn py-1 px-1 rounded border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700 font-medium transition text-slate-700 bg-white";
-                }
-            });
-
-            document.getElementById('user-active-month-label').textContent = `${monthNamesMap[targetMonth]} ${targetYear} г.`;
-
-            // Автоматическое получение / создание записей для выбранного месяца
-            const result = ensureGroupRecordsForTargetPeriod(userGroup, targetMonth, targetYear);
-            const recordsToDisplay = result.records;
-
-            const badge = document.getElementById('user-target-status-badge');
-            const subheading = document.getElementById('user-table-subheading');
-
-            if (result.isAlreadyEntered) {
-                if (badge) {
-                    badge.textContent = `Заполнен за ${monthNamesMap[targetMonth]} ${targetYear} г. (Режим корректировки)`;
-                    badge.className = "inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200";
-                }
-                if (subheading) subheading.textContent = "Данные за этот месяц уже заносились ранее. Вы можете внести любые правки и сохранить их.";
-            } else {
-                if (badge) {
-                    badge.textContent = `Новый отчет за ${monthNamesMap[targetMonth]} ${targetYear} г. (Авто-сохранен со прошлого месяца)`;
-                    badge.className = "inline-block text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200";
-                }
-                if (subheading) subheading.textContent = "Список вашей группы автоматически сгенерирован на основе последнего заполненного месяца. Заполните данные за новый месяц.";
-            }
-
-            if (recordsToDisplay.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400">Нет отчетов для вашей группы. Нажмите «Добавить».</td></tr>`;
-            } else {
-                recordsToDisplay.forEach(r => {
-                    tbody.insertAdjacentHTML('beforeend', renderTableRow(r, false));
-                });
-            }
-
-            const activity6m = calculate6MonthActivity(userGroup);
-            document.getElementById('user-count-irregular').textContent = activity6m.irregular.length;
-            document.getElementById('user-count-inactive').textContent = activity6m.inactive.length;
-        }
-
-        // --- МОДАЛЬНОЕ ОКНО "ИСТОРИЯ ОТЧЕТОВ" ДЛЯ ПОЛЬЗОВАТЕЛЯ ---
-        window.openUserHistoryModal = function() {
-            const userGroup = currentUser?.group || '1';
-            document.getElementById('history-modal-group-num').textContent = userGroup;
-
-            renderHistoryModalTable();
-            document.getElementById('user-history-modal').classList.remove('hidden');
-        };
-
-        window.closeUserHistoryModal = function() {
-            document.getElementById('user-history-modal').classList.add('hidden');
-        };
-
-        window.renderHistoryModalTable = function() {
-            const userGroup = currentUser?.group || '1';
-            const monthFilter = document.getElementById('history-month-filter')?.value || 'all';
-            const yearFilter = document.getElementById('history-year-filter')?.value || 'all';
-            const searchVal = document.getElementById('history-search-input')?.value.trim().toLowerCase() || '';
-
-            const tbody = document.getElementById('user-history-tbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            let historyList = reportsData.filter(r => String(r.group) === String(userGroup));
-
-            if (monthFilter !== 'all') {
-                historyList = historyList.filter(r => r.month === monthFilter);
-            }
-            if (yearFilter !== 'all') {
-                historyList = historyList.filter(r => String(r.year) === String(yearFilter));
-            }
-            if (searchVal) {
-                historyList = historyList.filter(r => (r.name || '').toLowerCase().includes(searchVal));
-            }
-
-            // Сортировка истории от новых к старым
-            historyList.sort((a, b) => {
-                if (a.year !== b.year) return parseInt(b.year) - parseInt(a.year);
-                return serviceMonthsOrder.indexOf(b.month) - serviceMonthsOrder.indexOf(a.month);
-            });
-
-            document.getElementById('history-total-count').textContent = historyList.length;
-
-            if (historyList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">История за указанный период пуста</td></tr>`;
-            } else {
-                historyList.forEach(r => {
-                    const isPioneer = r.status === 'ПП' || r.status === 'ОП';
-                    const activeBadge = isPioneer 
-                        ? `<span class="font-bold text-purple-700">${r.hours || 0} ч.</span>`
-                        : (r.participated ? `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Участвовал</span>` : `<span class="text-rose-500 font-bold">Пропуск</span>`);
-
-                    tbody.insertAdjacentHTML('beforeend', `
-                        <tr class="hover:bg-slate-50 border-b border-slate-100">
-                            <td class="p-2.5 font-bold text-slate-700">${monthNamesMap[r.month] || r.month} ${r.year}</td>
-                            <td class="p-2.5 font-semibold text-slate-900">${r.name || '—'}</td>
-                            <td class="p-2.5 text-center font-bold text-slate-500">№ ${r.groupNum || '1'}</td>
-                            <td class="p-2.5"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-medium">${r.status || 'Возвещатель'}</span></td>
-                            <td class="p-2.5 text-center">${activeBadge}</td>
-                            <td class="p-2.5 text-center font-bold text-slate-800">${r.studies || 0}</td>
-                            <td class="p-2.5 text-slate-500 text-[11px]">${r.notes || '—'}</td>
-                        </tr>
-                    `);
-                });
-            }
-        };
-
         function renderAdminDashboard() {
-            const tbody = document.getElementById('admin-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
             const groupFilter = document.getElementById('admin-group-filter')?.value || 'all';
             const numFilter = document.getElementById('admin-num-filter')?.value.trim() || '';
             const searchName = document.getElementById('admin-search-name')?.value.trim().toLowerCase() || '';
-            const analysisYear = document.getElementById('analysis-year-admin')?.value || String(currentYear);
+            const targetYear = document.getElementById('analysis-year-admin')?.value || String(currentYear);
 
+            // Заполнение выпадающего списка групп
+            const groupsSet = new Set(reportsData.map(r => String(r.group || '1')));
             const groupSelect = document.getElementById('admin-group-filter');
-            if (groupSelect) {
-                const groupsSet = new Set(reportsData.map(r => r.group || '1'));
-                const currentSel = groupSelect.value;
-                groupSelect.innerHTML = '<option value="all">Все группы</option>';
-                Array.from(groupsSet).sort().forEach(g => {
+            if (groupSelect && groupSelect.options.length <= 1) {
+                Array.from(groupsSet).sort((a,b)=>a-b).forEach(g => {
                     const opt = document.createElement('option');
                     opt.value = g;
                     opt.textContent = `Группа №${g}`;
-                    if (g === currentSel) opt.selected = true;
                     groupSelect.appendChild(opt);
                 });
             }
 
-            let filtered = reportsData.filter(r => {
-                if (selectedTimelineMonths.length > 0 && !selectedTimelineMonths.includes(r.month)) return false;
-                if (groupFilter !== 'all' && String(r.group) !== String(groupFilter)) return false;
-                if (numFilter && String(r.groupNum) !== numFilter) return false;
-                if (searchName && !(r.name || '').toLowerCase().includes(searchName)) return false;
+            // Активность за 6 месяцев
+            const actData = calculate6MonthActivity(groupFilter);
+            document.getElementById('count-active-pub').textContent = actData.activePubs.length;
+            document.getElementById('count-regular-pub').textContent = actData.regularPubs.length;
+            document.getElementById('count-irregular').textContent = actData.irregular.length;
+            document.getElementById('count-inactive').textContent = actData.inactive.length;
 
-                const expectedYear = ['09', '10', '11', '12'].includes(r.month) ? String(parseInt(analysisYear) - 1) : String(analysisYear);
+            const periodLabel = actData.last6Months.map(m => `${monthNamesMap[m.month]} ${m.year}`).reverse().join(', ');
+            document.getElementById('last-6-months-label').textContent = periodLabel;
+
+            // Расчет ОП подпунктов (Контроль нормы 600 ч)
+            const opLagList = calculateOPCurrentYearLag();
+            const opDeficitList = calculateOPPreviousYearDeficit();
+
+            document.getElementById('count-op-current-lag').textContent = opLagList.length;
+            document.getElementById('count-op-prev-deficit').textContent = opDeficitList.length;
+
+            const laggingOPSet = new Set(opLagList.map(o => o.name.trim().toLowerCase()));
+
+            // Общий анализ
+            const globalAnalytics = calculateAnalyticsForSelectedPeriod(groupFilter, targetYear);
+            document.getElementById('analytics-reports-submitted').textContent = globalAnalytics.submittedCount;
+            document.getElementById('analytics-reports-missing').textContent = globalAnalytics.missingCount;
+            
+            document.getElementById('analytics-pub-participated-count').textContent = globalAnalytics.participatingPubCount;
+            document.getElementById('analytics-pub-studies-count').textContent = globalAnalytics.publisherStudiesCount;
+
+            document.getElementById('analytics-pp-count').textContent = globalAnalytics.countPP;
+            document.getElementById('analytics-hours-pp').textContent = globalAnalytics.hoursPP + ' ч.';
+            document.getElementById('analytics-pp-studies').textContent = globalAnalytics.studiesPP;
+
+            document.getElementById('analytics-op-count').textContent = globalAnalytics.countOP;
+            document.getElementById('analytics-hours-op').textContent = globalAnalytics.hoursOP + ' ч.';
+            document.getElementById('analytics-op-studies').textContent = globalAnalytics.studiesOP;
+
+            // Отрисовка таблицы админа
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = reportsData.filter(r => {
+                if (groupFilter !== 'all' && String(r.group) !== groupFilter) return false;
+                if (numFilter && String(r.groupNum || '') !== numFilter) return false;
+                if (searchName && !r.name.toLowerCase().includes(searchName)) return false;
+                
+                if (selectedTimelineMonths.length > 0 && !selectedTimelineMonths.includes(r.month)) return false;
+
+                const expectedYear = ['09', '10', '11', '12'].includes(r.month) ? String(parseInt(targetYear) - 1) : targetYear;
                 return String(r.year) === expectedYear;
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400">Записи по выбранным фильтрам не найдены.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="p-4 text-center text-slate-400">Нет сохраненных отчетов по выбранному фильтру</td></tr>`;
             } else {
                 filtered.forEach(r => {
-                    tbody.insertAdjacentHTML('beforeend', renderTableRow(r, true));
+                    tbody.insertAdjacentHTML('beforeend', renderTableRow(r, true, laggingOPSet));
                 });
             }
-
-            // Обновление блоков аналитики
-            const analytics = calculateAnalyticsForSelectedPeriod(groupFilter, analysisYear);
-            document.getElementById('analytics-reports-submitted').textContent = analytics.submittedCount;
-            document.getElementById('analytics-reports-missing').textContent = analytics.missingCount;
-
-            document.getElementById('analytics-pub-participated-count').textContent = analytics.participatingPubCount;
-            document.getElementById('analytics-pub-studies-count').textContent = analytics.publisherStudiesCount;
-
-            document.getElementById('analytics-pp-count').textContent = analytics.countPP;
-            document.getElementById('analytics-hours-pp').textContent = `${analytics.hoursPP} ч.`;
-            document.getElementById('analytics-pp-studies').textContent = analytics.studiesPP;
-
-            document.getElementById('analytics-op-count').textContent = analytics.countOP;
-            document.getElementById('analytics-hours-op').textContent = `${analytics.hoursOP} ч.`;
-            document.getElementById('analytics-op-studies').textContent = analytics.studiesOP;
-
-            const activity6m = calculate6MonthActivity(groupFilter);
-            document.getElementById('count-active-pub').textContent = activity6m.activePubs.length;
-            document.getElementById('count-regular-pub').textContent = activity6m.regularPubs.length;
-            document.getElementById('count-irregular').textContent = activity6m.irregular.length;
-            document.getElementById('count-inactive').textContent = activity6m.inactive.length;
-
-            const last6PeriodText = activity6m.last6Months.map(m => `${monthNamesMap[m.month]} ${m.year}`).reverse().join(', ');
-            document.getElementById('last-6-months-label').textContent = last6PeriodText;
         }
 
-        window.addNewRow = function() {
-            const targetM = document.getElementById('user-month')?.value || selectedTimelineMonths[0] || '09';
-            const targetY = document.getElementById('user-year')?.value || document.getElementById('analysis-year-admin')?.value || String(currentYear);
-            const userGroup = (currentUser.role === 'superadmin' || currentUser.role === 'admin') ? '1' : (currentUser.group || '1');
+        function renderUserDashboard() {
+            const userGroup = currentUser.group || '1';
+            const userM = document.getElementById('user-month').value;
+            const userY = document.getElementById('user-year').value;
 
-            const newRow = {
-                id: 'rec_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                personId: 'pers_' + Math.random().toString(36).substr(2, 6),
-                name: 'Новый возвещатель',
-                groupNum: '1',
-                group: userGroup,
-                month: targetM,
-                year: String(targetY),
-                status: 'Возвещатель',
-                participated: false,
-                hours: '',
-                studies: '0',
-                notes: '',
-                donation: '0',
-                isDemo: false
-            };
+            document.getElementById('user-target-status-badge').textContent = `${monthNamesMap[userM]} ${userY} г.`;
+            document.getElementById('user-active-month-label').textContent = `${monthNamesMap[userM]} ${userY}`;
 
-            reportsData.push(newRow);
-            saveReportsToStorage();
-            refreshCurrentView();
-            showToast('Добавлена новая строка', 'success');
-        };
+            // Подсветка активной кнопки месяца
+            document.querySelectorAll('.user-m-btn').forEach(btn => {
+                if (btn.getAttribute('data-m') === userM) {
+                    btn.className = "user-m-btn py-1 px-1 rounded border border-indigo-600 bg-indigo-600 text-white font-bold transition";
+                } else {
+                    btn.className = "user-m-btn py-1 px-1 rounded border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700 transition";
+                }
+            });
 
-        window.confirmDelete = function(id) {
-            itemToDeleteId = id;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        };
+            const actData = calculate6MonthActivity(userGroup);
+            document.getElementById('user-count-irregular').textContent = actData.irregular.length;
+            document.getElementById('user-count-inactive').textContent = actData.inactive.length;
 
-        document.getElementById('cancel-delete-btn')?.addEventListener('click', () => {
-            itemToDeleteId = null;
-            document.getElementById('delete-modal').classList.add('hidden');
-        });
+            const tbody = document.getElementById('user-table-body');
+            tbody.innerHTML = '';
 
-        document.getElementById('confirm-delete-btn')?.addEventListener('click', () => {
-            if (itemToDeleteId) {
-                reportsData = reportsData.filter(r => r.id !== itemToDeleteId);
-                saveReportsToStorage();
-                refreshCurrentView();
-                showToast('Запись удалена', 'info');
+            // Получаем отчеты группы за выбранный период
+            let currentPeriodReports = reportsData.filter(r => String(r.group) === String(userGroup) && r.month === userM && String(r.year) === String(userY));
+
+            // Автоперенос из предыдущих месяцев если пусто
+            if (currentPeriodReports.length === 0) {
+                const groupReports = reportsData.filter(r => String(r.group) === String(userGroup));
+
+                const uniqueMap = {};
+                groupReports.forEach(r => {
+                    const key = r.personId || (r.name ? r.name.trim().toLowerCase() : null);
+                    if (key && !uniqueMap[key]) {
+                        uniqueMap[key] = r;
+                    }
+                });
+
+                const previousList = Object.values(uniqueMap);
+
+                if (previousList.length > 0) {
+                    currentPeriodReports = previousList.map(p => ({
+                        id: 'virt_' + Date.now() + '_' + Math.random().toString(36).substr(2,4),
+                        personId: p.personId,
+                        name: p.name,
+                        groupNum: p.groupNum || '1',
+                        group: userGroup,
+                        month: userM,
+                        year: userY,
+                        status: p.status || 'Возвещатель',
+                        participated: false,
+                        hours: '',
+                        studies: '0',
+                        notes: '',
+                        donation: '0',
+                        isVirtual: true
+                    }));
+
+                    reportsData.push(...currentPeriodReports);
+                }
             }
-            itemToDeleteId = null;
-            document.getElementById('delete-modal').classList.add('hidden');
-        });
 
-        window.restoreDemoData = function() {
-            reportsData = generateFull12MonthDemoData();
-            saveReportsToStorage();
+            if (currentPeriodReports.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="p-4 text-center text-slate-400">Нажмите "+ Добавить (+ возвещатель)", чтобы внести первую запись.</td></tr>`;
+            } else {
+                currentPeriodReports.sort((a,b) => parseInt(a.groupNum || 0) - parseInt(b.groupNum || 0));
+                currentPeriodReports.forEach(r => {
+                    tbody.insertAdjacentHTML('beforeend', renderTableRow(r, false, null));
+                });
+            }
+        }
+
+        function setUserMonth(mCode) {
+            document.getElementById('user-month').value = mCode;
+            onUserPeriodChange();
+        }
+
+        function onUserPeriodChange() {
             refreshCurrentView();
-            showToast('Тестовые данные за 12 месяцев восстановлены!', 'success');
-        };
+        }
 
-        window.clearDemoData = function() {
-            reportsData = [];
-            saveReportsToStorage();
-            refreshCurrentView();
-            showToast('Все данные очищены', 'info');
-        };
-
-        // Карточка S-21
-        window.openPublisherCard = function(personId, pubName) {
+        function openPublisherCard(personKeyOrName) {
+            if (!personKeyOrName) return;
             const modal = document.getElementById('publisher-card-modal');
-            const nameEl = document.getElementById('card-publisher-name');
-            const idEl = document.getElementById('card-publisher-id');
-            const fullnameInput = document.getElementById('meta-fullname');
+            
+            const targetPub = reportsData.find(r => r.personId === personKeyOrName || (r.name && r.name.toLowerCase() === personKeyOrName.toLowerCase()));
+            const fullName = targetPub ? targetPub.name : personKeyOrName;
+            const groupNum = targetPub ? targetPub.group : '1';
 
-            nameEl.textContent = pubName || 'Возвещатель';
-            idEl.textContent = personId || 'ID-NEW';
-            if (fullnameInput) fullnameInput.value = pubName || '';
+            document.getElementById('card-publisher-name').textContent = fullName;
+            document.getElementById('card-publisher-id').textContent = targetPub ? targetPub.personId : '---';
+            document.getElementById('meta-fullname').value = fullName;
+            document.getElementById('card-publisher-group').textContent = groupNum;
 
             const selectedServiceYear = document.getElementById('analysis-year-admin')?.value || String(currentYear);
             document.getElementById('card-service-year-title').textContent = `${parseInt(selectedServiceYear) - 1}–${selectedServiceYear}`;
 
-            const historyTbody = document.getElementById('card-history-tbody');
-            historyTbody.innerHTML = '';
+            const pubReports = reportsData.filter(r => r.personId === personKeyOrName || (r.name && r.name.toLowerCase() === personKeyOrName.toLowerCase()));
 
-            const pubReports = reportsData.filter(r => {
-                if (personId && r.personId === personId) return true;
-                return r.name && pubName && r.name.trim().toLowerCase() === pubName.trim().toLowerCase();
-            });
+            const tbody = document.getElementById('card-history-tbody');
+            tbody.innerHTML = '';
 
-            let totalHours = 0;
-            let totalStudies = 0;
+            let totalH = 0;
+            let totalS = 0;
 
             serviceMonthsOrder.forEach(mCode => {
-                const repYear = ['09', '10', '11', '12'].includes(mCode) ? String(parseInt(selectedServiceYear) - 1) : String(selectedServiceYear);
+                const repYear = ['09', '10', '11', '12'].includes(mCode) ? String(parseInt(selectedServiceYear) - 1) : selectedServiceYear;
                 const r = pubReports.find(x => x.month === mCode && String(x.year) === repYear);
 
-                const hoursVal = parseFloat(r?.hours) || 0;
-                const studiesVal = parseInt(r?.studies) || 0;
-                totalHours += hoursVal;
-                totalStudies += studiesVal;
+                const hours = r ? (parseFloat(r.hours) || 0) : 0;
+                const studies = r ? (parseInt(r.studies) || 0) : 0;
+                totalH += hours;
+                totalS += studies;
 
-                const statusText = r ? r.status : '—';
-                const partText = r ? (r.participated ? 'Да' : 'Нет') : '—';
-                const hoursText = (r && (r.status === 'ПП' || r.status === 'ОП')) ? `${r.hours || 0} ч.` : '—';
-
-                historyTbody.insertAdjacentHTML('beforeend', `
+                tbody.insertAdjacentHTML('beforeend', `
                     <tr class="border-b border-slate-300">
-                        <td class="p-1.5 border-r border-slate-400 font-bold">${monthNamesMap[mCode]}</td>
-                        <td class="p-1.5 border-r border-slate-400 text-center">${repYear}</td>
-                        <td class="p-1.5 border-r border-slate-400">${statusText}</td>
-                        <td class="p-1.5 border-r border-slate-400 text-center">${partText}</td>
-                        <td class="p-1.5 border-r border-slate-400 text-right font-medium">${hoursText}</td>
-                        <td class="p-1.5 border-r border-slate-400 text-center font-bold">${r ? (r.studies || 0) : '—'}</td>
-                        <td class="p-1.5 text-slate-600">${r ? (r.notes || '') : ''}</td>
+                        <td class="p-1.5 font-bold border-r border-slate-800">${monthNamesMap[mCode]}</td>
+                        <td class="p-1.5 text-center border-r border-slate-800">${repYear}</td>
+                        <td class="p-1.5 border-r border-slate-800 font-semibold">${r ? r.status : '—'}</td>
+                        <td class="p-1.5 text-center border-r border-slate-800">${r ? (r.participated ? '✓' : '—') : '—'}</td>
+                        <td class="p-1.5 text-right font-bold border-r border-slate-800">${hours > 0 ? hours + ' ч.' : '—'}</td>
+                        <td class="p-1.5 text-center border-r border-slate-800">${studies > 0 ? studies : '—'}</td>
+                        <td class="p-1.5 text-[11px] text-slate-600">${r ? (r.notes || '') : ''}</td>
                     </tr>
                 `);
             });
 
-            document.getElementById('pdf-total-service-hours').textContent = `${totalHours} ч.`;
-            document.getElementById('pdf-total-service-studies').textContent = totalStudies;
+            document.getElementById('pdf-total-service-hours').textContent = totalH + ' ч.';
+            document.getElementById('pdf-total-service-studies').textContent = totalS;
 
             modal.classList.remove('hidden');
-        };
+        }
 
-        document.getElementById('close-publisher-card')?.addEventListener('click', () => {
+        function closePublisherCardModal() {
             document.getElementById('publisher-card-modal').classList.add('hidden');
-        });
+        }
 
-        window.exportCardToPDF = function() {
+        function exportCardToPDF() {
             const element = document.getElementById('printable-card-content');
-            const name = document.getElementById('card-publisher-name')?.textContent || 'Возвещатель';
-
+            const name = document.getElementById('meta-fullname').value || 'Возвещатель';
             const opt = {
-                margin:       10,
-                filename:     `Карточка_S21_${name.replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin: 0.3,
+                filename: `Карточка_S21_${name.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(element).save();
-        };
+            showToast("Экспорт PDF запущен", 'info');
+        }
 
-        // Модальные окна управления облаком и пользователями
-        document.getElementById('cloud-config-btn')?.addEventListener('click', () => {
+        // Модальное окно истории пользователя
+        function openUserHistoryModal() {
+            const modal = document.getElementById('user-history-modal');
+            document.getElementById('history-modal-group-num').textContent = currentUser.group || '1';
+            renderHistoryModalTable();
+            modal.classList.remove('hidden');
+        }
+
+        function closeUserHistoryModal() {
+            document.getElementById('user-history-modal').classList.add('hidden');
+        }
+
+        function renderHistoryModalTable() {
+            const groupNum = currentUser.group || '1';
+            const mFilter = document.getElementById('history-month-filter')?.value || 'all';
+            const yFilter = document.getElementById('history-year-filter')?.value || 'all';
+            const search = document.getElementById('history-search-input')?.value.trim().toLowerCase() || '';
+
+            const filtered = reportsData.filter(r => {
+                if (String(r.group) !== String(groupNum)) return false;
+                if (mFilter !== 'all' && r.month !== mFilter) return false;
+                if (yFilter !== 'all' && String(r.year) !== yFilter) return false;
+                if (search && !r.name.toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            document.getElementById('history-total-count').textContent = filtered.length;
+            const tbody = document.getElementById('user-history-tbody');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Записи не найдены</td></tr>`;
+            } else {
+                filtered.forEach(r => {
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr class="hover:bg-slate-50 border-b border-slate-100">
+                            <td class="p-2.5 font-bold text-indigo-900">${monthNamesMap[r.month]} ${r.year}</td>
+                            <td class="p-2.5 font-semibold text-slate-800">${r.name || 'Без имени'}</td>
+                            <td class="p-2.5 text-center font-bold text-slate-600">№ ${r.groupNum || '1'}</td>
+                            <td class="p-2.5"><span class="bg-indigo-50 text-indigo-800 px-2 py-0.5 rounded text-[11px] font-semibold">${r.status}</span></td>
+                            <td class="p-2.5 text-center font-bold">${r.hours ? r.hours + ' ч.' : (r.participated ? '✓ Сдано' : '—')}</td>
+                            <td class="p-2.5 text-center font-bold">${r.studies || '0'}</td>
+                            <td class="p-2.5 text-slate-500">${r.notes || ''}</td>
+                        </tr>
+                    `);
+                });
+            }
+        }
+
+        // Облако
+        function openCloudModal() {
             document.getElementById('jsonbin-id-input').value = jsonbinConfig.binId;
             document.getElementById('jsonbin-key-input').value = jsonbinConfig.apiKey;
             document.getElementById('cloud-modal').classList.remove('hidden');
-        });
-        document.getElementById('close-cloud-modal')?.addEventListener('click', () => {
-            document.getElementById('cloud-modal').classList.add('hidden');
-        });
+        }
 
-        document.getElementById('save-firebase-config')?.addEventListener('click', () => {
-            jsonbinConfig.binId = document.getElementById('jsonbin-id-input').value.trim();
-            jsonbinConfig.apiKey = document.getElementById('jsonbin-key-input').value.trim();
-            localStorage.setItem('jsonbin_id', jsonbinConfig.binId);
-            localStorage.setItem('jsonbin_key', jsonbinConfig.apiKey);
+        function closeCloudModal() {
             document.getElementById('cloud-modal').classList.add('hidden');
+        }
+
+        function saveCloudConfig() {
+            const bId = document.getElementById('jsonbin-id-input').value.trim();
+            const key = document.getElementById('jsonbin-key-input').value.trim();
+
+            jsonbinConfig.binId = bId;
+            jsonbinConfig.apiKey = key;
+
+            localStorage.setItem('jsonbin_id', bId);
+            localStorage.setItem('jsonbin_key', key);
+
+            closeCloudModal();
             fetchJSONBinData();
-        });
+            showToast("Ключи сохранены, выполняется подключение...", 'info');
+        }
 
-        document.getElementById('reset-firebase-config')?.addEventListener('click', () => {
+        function resetCloudConfig() {
             localStorage.removeItem('jsonbin_id');
             localStorage.removeItem('jsonbin_key');
-            jsonbinConfig = { binId: '', apiKey: '' };
-            document.getElementById('cloud-modal').classList.add('hidden');
+            jsonbinConfig.binId = '';
+            jsonbinConfig.apiKey = '';
+            closeCloudModal();
             fallbackToLocal();
-        });
+            showToast("Переключено в локальный режим", 'info');
+        }
 
-        document.getElementById('logout-btn')?.addEventListener('click', () => {
-            currentUser = null;
-            document.getElementById('user-dashboard').classList.add('hidden');
-            document.getElementById('admin-dashboard').classList.add('hidden');
-            document.getElementById('user-info').classList.add('hidden');
-            document.getElementById('login-view').classList.remove('hidden');
-            showToast('Сеанс завершен', 'info');
-        });
+        // Демо данные
+        function restoreDemoData() {
+            reportsData = generateFull12MonthDemoData();
+            saveReportsToStorage();
+            showToast("Загружен расширенный тестовый набор отчетов!", 'success');
+            refreshCurrentView();
+        }
 
-        // Формы Входа / Регистрации
-        document.getElementById('tab-login-btn')?.addEventListener('click', (e) => {
-            e.target.className = "flex-1 py-2 text-center tab-active focus:outline-none";
-            document.getElementById('tab-register-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
-        });
+        function clearDemoData() {
+            reportsData = [];
+            saveReportsToStorage();
+            showToast("Все данные очищены", 'info');
+            refreshCurrentView();
+        }
 
-        document.getElementById('tab-register-btn')?.addEventListener('click', (e) => {
-            e.target.className = "flex-1 py-2 text-center tab-active focus:outline-none";
-            document.getElementById('tab-login-btn').className = "flex-1 py-2 text-center text-slate-500 hover:text-slate-800 focus:outline-none";
-            document.getElementById('register-form').classList.remove('hidden');
-            document.getElementById('login-form').classList.add('hidden');
-        });
+        // Управление пользователями
+        function openUsersModal() {
+            const modal = document.getElementById('users-modal');
+            const tbody = document.getElementById('users-modal-tbody');
+            tbody.innerHTML = '';
 
-        document.getElementById('login-form')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            loginWithCredentials(
-                document.getElementById('login-email').value.trim(),
-                document.getElementById('login-password').value
-            );
-        });
+            let savedUsers = [];
+            try {
+                savedUsers = JSON.parse(localStorage.getItem('users_db')) || initialUsers;
+            } catch(e) { savedUsers = initialUsers; }
 
-        document.getElementById('register-form')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('reg-email').value.trim();
-            const pass = document.getElementById('reg-password').value;
-            const group = document.getElementById('reg-group').value;
+            savedUsers.forEach(u => {
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="p-2.5 font-bold text-slate-800">${u.email}</td>
+                        <td class="p-2.5 text-center font-semibold">Группа ${u.group}</td>
+                        <td class="p-2.5 text-center font-bold">
+                            <span class="px-2 py-0.5 rounded text-[10px] ${u.role === 'superadmin' ? 'bg-purple-100 text-purple-900' : u.role === 'admin' ? 'bg-indigo-100 text-indigo-900' : 'bg-slate-100 text-slate-800'}">
+                                ${u.role}
+                            </span>
+                        </td>
+                        <td class="p-2.5 text-center">
+                            <select onchange="changeUserRole('${u.email}', this.value)" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white">
+                                <option value="user" ${u.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="superadmin" ${u.role === 'superadmin' ? 'selected' : ''}>Superadmin</option>
+                            </select>
+                        </td>
+                    </tr>
+                `);
+            });
 
-            let savedUsers = JSON.parse(localStorage.getItem('users_db') || JSON.stringify(initialUsers));
-            if (savedUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-                document.getElementById('reg-error').textContent = "Пользователь с таким Email уже существует!";
-                document.getElementById('reg-error').classList.remove('hidden');
-                return;
+            modal.classList.remove('hidden');
+        }
+
+        function closeUsersModal() {
+            document.getElementById('users-modal').classList.add('hidden');
+        }
+
+        function changeUserRole(email, newRole) {
+            let savedUsers = JSON.parse(localStorage.getItem('users_db')) || initialUsers;
+            const target = savedUsers.find(u => u.email === email);
+            if (target) {
+                target.role = newRole;
+                localStorage.setItem('users_db', JSON.stringify(savedUsers));
+                showToast(`Роль ${email} изменена на ${newRole}`, 'success');
             }
+        }
 
-            const newUser = { email, password: pass, group, role: 'user' };
-            savedUsers.push(newUser);
-            localStorage.setItem('users_db', JSON.stringify(savedUsers));
-
-            currentUser = newUser;
-            enterDashboard();
-            showToast('Аккаунт успешно создан!', 'success');
-        });
-
-        // Инициализация при старте
+        // Инициализация
         window.addEventListener('DOMContentLoaded', () => {
             populateYearSelectors();
-
-            const startSlider = document.getElementById('slider-start-month');
-            const endSlider = document.getElementById('slider-end-month');
-            if (startSlider && endSlider) {
-                startSlider.addEventListener('input', updateRangeSliderUI);
-                endSlider.addEventListener('input', updateRangeSliderUI);
-                updateRangeSliderUI();
-            }
-
+            updateRangeSliderUI();
             fetchJSONBinData();
         });
     </script>
