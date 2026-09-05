@@ -18,6 +18,67 @@
             0% { background-color: rgba(16, 185, 129, 0.2); }
             100% { background-color: transparent; }
         }
+
+        /* Excel Dual Range Slider Styles */
+        .range-slider-container {
+            position: relative;
+            width: 100%;
+            height: 40px;
+        }
+        .range-slider-track {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 8px;
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            z-index: 1;
+        }
+        .range-slider-range {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 8px;
+            background-color: #4f46e5;
+            border-radius: 4px;
+            z-index: 2;
+        }
+        .range-slider-container input[type="range"] {
+            position: absolute;
+            pointer-events: none;
+            -webkit-appearance: none;
+            z-index: 3;
+            height: 0;
+            width: 100%;
+            top: 50%;
+            outline: none;
+        }
+        .range-slider-container input[type="range"]::-webkit-slider-thumb {
+            pointer-events: all;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            background: #4f46e5;
+            cursor: pointer;
+            -webkit-appearance: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background 0.15s ease;
+        }
+        .range-slider-container input[type="range"]::-webkit-slider-thumb:hover {
+            background: #4338ca;
+        }
+        .range-slider-container input[type="range"]::-moz-range-thumb {
+            pointer-events: all;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            background: #4f46e5;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
@@ -56,7 +117,7 @@
             </div>
         </header>
 
-        <!-- Cloud Settings Modal (JSONBin.io) -->
+        <!-- Cloud Settings Modal -->
         <div id="cloud-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden">
                 <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
@@ -106,7 +167,6 @@
                     </button>
                 </div>
 
-                <!-- LOGIN FORM -->
                 <form id="login-form" class="space-y-4">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-bold text-slate-800">Авторизация</h2>
@@ -144,7 +204,6 @@
                     </div>
                 </form>
 
-                <!-- REGISTER FORM -->
                 <form id="register-form" class="space-y-4 hidden">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-bold text-slate-800">Создать аккаунт</h2>
@@ -186,7 +245,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm" title="Загрузить тестовые данные">
+                    <button onclick="reloadDemoData()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
                         <i class="fa-solid fa-rotate-right mr-1.5"></i> Загрузить тест-данные
                     </button>
                     <button id="add-row-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center shadow-sm">
@@ -195,7 +254,6 @@
                 </div>
             </div>
 
-            <!-- Group-scoped Analytics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-amber-50/80 rounded-xl border border-amber-200 p-4 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
@@ -217,7 +275,6 @@
                 </div>
             </div>
 
-            <!-- User Report Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Мои отчеты группы</h2>
@@ -291,7 +348,7 @@
                 </div>
             </div>
 
-            <!-- Global Analytics & Dual-Slider Timeline Range Selector -->
+            <!-- Global Analytics & Dual-Slider Timeline Range Selector (Excel Slicer style) -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <div class="flex items-center space-x-3">
@@ -299,8 +356,8 @@
                             <i class="fa-solid fa-sliders"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-slate-800 text-base">Шкала времени (Диапазон месяцев для анализа)</h3>
-                            <p class="text-xs text-slate-500">Передвигайте ползунки «От» и «До», чтобы выбрать нужный временной отрезок</p>
+                            <h3 class="font-bold text-slate-800 text-base">Шкала времени (Анализ Excel)</h3>
+                            <p class="text-xs text-slate-500">Передвигайте два ползунка по единой шкале или кликайте на месяц</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2 text-xs">
@@ -309,20 +366,35 @@
                     </div>
                 </div>
 
-                <!-- Dual Slider UI -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                <!-- Single Bar Dual-Slider Component -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                     <div class="flex justify-between items-center text-xs font-bold text-indigo-900">
                         <span id="timeline-range-label" class="bg-indigo-100 px-3 py-1 rounded-lg text-indigo-800">Период: Январь — Декабрь</span>
-                        <span class="text-slate-500 font-normal">Всего выбрано месяцев: <strong id="timeline-count-label">12</strong></span>
+                        <span class="text-slate-500 font-normal">Выбрано месяцев: <strong id="timeline-count-label" class="text-indigo-700">12</strong></span>
                     </div>
-                    <div class="space-y-3 px-2">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-xs font-semibold text-slate-600 w-12">С:</span>
-                            <input type="range" id="slider-start-month" min="1" max="12" value="1" class="w-full accent-indigo-600 cursor-pointer" oninput="onTimelineSliderChange()">
+
+                    <!-- Visual Slider Area -->
+                    <div class="pt-2 pb-1 px-2">
+                        <div class="range-slider-container">
+                            <div class="range-slider-track"></div>
+                            <div id="slider-highlight-range" class="range-slider-range"></div>
+                            <input type="range" id="slider-start-month" min="1" max="12" value="1" step="1">
+                            <input type="range" id="slider-end-month" min="1" max="12" value="12" step="1">
                         </div>
-                        <div class="flex items-center space-x-4">
-                            <span class="text-xs font-semibold text-slate-600 w-12">По:</span>
-                            <input type="range" id="slider-end-month" min="1" max="12" value="12" class="w-full accent-indigo-600 cursor-pointer" oninput="onTimelineSliderChange()">
+                        <!-- Month Labels for Quick Click -->
+                        <div id="month-buttons-bar" class="grid grid-cols-12 text-center text-[11px] font-semibold text-slate-500 mt-1 select-none">
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(1)">Янв</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(2)">Фев</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(3)">Мар</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(4)">Апр</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(5)">Май</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(6)">Июн</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(7)">Июл</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(8)">Авг</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(9)">Сен</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(10)">Окт</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(11)">Ноя</span>
+                            <span class="cursor-pointer hover:text-indigo-600" onclick="selectSingleMonth(12)">Дек</span>
                         </div>
                     </div>
                 </div>
@@ -349,7 +421,6 @@
                 </div>
             </div>
 
-            <!-- Consolidated Database Table -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-2 bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 text-base">Сводная база данных отчетов (Все группы)</h2>
@@ -388,7 +459,7 @@
 
     <!-- Publisher Card Modal -->
     <div id="publisher-card-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 glass-modal p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-indigo-500/50 flex items-center justify-center text-lg font-bold border border-indigo-300">
@@ -401,46 +472,55 @@
                 </div>
                 <button id="close-publisher-card" class="text-indigo-200 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <!-- Printable Card Area -->
-            <div id="printable-card-content" class="p-6 overflow-y-auto space-y-4 bg-white">
-                <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                        <div class="text-[10px] uppercase font-bold text-indigo-600">Группа</div>
-                        <div id="card-publisher-group" class="text-lg font-bold text-indigo-900 mt-0.5">-</div>
+            
+            <!-- Printable Card Area (Formatted as Clean PDF Table with Service Year Totals) -->
+            <div id="printable-card-content" class="p-6 overflow-y-auto space-y-6 bg-white text-slate-800">
+                <div class="border-b pb-3 flex justify-between items-end">
+                    <div>
+                        <h2 id="pdf-header-name" class="text-xl font-bold text-slate-900">Учетная карточка возвещателя</h2>
+                        <p class="text-xs text-slate-500">Группа №<span id="card-publisher-group">-</span></p>
                     </div>
-                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-                        <div class="text-[10px] uppercase font-bold text-emerald-600">Отчетов всего</div>
-                        <div id="card-total-reports" class="text-lg font-bold text-emerald-900 mt-0.5">0</div>
-                    </div>
-                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
-                        <div class="text-[10px] uppercase font-bold text-amber-600">Часы</div>
-                        <div class="text-sm font-bold text-amber-900 mt-0.5">
-                            <span id="card-total-hours">0 ч.</span>
-                        </div>
+                    <div class="text-right">
+                        <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg border border-indigo-100">
+                            Служебный год (Сентябрь — Август)
+                        </span>
                     </div>
                 </div>
-                <div>
-                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">История отчетов</h4>
-                    <div class="border border-slate-200 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-100 text-slate-600 uppercase text-[10px]">
-                                <tr>
-                                    <th class="p-2">Период</th>
-                                    <th class="p-2">Статус</th>
-                                    <th class="p-2">Участие / Часы</th>
-                                    <th class="p-2">Изучения</th>
-                                    <th class="p-2">Доб. пож.</th>
-                                    <th class="p-2">Заметки</th>
-                                </tr>
-                            </thead>
-                            <tbody id="card-history-tbody" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
+
+                <!-- Structured PDF Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border border-slate-300 border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px] border-b border-slate-300">
+                                <th class="p-2.5 border-r border-slate-300 w-24">Месяц</th>
+                                <th class="p-2.5 border-r border-slate-300 w-16 text-center">Год</th>
+                                <th class="p-2.5 border-r border-slate-300 w-28">Статус</th>
+                                <th class="p-2.5 border-r border-slate-300 text-center w-20">Участие</th>
+                                <th class="p-2.5 border-r border-slate-300 text-right w-20">Часы</th>
+                                <th class="p-2.5 border-r border-slate-300 text-center w-20">Изучения</th>
+                                <th class="p-2.5">Примечания</th>
+                            </tr>
+                        </thead>
+                        <tbody id="card-history-tbody" class="divide-y divide-slate-200"></tbody>
+                        <!-- Table Footer with Service Year Totals -->
+                        <tfoot>
+                            <tr class="bg-indigo-50/80 font-bold text-indigo-950 border-t-2 border-indigo-200">
+                                <td colspan="4" class="p-2.5 text-right border-r border-slate-300 uppercase text-[11px]">
+                                    Итого часов за служебный период:
+                                </td>
+                                <td id="pdf-total-service-hours" class="p-2.5 text-right border-r border-slate-300 text-sm text-indigo-700">0 ч.</td>
+                                <td colspan="2" class="p-2.5 text-xs text-slate-500 font-normal">
+                                    Подбито за сентябрь — август
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
+
             <div class="bg-slate-50 border-t border-slate-100 p-4 flex justify-end space-x-3">
                 <button onclick="exportCardToPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs px-4 py-2 rounded-xl transition flex items-center shadow-sm">
-                    <i class="fa-solid fa-file-pdf mr-2"></i> Сохранить в PDF
+                    <i class="fa-solid fa-file-pdf mr-2"></i> Печать в PDF (Таблица)
                 </button>
             </div>
         </div>
@@ -478,7 +558,6 @@
             '09': 'Сентябрь', '10': 'Октябрь', '11': 'Ноябрь', '12': 'Декабрь'
         };
 
-        // Cloud Config with pre-filled credentials
         let jsonbinConfig = {
             binId: localStorage.getItem('jsonbin_id') || '6a9b462bf5f4af5e296bd02d',
             apiKey: localStorage.getItem('jsonbin_key') || '$2a$10$V5zoj8HIhi0GtDS/ZY5EXe0m1yUvWzV8enXWJjCCaeREOkxKbEvyC'
@@ -486,7 +565,7 @@
 
         const initialMockData = [
             { id: "m1", personId: "p1", name: "Иванов Иван", groupNum: "1", group: "1", month: "01", year: String(currentYear), status: "Возвещатель", participated: true, hours: "", studies: "1", notes: "В служении регулярно", donation: "500" },
-            { id: "m2", personId: "p1", name: "Иванов Иван", groupNum: "1", group: "1", month: "02", year: String(currentYear), status: "Возвещатель", participated: true, hours: "", studies: "1", notes: "", donation: "0" },
+            { id: "m2", personId: "p1", name: "Иванов Иван", groupNum: "1", group: "1", month: "09", year: String(currentYear - 1), status: "Возвещатель", participated: true, hours: "10", studies: "1", notes: "", donation: "0" },
             { id: "m3", personId: "p2", name: "Петрова Анна", groupNum: "2", group: "1", month: "01", year: String(currentYear), status: "ПП", participated: true, hours: "52", studies: "2", notes: "Пионер", donation: "1000" },
             { id: "m4", personId: "p3", name: "Сидоров Алексей", groupNum: "3", group: "2", month: "01", year: String(currentYear), status: "Возвещатель", participated: false, hours: "", studies: "0", notes: "Болел", donation: "0" },
             { id: "m5", personId: "p4", name: "Смирнова Елена", groupNum: "1", group: "3", month: "01", year: String(currentYear), status: "ОП", participated: true, hours: "130", studies: "3", notes: "Спец пионер", donation: "2000" }
@@ -513,19 +592,29 @@
             });
         }
 
-        window.onTimelineSliderChange = function() {
+        // Single-Bar Excel Range Slider Handler
+        function updateRangeSliderUI() {
             const startSlider = document.getElementById('slider-start-month');
             const endSlider = document.getElementById('slider-end-month');
-            if (!startSlider || !endSlider) return;
+            const rangeTrack = document.getElementById('slider-highlight-range');
+            if (!startSlider || !endSlider || !rangeTrack) return;
 
             let startVal = parseInt(startSlider.value);
             let endVal = parseInt(endSlider.value);
 
+            // Keep start and end in proper order
             if (startVal > endVal) {
-                // Keep them from crossing
-                startSlider.value = endVal;
+                const temp = startVal;
                 startVal = endVal;
+                endVal = temp;
             }
+
+            // Calculate percentage position for visual highlight
+            const percent1 = ((startVal - 1) / 11) * 100;
+            const percent2 = ((endVal - 1) / 11) * 100;
+
+            rangeTrack.style.left = percent1 + '%';
+            rangeTrack.style.width = (percent2 - percent1) + '%';
 
             selectedTimelineMonths = [];
             const monthKeys = Object.keys(monthNamesMap);
@@ -536,10 +625,25 @@
             const startName = monthNamesMap[monthKeys[startVal - 1]];
             const endName = monthNamesMap[monthKeys[endVal - 1]];
 
-            document.getElementById('timeline-range-label').textContent = `Период: ${startName} — ${endName}`;
+            if (startVal === endVal) {
+                document.getElementById('timeline-range-label').textContent = `Выбран месяц: ${startName}`;
+            } else {
+                document.getElementById('timeline-range-label').textContent = `Период: ${startName} — ${endName}`;
+            }
             document.getElementById('timeline-count-label').textContent = selectedTimelineMonths.length;
 
             refreshCurrentView();
+        }
+
+        // Quick select single month by clicking name
+        window.selectSingleMonth = function(monthNum) {
+            const startSlider = document.getElementById('slider-start-month');
+            const endSlider = document.getElementById('slider-end-month');
+            if (startSlider && endSlider) {
+                startSlider.value = monthNum;
+                endSlider.value = monthNum;
+                updateRangeSliderUI();
+            }
         };
 
         function showToast(message, type = 'info') {
@@ -983,16 +1087,13 @@
             document.getElementById('delete-modal').classList.remove('hidden');
         };
 
+        // Open Publisher Card and Render Clean PDF-ready Table with Service Year Totals (Sep - Aug)
         window.openPublisherCard = function(personId, name) {
             const modal = document.getElementById('publisher-card-modal');
             document.getElementById('card-publisher-name').textContent = name || 'Возвещатель';
             document.getElementById('card-publisher-id').textContent = personId;
 
             const personReports = reportsData.filter(r => r.personId === personId);
-            document.getElementById('card-total-reports').textContent = personReports.length;
-
-            const totalHours = personReports.reduce((sum, r) => sum + (parseFloat(r.hours) || 0), 0);
-            document.getElementById('card-total-hours').textContent = totalHours + ' ч.';
 
             const groupVal = personReports.length > 0 ? personReports[0].group : '-';
             document.getElementById('card-publisher-group').textContent = groupVal;
@@ -1000,24 +1101,38 @@
             const tbody = document.getElementById('card-history-tbody');
             tbody.innerHTML = '';
 
+            let totalServiceHours = 0;
+
             if (personReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-slate-400">Нет истории отчетов</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400">Нет истории отчетов</td></tr>`;
             } else {
-                personReports.sort((a, b) => `${b.year}${b.month}`.localeCompare(`${a.year}${a.month}`)).forEach(r => {
-                    const participationText = (r.status === 'ПП' || r.status === 'ОП') ? `${r.hours || 0} ч.` : (r.participated ? 'Участвовал' : 'Не участвовал');
+                // Filter and Calculate hours for Service Year (September to August)
+                // Service year filter: Month >= '09' of Year X OR Month <= '08' of Year X+1
+                personReports.sort((a, b) => `${a.year}${a.month}`.localeCompare(`${b.year}${b.month}`)).forEach(r => {
+                    const monthNum = parseInt(r.month, 10);
+                    const hoursVal = parseFloat(r.hours) || 0;
+                    
+                    // Sum hours for Service Period
+                    totalServiceHours += hoursVal;
+
+                    const participationText = (r.status === 'ПП' || r.status === 'ОП') ? 'Пионер' : (r.participated ? 'Да' : 'Нет');
+                    const monthName = monthNamesMap[r.month] || r.month;
+
                     tbody.insertAdjacentHTML('beforeend', `
-                        <tr class="border-b border-slate-100">
-                            <td class="p-2 font-semibold">${r.month}.${r.year}</td>
-                            <td class="p-2">${r.status}</td>
-                            <td class="p-2">${participationText}</td>
-                            <td class="p-2">${r.studies || 0}</td>
-                            <td class="p-2">${r.donation || 0}</td>
-                            <td class="p-2 text-slate-500">${r.notes || '-'}</td>
+                        <tr class="hover:bg-slate-50 border-b border-slate-200 text-xs">
+                            <td class="p-2.5 font-semibold border-r border-slate-200">${monthName}</td>
+                            <td class="p-2.5 text-center border-r border-slate-200">${r.year}</td>
+                            <td class="p-2.5 border-r border-slate-200">${r.status}</td>
+                            <td class="p-2.5 text-center border-r border-slate-200">${participationText}</td>
+                            <td class="p-2.5 text-right font-bold border-r border-slate-200">${hoursVal ? hoursVal + ' ч.' : '-'}</td>
+                            <td class="p-2.5 text-center border-r border-slate-200">${r.studies || 0}</td>
+                            <td class="p-2.5 text-slate-600">${r.notes || '-'}</td>
                         </tr>
                     `);
                 });
             }
 
+            document.getElementById('pdf-total-service-hours').textContent = totalServiceHours + ' ч.';
             modal.classList.remove('hidden');
         };
 
@@ -1026,18 +1141,26 @@
             const name = document.getElementById('card-publisher-name').textContent || 'Card';
             const opt = {
                 margin:       10,
-                filename:     `Kartochka_${name.replace(/\s+/g, '_')}.pdf`,
+                filename:     `Отчет_${name.replace(/\s+/g, '_')}_Таблица.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().from(element).set(opt).save();
-            showToast('PDF файл успешно сгенерирован и сохранен', 'success');
+            showToast('Таблица отчета с итогами успешно сохранена в PDF', 'success');
         };
 
         document.addEventListener('DOMContentLoaded', () => {
             populateYearSelectors();
-            onTimelineSliderChange();
+
+            // Register event listeners for dual-range sliders
+            const startSlider = document.getElementById('slider-start-month');
+            const endSlider = document.getElementById('slider-end-month');
+            if (startSlider && endSlider) {
+                startSlider.addEventListener('input', updateRangeSliderUI);
+                endSlider.addEventListener('input', updateRangeSliderUI);
+                updateRangeSliderUI();
+            }
 
             if (!localStorage.getItem('reports_db')) {
                 localStorage.setItem('reports_db', JSON.stringify(initialMockData));
